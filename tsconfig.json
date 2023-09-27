@@ -22,9 +22,18 @@
         "./src/subdomains/academic-programming/contexts/student-inscription/*"
       ],
       "@sofka/*": ["./src/domain/common/sofka/*"],
+      "@sofka": ["./src/domain/common/sofka"],
       "@validations": ["./src/domain/common/validations"],
       "@enums": ["./src/domain/enums"],
-      "@types": ["./src/domain/types"]
+      "@types": ["./src/domain/types"],
+      "@domain-models/*": ["./src/domain/models/*"],
+      "@domain-models": ["./src/domain/models"],
+      "@domain-dtos/*": ["./src/domain/dtos/*"],
+      "@domain-dtos": ["./src/domain/dtos"],
+      "@domain-services/*": ["./src/domain/services/*"],
+      "@domain-services": ["./src/domain/services"],
+      "@value-objects/*": ["./src/domain/values/*"],
+      "@value-objects": ["./src/domain/values"]
     }
   }
 }

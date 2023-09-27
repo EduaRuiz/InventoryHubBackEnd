@@ -6,9 +6,10 @@
   ProductQuantityValueObject,
   ProductCategoryValueObject,
 } from '../values/product';
+import { IProductDomainModel } from './interfaces';
 
-export class ProductDomainModel {
-  id: string | ProductIdValueObject;
+export class ProductDomainModel implements IProductDomainModel {
+  id?: string | ProductIdValueObject;
   name: string | ProductNameValueObject;
   description: string | ProductDescriptionValueObject;
   price: number | ProductPriceValueObject;
