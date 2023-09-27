@@ -33,7 +33,11 @@
       "@domain-services/*": ["./src/domain/services/*"],
       "@domain-services": ["./src/domain/services"],
       "@value-objects/*": ["./src/domain/values/*"],
-      "@value-objects": ["./src/domain/values"]
+      "@value-objects": ["./src/domain/values"],
+      "@domain-publishers/*": ["./src/domain/events/publishers/*"],
+      "@domain-publishers": ["./src/domain/events/publishers"],
+      "@use-cases/*": ["./src/application/use-cases/*"],
+      "@use-cases": ["./src/application/use-cases"]
     }
   }
 }

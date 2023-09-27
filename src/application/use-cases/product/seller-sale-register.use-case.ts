@@ -1,17 +1,22 @@
 ﻿import { ProductDomainModel } from '@domain-models';
 import { ConflictException } from '@nestjs/common';
 import { Observable, iif, switchMap, tap, throwError } from 'rxjs';
-// import { RegisteredNewProductDomainEvent } from '../../domain/events/publishers';
-import { ICustomerSaleDomainDto } from '@domain-dtos';
-import { IProductDomainService } from '@domain-services';
+import { ISellerSaleDomainDto } from '@domain-dtos';
+import {
+  IProductDomainService,
+  IStoredEventDomainService,
+} from '@domain-services';
+import { SellerSaleRegisteredEventPublisher } from '../../../domain/events/publishers/seller-sale-registered.event-publisher';
 
-export class RegisterCustomerSaleUseCase {
+export class SellerSaleRegisterUseCase {
   constructor(
-    private readonly product$: IProductDomainService, // private readonly registeredNewProductDomainEvent: RegisteredNewProductDomainEvent,
+    private readonly product$: IProductDomainService,
+    private readonly storedEvent$: IStoredEventDomainService,
+    private readonly sellerSaleRegisteredEventPublisher: SellerSaleRegisteredEventPublisher,
   ) {}
 
   execute(
-    customerSaleDto: ICustomerSaleDomainDto,
+    customerSaleDto: ISellerSaleDomainDto,
   ): Observable<ProductDomainModel> {
     return this.product$.getProduct(customerSaleDto.productId).pipe(
       switchMap((product: ProductDomainModel) => {
@@ -22,7 +27,7 @@ export class RegisterCustomerSaleUseCase {
           throwError(() => new ConflictException('Product out of stock')),
           this.product$.updateProduct(product).pipe(
             tap((product: ProductDomainModel) => {
-              console.log('Customer sale: ', product);
+              console.log('Seller sale: ', product);
               // this.registeredNewProductDomainEvent.publish(product);
             }),
           ),

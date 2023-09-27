@@ -1,12 +1,17 @@
 import { ProductDomainModel } from '@domain-models';
 import { Observable, switchMap, tap } from 'rxjs';
-// import { RegisteredNewProductDomainEvent } from '../../domain/events/publishers';
+import { ProductPurchaseRegisteredEventPublisher } from '@domain-publishers';
 import { IAddProductDomainDto } from '@domain-dtos';
-import { IProductDomainService } from '@domain-services';
+import {
+  IProductDomainService,
+  IStoredEventDomainService,
+} from '@domain-services';
 
-export class RegisterProductQuantityUseCase {
+export class ProductPurchaseRegisterUseCase {
   constructor(
-    private readonly product$: IProductDomainService, // private readonly registeredNewProductDomainEvent: RegisteredNewProductDomainEvent,
+    private readonly product$: IProductDomainService,
+    private readonly storedEvent$: IStoredEventDomainService,
+    private readonly registeredProductPurchaseEvent: ProductPurchaseRegisteredEventPublisher,
   ) {}
 
   execute(addProductDto: IAddProductDomainDto): Observable<ProductDomainModel> {
@@ -16,7 +21,7 @@ export class RegisterProductQuantityUseCase {
         return this.product$.updateProduct(product).pipe(
           tap((product: ProductDomainModel) => {
             console.log('Product created: ', product);
-            // this.registeredNewProductDomainEvent.publish(product);
+            // this.registeredProductPurchaseEvent.publish(product);
           }),
         );
       }),

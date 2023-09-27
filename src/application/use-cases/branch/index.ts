@@ -1,1 +1,1 @@
-export * from './register-branch.use-case';
+export * from './branch-register.use-case';

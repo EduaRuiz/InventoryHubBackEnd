@@ -1,12 +1,17 @@
 ﻿import { UserDomainModel } from '@domain-models';
 import { Observable, tap } from 'rxjs';
-// import { RegisteredNewUserDomainEvent } from '../../domain/events/publishers';
 import { INewUserDomainDto } from '@domain-dtos';
-import { IUserDomainService } from '@domain-services';
+import {
+  IStoredEventDomainService,
+  IUserDomainService,
+} from '@domain-services';
+import { UserRegisteredEventPublisher } from '@domain-publishers';
 
-export class RegisterUserUseCase {
+export class UserRegisterUseCase {
   constructor(
-    private readonly user$: IUserDomainService, // private readonly registeredNewUserDomainEvent: RegisteredNewUserDomainEvent,
+    private readonly user$: IUserDomainService,
+    private readonly storedEvent$: IStoredEventDomainService,
+    private readonly userRegisteredDomainEvent: UserRegisteredEventPublisher,
   ) {}
 
   execute(registerUserDto: INewUserDomainDto): Observable<UserDomainModel> {

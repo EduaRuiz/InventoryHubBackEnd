@@ -1,26 +1,25 @@
 ﻿import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
-import {
-  ProductService,
-  BranchService,
-  UserService,
-} from '../persistence/services';
+import { ProductService } from '../persistence/services';
 import { CustomerSaleDto, NewProductDto, SellerSaleDto } from '../utils/dtos';
 import { ProductDomainModel } from '@domain-models';
 import { Observable } from 'rxjs';
 import {
-  RegisterCustomerSaleUseCase,
-  RegisterProductQuantityUseCase,
-  RegisterProductUseCase,
-  RegisterSellerSaleUseCase,
+  CustomerSaleRegisterUseCase,
+  ProductPurchaseRegisterUseCase,
+  ProductRegisterUseCase,
+  SellerSaleRegisterUseCase,
 } from 'src/application/use-cases/product';
-import { AddProductDto } from '../utils/dtos/add-product.dto';
+import { AddProductDto } from '../utils/dtos';
+// import { ProductRegisteredPublisher } from '../messaging/publishers';
 
 @Controller('product')
 export class ProductController {
   constructor(
     private readonly productService: ProductService,
-    private readonly userService: UserService,
-    private readonly branchService: BranchService,
+    private readonly productRegisterUseCase: ProductRegisterUseCase,
+    private readonly productPurchaseRegisterUseCase: ProductPurchaseRegisterUseCase,
+    private readonly sellerSaleRegisterUseCase: SellerSaleRegisterUseCase,
+    private readonly customerSaleRegisterUseCase: CustomerSaleRegisterUseCase,
   ) {}
 
   @Get('info/:id')
@@ -33,43 +32,27 @@ export class ProductController {
   createProduct(
     @Body() product: NewProductDto,
   ): Observable<ProductDomainModel> {
-    const newProduct = new RegisterProductUseCase(
-      this.productService,
-      // this.registeredNewProductPublisher,
-    );
-    return newProduct.execute(product);
+    return this.productRegisterUseCase.execute(product);
   }
 
   @Patch('purchase')
   productPurchase(
     @Body() product: AddProductDto,
   ): Observable<ProductDomainModel> {
-    const newProduct = new RegisterProductQuantityUseCase(
-      this.productService,
-      // this.registeredNewProductPublisher,
-    );
-    return newProduct.execute(product);
+    return this.productPurchaseRegisterUseCase.execute(product);
   }
 
   @Patch('sale/seller')
   productSellerSale(
     @Body() sale: SellerSaleDto,
   ): Observable<ProductDomainModel> {
-    const newProduct = new RegisterSellerSaleUseCase(
-      this.productService,
-      // this.registeredNewProductPublisher,
-    );
-    return newProduct.execute(sale);
+    return this.sellerSaleRegisterUseCase.execute(sale);
   }
 
   @Patch('sale/customer')
   productCustomerSale(
     @Body() sale: CustomerSaleDto,
   ): Observable<ProductDomainModel> {
-    const newProduct = new RegisterCustomerSaleUseCase(
-      this.productService,
-      // this.registeredNewProductPublisher,
-    );
-    return newProduct.execute(sale);
+    return this.customerSaleRegisterUseCase.execute(sale);
   }
 }

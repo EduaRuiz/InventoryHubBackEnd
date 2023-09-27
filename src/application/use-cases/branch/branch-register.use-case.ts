@@ -1,12 +1,17 @@
 ﻿import { BranchDomainModel } from '@domain-models';
 import { Observable, tap } from 'rxjs';
-// import { RegisteredNewBranchDomainEvent } from '../../domain/events/publishers';
 import { INewBranchDomainDto } from '@domain-dtos';
-import { IBranchDomainService } from '@domain-services';
+import {
+  IBranchDomainService,
+  IStoredEventDomainService,
+} from '@domain-services';
+import { BranchRegisteredEventPublisher } from '../../../domain/events/publishers/branch-registered.event-publisher';
 
-export class RegisterBranchUseCase {
+export class BranchRegisterUseCase {
   constructor(
-    private readonly branch$: IBranchDomainService, // private readonly registeredNewBranchDomainEvent: RegisteredNewBranchDomainEvent,
+    private readonly branch$: IBranchDomainService,
+    private readonly storedEvent$: IStoredEventDomainService,
+    private readonly branchRegisteredEventPublisher: BranchRegisteredEventPublisher,
   ) {}
 
   execute(
