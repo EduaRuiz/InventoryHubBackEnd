@@ -4,3 +4,4 @@ export * from './product-id.value-object';
 export * from './product-name.value-object';
 export * from './product-price.value-object';
 export * from './product-quantity.value-object';
+export * from './product-branch-id.value-object';

@@ -15,4 +15,5 @@ export class ProductDomainModel implements IProductDomainModel {
   price: number | ProductPriceValueObject;
   quantity: number | ProductQuantityValueObject;
   category: string | ProductCategoryValueObject;
+  branchId?: string;
 }

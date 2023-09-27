@@ -49,7 +49,7 @@ export class UserRegisterUseCase extends ValueObjectErrorHandler {
     }
     if (this.hasErrors()) {
       throw new ValueObjectException(
-        'Existen algunos errores en el comando',
+        'Existen algunos errores en los datos ingresados',
         this.getErrors(),
       );
     }

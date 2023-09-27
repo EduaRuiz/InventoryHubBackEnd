@@ -75,7 +75,7 @@ export class CustomerSaleRegisterUseCase extends ValueObjectErrorHandler {
       aggregateRootId: product?.id?.valueOf() ?? 'null',
       eventBody: JSON.stringify(product),
       occurredOn: new Date(),
-      typeName: 'ProductRegistered',
+      typeName: 'CustomerSaleRegistered',
     });
   }
 }
