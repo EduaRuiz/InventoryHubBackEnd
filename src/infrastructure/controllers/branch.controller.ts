@@ -21,4 +21,9 @@ export class BranchController {
   getBranchInfo(@Param('id') branchId: string): Observable<BranchDomainModel> {
     return this.branchService.getBranchById(branchId);
   }
+
+  @Get('all')
+  getAllBranches(): Observable<BranchDomainModel[]> {
+    return this.branchService.getAllBranches();
+  }
 }

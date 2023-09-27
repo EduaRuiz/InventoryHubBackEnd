@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 import { INewUserDomainDto } from 'src/domain';
 
@@ -12,7 +13,12 @@ export class NewUserDto implements INewUserDomainDto {
   @IsString()
   @IsDefined()
   @IsNotEmpty()
-  name: string;
+  firstName: string;
+
+  @IsString()
+  @IsDefined()
+  @IsNotEmpty()
+  lastName: string;
 
   @IsString()
   @IsDefined()
@@ -35,5 +41,6 @@ export class NewUserDto implements INewUserDomainDto {
   @IsString()
   @IsDefined()
   @IsNotEmpty()
+  @IsUUID()
   branchId?: string;
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { UserService } from '../persistence/services';
 import { UserDomainModel } from '@domain-models';
 import { UserRegisterUseCase } from 'src/application/use-cases/user';
@@ -15,5 +15,15 @@ export class UserController {
   @Post('register')
   registerUser(@Body() user: NewUserDto): Observable<UserDomainModel> {
     return this.userRegisterUseCase.execute(user);
+  }
+
+  @Get('info/:id')
+  getUserInfo(userId: string): Observable<UserDomainModel> {
+    return this.userService.getUserById(userId);
+  }
+
+  @Get('all')
+  getAllUsers(): Observable<UserDomainModel[]> {
+    return this.userService.getAllUsers();
   }
 }

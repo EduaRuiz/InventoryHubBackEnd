@@ -7,6 +7,7 @@
   IsNumber,
   Min,
   Max,
+  IsUUID,
 } from 'class-validator';
 import { ISellerSaleDomainDto } from 'src/domain';
 
@@ -14,6 +15,7 @@ export class SellerSaleDto implements ISellerSaleDomainDto {
   @IsString()
   @IsDefined()
   @IsNotEmpty()
+  @IsUUID()
   productId: string;
 
   // @IsString()

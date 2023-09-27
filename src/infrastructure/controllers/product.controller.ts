@@ -55,4 +55,9 @@ export class ProductController {
   ): Observable<ProductDomainModel> {
     return this.customerSaleRegisterUseCase.execute(sale);
   }
+
+  @Get('all')
+  getAllProducts(): Observable<ProductDomainModel[]> {
+    return this.productService.getAllProducts();
+  }
 }

@@ -5,6 +5,7 @@ import {
   IsString,
   // IsNumberString,
   IsNumber,
+  IsUUID,
 } from 'class-validator';
 import { INewProductDomainDto } from '../../../domain/dtos';
 
@@ -33,5 +34,6 @@ export class NewProductDto implements INewProductDomainDto {
   @IsString()
   @IsDefined()
   @IsNotEmpty()
+  @IsUUID()
   branchId: string;
 }

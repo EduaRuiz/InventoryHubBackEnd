@@ -33,7 +33,6 @@ export class ProductRegisterUseCase {
           occurredOn: new Date(),
           typeName: 'ProductRegistered',
         });
-        // this.productRegisteredDomainEvent.emit();
         this.productRegisteredDomainEvent.publish();
       }),
     );

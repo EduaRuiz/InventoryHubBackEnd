@@ -21,7 +21,14 @@ export class ProductPurchaseRegisterUseCase {
         return this.product$.updateProduct(product).pipe(
           tap((product: ProductDomainModel) => {
             console.log('Product created: ', product);
-            // this.registeredProductPurchaseEvent.publish(product);
+            this.registeredProductPurchaseEvent.response = product;
+            this.registeredProductPurchaseEvent.publish();
+            this.storedEvent$.createStoredEvent({
+              aggregateRootId: product?.id?.valueOf() ?? 'null',
+              eventBody: JSON.stringify(product),
+              occurredOn: new Date(),
+              typeName: 'ProductRegistered',
+            });
           }),
         );
       }),
