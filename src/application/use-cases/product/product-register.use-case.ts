@@ -2,10 +2,7 @@ import { ProductDomainModel } from '@domain-models';
 import { Observable, tap } from 'rxjs';
 import { ProductRegisteredEventPublisher } from '@domain-publishers';
 import { INewProductDomainDto } from '@domain-dtos';
-import {
-  IProductDomainService,
-  IStoredEventDomainService,
-} from '@domain-services';
+import { IProductDomainService } from '@domain-services';
 import { ValueObjectBase, ValueObjectErrorHandler } from '@sofka/bases';
 import {
   ProductBranchIdValueObject,
@@ -15,11 +12,14 @@ import {
   ProductPriceValueObject,
 } from '@value-objects/product';
 import { ValueObjectException } from '@sofka/exceptions';
+import { IUseCase } from '@sofka/interfaces';
 
-export class ProductRegisterUseCase extends ValueObjectErrorHandler {
+export class ProductRegisterUseCase
+  extends ValueObjectErrorHandler
+  implements IUseCase<INewProductDomainDto, ProductDomainModel>
+{
   constructor(
     private readonly product$: IProductDomainService,
-    private readonly storedEvent$: IStoredEventDomainService,
     private readonly productRegisteredDomainEvent: ProductRegisteredEventPublisher,
   ) {
     super();
@@ -29,7 +29,7 @@ export class ProductRegisterUseCase extends ValueObjectErrorHandler {
     registerProductDto: INewProductDomainDto,
   ): Observable<ProductDomainModel> {
     registerProductDto.name = registerProductDto.name?.trim().toUpperCase();
-    registerProductDto.description = registerProductDto.description.trim();
+    registerProductDto.description = registerProductDto.description?.trim();
     const newProduct = this.entityFactory(registerProductDto);
     return this.product$.createProduct(newProduct).pipe(
       tap((product: ProductDomainModel) => {
@@ -78,11 +78,5 @@ export class ProductRegisterUseCase extends ValueObjectErrorHandler {
     console.log('Product created: ', product);
     this.productRegisteredDomainEvent.response = product;
     this.productRegisteredDomainEvent.publish();
-    this.storedEvent$.createStoredEvent({
-      aggregateRootId: product?.branchId ?? 'null',
-      eventBody: JSON.stringify(product),
-      occurredOn: new Date(),
-      typeName: 'ProductRegistered',
-    });
   }
 }

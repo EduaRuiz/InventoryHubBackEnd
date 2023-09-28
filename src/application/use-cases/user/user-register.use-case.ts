@@ -1,19 +1,23 @@
 ﻿import { UserDomainModel } from '@domain-models';
 import { Observable, tap } from 'rxjs';
 import { INewUserDomainDto } from '@domain-dtos';
-import {
-  IStoredEventDomainService,
-  IUserDomainService,
-} from '@domain-services';
+import { IUserDomainService } from '@domain-services';
 import { UserRegisteredEventPublisher } from '@domain-publishers';
-import { UserEmailValueObject, UserNameValueObject } from '@value-objects/user';
+import {
+  UserBranchIdValueObject,
+  UserEmailValueObject,
+  UserNameValueObject,
+} from '@value-objects/user';
 import { ValueObjectBase, ValueObjectErrorHandler } from '@sofka/bases';
 import { ValueObjectException } from '@sofka/exceptions';
+import { IUseCase } from '@sofka/interfaces';
 
-export class UserRegisterUseCase extends ValueObjectErrorHandler {
+export class UserRegisterUseCase
+  extends ValueObjectErrorHandler
+  implements IUseCase<INewUserDomainDto, UserDomainModel>
+{
   constructor(
     private readonly user$: IUserDomainService,
-    private readonly storedEvent$: IStoredEventDomainService,
     private readonly userRegisteredDomainEvent: UserRegisteredEventPublisher,
   ) {
     super();
@@ -38,7 +42,10 @@ export class UserRegisterUseCase extends ValueObjectErrorHandler {
       lastName: command.lastName,
     });
     const email = new UserEmailValueObject(command.email);
-    return [email, name];
+    const response: ValueObjectBase<any>[] = [email, name];
+    if (command.branchId)
+      response.push(new UserBranchIdValueObject(command.branchId));
+    return response;
   }
 
   private validateValueObjects(valueObjects: ValueObjectBase<any>[]) {
@@ -66,6 +73,7 @@ export class UserRegisterUseCase extends ValueObjectErrorHandler {
       email: registerUserDto.email,
       password: registerUserDto.password,
       role: registerUserDto.role,
+      branchId: registerUserDto.branchId,
     };
   }
 
@@ -73,11 +81,5 @@ export class UserRegisterUseCase extends ValueObjectErrorHandler {
     console.log('User created: ', user);
     this.userRegisteredDomainEvent.response = user;
     this.userRegisteredDomainEvent.publish();
-    this.storedEvent$.createStoredEvent({
-      aggregateRootId: user?.id?.valueOf() ?? 'null',
-      eventBody: JSON.stringify(user),
-      occurredOn: new Date(),
-      typeName: 'ProductRegistered',
-    });
   }
 }

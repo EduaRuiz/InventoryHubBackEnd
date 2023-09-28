@@ -1,3 +1,5 @@
+import { Observable } from 'rxjs';
+
 /**
  * Interface representing a EventPublisher
  *
@@ -12,10 +14,13 @@ export interface IEventPublisher {
    * @template Input
    * @param {*} pattern
    * @param {Input} data
-   * @return {*}  {Promise<Result>}
+   * @return {*}  {Observable<Result>}
    * @memberof IEventPublisher
    */
-  send<Result = any, Input = any>(pattern: any, data: Input): Promise<Result>;
+  send<Result = any, Input = any>(
+    pattern: any,
+    data: Input,
+  ): Observable<Result>;
   /**
    * Emit data throw de pattern
    *
@@ -23,8 +28,11 @@ export interface IEventPublisher {
    * @template Input
    * @param {*} pattern
    * @param {Input} data
-   * @return {*}  {Promise<Result>}
+   * @return {*}  {Observable<Result>}
    * @memberof IEventPublisher
    */
-  emit<Result = any, Input = any>(pattern: any, data: Input): Promise<Result>;
+  emit<Result = any, Input = any>(
+    pattern: any,
+    data: Input,
+  ): Observable<Result>;
 }

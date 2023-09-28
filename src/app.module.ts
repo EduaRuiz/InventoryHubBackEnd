@@ -6,7 +6,6 @@ import {
   BranchService,
   PersistenceModule,
   ProductService,
-  StoredEventService,
   UserService,
 } from './infrastructure/persistence';
 import { ConfigModule } from '@nestjs/config';
@@ -20,14 +19,8 @@ import {
   SellerSaleRegisteredPublisher,
   UserRegisteredPublisher,
 } from './infrastructure/messaging';
-import {
-  BranchRegisterUseCase,
-  CustomerSaleRegisterUseCase,
-  ProductPurchaseRegisterUseCase,
-  ProductRegisterUseCase,
-  SellerSaleRegisterUseCase,
-  UserRegisterUseCase,
-} from '@use-cases';
+import { BranchRegisterUseCase, UserRegisterUseCase } from '@use-cases';
+import { ProductDelegator } from '@use-cases/product';
 
 @Module({
   imports: [
@@ -46,100 +39,44 @@ import {
   controllers: [UserController, BranchController, ProductController],
   providers: [
     {
-      provide: ProductRegisterUseCase,
+      provide: ProductDelegator,
       useFactory: (
         productService: ProductService,
-        storedEventService: StoredEventService,
         productRegisteredEvent: ProductRegisteredPublisher,
+        productPurchaseRegisteredEvent: ProductPurchaseRegisteredPublisher,
+        sellerSaleRegisteredEvent: SellerSaleRegisteredPublisher,
+        customerSaleRegisteredEvent: CustomerSaleRegisteredPublisher,
       ) =>
-        new ProductRegisterUseCase(
+        new ProductDelegator(
           productService,
-          storedEventService,
           productRegisteredEvent,
-        ),
-      inject: [ProductService, StoredEventService, ProductRegisteredPublisher],
-    },
-    {
-      provide: ProductPurchaseRegisterUseCase,
-      useFactory: (
-        productService: ProductService,
-        storedEventService: StoredEventService,
-        productRegisteredEvent: ProductPurchaseRegisteredPublisher,
-      ) =>
-        new ProductPurchaseRegisterUseCase(
-          productService,
-          storedEventService,
-          productRegisteredEvent,
+          productPurchaseRegisteredEvent,
+          sellerSaleRegisteredEvent,
+          customerSaleRegisteredEvent,
         ),
       inject: [
         ProductService,
-        StoredEventService,
+        ProductRegisteredPublisher,
         ProductPurchaseRegisteredPublisher,
-      ],
-    },
-    {
-      provide: CustomerSaleRegisterUseCase,
-      useFactory: (
-        productService: ProductService,
-        storedEventService: StoredEventService,
-        productRegisteredEvent: CustomerSaleRegisteredPublisher,
-      ) =>
-        new CustomerSaleRegisterUseCase(
-          productService,
-          storedEventService,
-          productRegisteredEvent,
-        ),
-      inject: [
-        ProductService,
-        StoredEventService,
-        CustomerSaleRegisteredPublisher,
-      ],
-    },
-    {
-      provide: SellerSaleRegisterUseCase,
-      useFactory: (
-        productService: ProductService,
-        storedEventService: StoredEventService,
-        productRegisteredEvent: SellerSaleRegisteredPublisher,
-      ) =>
-        new SellerSaleRegisterUseCase(
-          productService,
-          storedEventService,
-          productRegisteredEvent,
-        ),
-      inject: [
-        ProductService,
-        StoredEventService,
         SellerSaleRegisteredPublisher,
+        CustomerSaleRegisteredPublisher,
       ],
     },
     {
       provide: BranchRegisterUseCase,
       useFactory: (
         branchService: BranchService,
-        storedEventService: StoredEventService,
         branchRegisteredEvent: BranchRegisteredPublisher,
-      ) =>
-        new BranchRegisterUseCase(
-          branchService,
-          storedEventService,
-          branchRegisteredEvent,
-        ),
-      inject: [BranchService, StoredEventService, BranchRegisteredPublisher],
+      ) => new BranchRegisterUseCase(branchService, branchRegisteredEvent),
+      inject: [BranchService, BranchRegisteredPublisher],
     },
     {
       provide: UserRegisterUseCase,
       useFactory: (
         userService: UserService,
-        storedEventService: StoredEventService,
         userRegisteredEvent: UserRegisteredPublisher,
-      ) =>
-        new UserRegisterUseCase(
-          userService,
-          storedEventService,
-          userRegisteredEvent,
-        ),
-      inject: [UserService, StoredEventService, UserRegisteredPublisher],
+      ) => new UserRegisterUseCase(userService, userRegisteredEvent),
+      inject: [UserService, UserRegisteredPublisher],
     },
   ],
 })

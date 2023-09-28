@@ -10,9 +10,6 @@ import { StoredEventMongoService } from './services';
     MongooseModule.forRootAsync({
       useClass: MongooseConfigService,
     }),
-    // MongooseModule.forRoot(
-    //   'mongodb://root:password@localhost:27017/inventory?authSource=admin',
-    // ),
     MongooseModule.forFeature([
       { name: StoredEventMongoModel.name, schema: StoredEventSchema },
       {

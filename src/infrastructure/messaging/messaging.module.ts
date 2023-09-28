@@ -8,6 +8,7 @@ import {
   SellerSaleRegisteredPublisher,
   UserRegisteredPublisher,
 } from './publishers';
+import { PersistenceModule } from '../persistence';
 
 /**
  * Modulo de mensajería
@@ -28,6 +29,7 @@ import {
         },
       },
     ]),
+    PersistenceModule,
   ],
   controllers: [],
   providers: [

@@ -4,6 +4,7 @@
   UserEmailValueObject,
   UserPasswordValueObject,
   UserRoleValueObject,
+  UserBranchIdValueObject,
 } from '../values/user';
 
 export interface UserDomainModel {
@@ -12,4 +13,5 @@ export interface UserDomainModel {
   email: string | UserEmailValueObject;
   password: string | UserPasswordValueObject;
   role: string | UserRoleValueObject;
+  branchId?: string | UserBranchIdValueObject;
 }

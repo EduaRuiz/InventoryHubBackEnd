@@ -15,7 +15,7 @@ export class ProductQuantityValueObject extends ValueObjectBase<number> {
   }
 
   private validateLength(): void {
-    if (this.value && this.value > 0) {
+    if (this.value && this.value < 0) {
       this.setError({
         field: 'ProductQuantity',
         message: 'La cantidad de producto no puede ser negativa',

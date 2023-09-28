@@ -2,10 +2,7 @@
 import { ConflictException } from '@nestjs/common';
 import { Observable, iif, switchMap, tap, throwError } from 'rxjs';
 import { ICustomerSaleDomainDto } from '@domain-dtos';
-import {
-  IProductDomainService,
-  IStoredEventDomainService,
-} from '@domain-services';
+import { IProductDomainService } from '@domain-services';
 import { CustomerSaleRegisteredEventPublisher } from '@domain-publishers';
 import { ValueObjectBase, ValueObjectErrorHandler } from '@sofka/bases';
 import {
@@ -13,11 +10,14 @@ import {
   ProductQuantityValueObject,
 } from '@value-objects/product';
 import { ValueObjectException } from '@sofka/exceptions';
+import { IUseCase } from '@sofka/interfaces';
 
-export class CustomerSaleRegisterUseCase extends ValueObjectErrorHandler {
+export class CustomerSaleRegisterUseCase
+  extends ValueObjectErrorHandler
+  implements IUseCase<ICustomerSaleDomainDto, ProductDomainModel>
+{
   constructor(
     private readonly product$: IProductDomainService,
-    private readonly storedEvent$: IStoredEventDomainService,
     private readonly customerSaleRegisteredEventPublisher: CustomerSaleRegisteredEventPublisher,
   ) {
     super();
@@ -72,11 +72,5 @@ export class CustomerSaleRegisterUseCase extends ValueObjectErrorHandler {
     console.log('Customer sale: ', product);
     this.customerSaleRegisteredEventPublisher.response = product;
     this.customerSaleRegisteredEventPublisher.publish();
-    this.storedEvent$.createStoredEvent({
-      aggregateRootId: product?.id?.valueOf() ?? 'null',
-      eventBody: JSON.stringify(product),
-      occurredOn: new Date(),
-      typeName: 'CustomerSaleRegistered',
-    });
   }
 }

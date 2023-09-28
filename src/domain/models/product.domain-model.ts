@@ -5,6 +5,7 @@
   ProductPriceValueObject,
   ProductQuantityValueObject,
   ProductCategoryValueObject,
+  ProductBranchIdValueObject,
 } from '../values/product';
 import { IProductDomainModel } from './interfaces';
 
@@ -15,5 +16,5 @@ export class ProductDomainModel implements IProductDomainModel {
   price: number | ProductPriceValueObject;
   quantity: number | ProductQuantityValueObject;
   category: string | ProductCategoryValueObject;
-  branchId?: string;
+  branchId: string | ProductBranchIdValueObject;
 }

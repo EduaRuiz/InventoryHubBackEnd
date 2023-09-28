@@ -5,6 +5,7 @@
   ProductPriceValueObject,
   ProductQuantityValueObject,
   ProductCategoryValueObject,
+  ProductBranchIdValueObject,
 } from '@value-objects/product';
 
 export interface IProductDomainModel {
@@ -14,4 +15,5 @@ export interface IProductDomainModel {
   price: number | ProductPriceValueObject;
   quantity: number | ProductQuantityValueObject;
   category: string | ProductCategoryValueObject;
+  branchId: string | ProductBranchIdValueObject;
 }

@@ -1,4 +1,5 @@
 import { IEventPublisher } from '@sofka/interfaces';
+import { Observable } from 'rxjs';
 
 /**
  * Abstract class representing an event publisher
@@ -51,13 +52,13 @@ export abstract class EventPublisherBase<Response> implements IEventPublisher {
    * @template Input
    * @param {*} pattern
    * @param {Input} data
-   * @return {*}  {Promise<Result>}
+   * @return {*}  {Observable<Result>}
    * @memberof EventPublisherBase
    */
   send<Result = any, Input = Response>(
     pattern: any,
     data: Input,
-  ): Promise<Result> {
+  ): Observable<Result> {
     return this.eventPublisher.send(pattern, data);
   }
 
@@ -68,13 +69,13 @@ export abstract class EventPublisherBase<Response> implements IEventPublisher {
    * @template Input
    * @param {*} pattern
    * @param {Input} data
-   * @return {*}  {Promise<Result>}
+   * @return {*}  {Observable<Result>}
    * @memberof EventPublisherBase
    */
   emit<Result = any, Input = Response>(
     pattern: any,
     data: Input,
-  ): Promise<Result> {
+  ): Observable<Result> {
     return this.eventPublisher.emit(pattern, data);
   }
 
@@ -84,5 +85,5 @@ export abstract class EventPublisherBase<Response> implements IEventPublisher {
    * @abstract
    * @memberof EventPublisherBase
    */
-  abstract publish<Result = any>(): Promise<Result>;
+  abstract publish<Result = any>(): Observable<Result>;
 }

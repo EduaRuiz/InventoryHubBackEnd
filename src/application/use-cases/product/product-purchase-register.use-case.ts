@@ -2,21 +2,21 @@ import { ProductDomainModel } from '@domain-models';
 import { Observable, switchMap, tap } from 'rxjs';
 import { ProductPurchaseRegisteredEventPublisher } from '@domain-publishers';
 import { IAddProductDomainDto } from '@domain-dtos';
-import {
-  IProductDomainService,
-  IStoredEventDomainService,
-} from '@domain-services';
+import { IProductDomainService } from '@domain-services';
 import { ValueObjectBase, ValueObjectErrorHandler } from '@sofka/bases';
 import {
   ProductIdValueObject,
   ProductQuantityValueObject,
 } from '@value-objects/product';
 import { ValueObjectException } from '@sofka/exceptions';
+import { IUseCase } from '@sofka/interfaces';
 
-export class ProductPurchaseRegisterUseCase extends ValueObjectErrorHandler {
+export class ProductPurchaseRegisterUseCase
+  extends ValueObjectErrorHandler
+  implements IUseCase<IAddProductDomainDto, ProductDomainModel>
+{
   constructor(
     private readonly product$: IProductDomainService,
-    private readonly storedEvent$: IStoredEventDomainService,
     private readonly registeredProductPurchaseEvent: ProductPurchaseRegisteredEventPublisher,
   ) {
     super();
@@ -64,11 +64,5 @@ export class ProductPurchaseRegisterUseCase extends ValueObjectErrorHandler {
     console.log('Product created: ', product);
     this.registeredProductPurchaseEvent.response = product;
     this.registeredProductPurchaseEvent.publish();
-    this.storedEvent$.createStoredEvent({
-      aggregateRootId: product?.id?.valueOf() ?? 'null',
-      eventBody: JSON.stringify(product),
-      occurredOn: new Date(),
-      typeName: 'ProductPurchaseRegistered',
-    });
   }
 }

@@ -1,10 +1,7 @@
 ﻿import { BranchDomainModel } from '@domain-models';
 import { Observable, tap } from 'rxjs';
 import { INewBranchDomainDto } from '@domain-dtos';
-import {
-  IBranchDomainService,
-  IStoredEventDomainService,
-} from '@domain-services';
+import { IBranchDomainService } from '@domain-services';
 import { BranchRegisteredEventPublisher } from '@domain-publishers';
 import { ValueObjectBase, ValueObjectErrorHandler } from '@sofka/bases';
 import {
@@ -12,11 +9,14 @@ import {
   BranchNameValueObject,
 } from '@value-objects/branch';
 import { ValueObjectException } from '@sofka/exceptions';
+import { IUseCase } from '@sofka/interfaces';
 
-export class BranchRegisterUseCase extends ValueObjectErrorHandler {
+export class BranchRegisterUseCase
+  extends ValueObjectErrorHandler
+  implements IUseCase<INewBranchDomainDto, BranchDomainModel>
+{
   constructor(
     private readonly branch$: IBranchDomainService,
-    private readonly storedEvent$: IStoredEventDomainService,
     private readonly branchRegisteredEventPublisher: BranchRegisteredEventPublisher,
   ) {
     super();
@@ -74,14 +74,7 @@ export class BranchRegisterUseCase extends ValueObjectErrorHandler {
   }
 
   private eventHandler(branch: BranchDomainModel): void {
-    console.log('Branch created: ', branch);
     this.branchRegisteredEventPublisher.response = branch;
     this.branchRegisteredEventPublisher.publish();
-    this.storedEvent$.createStoredEvent({
-      aggregateRootId: branch?.id?.valueOf() ?? 'null',
-      eventBody: JSON.stringify(branch),
-      occurredOn: new Date(),
-      typeName: 'ProductRegistered',
-    });
   }
 }

@@ -3,23 +3,15 @@ import { ProductService } from '../persistence/services';
 import { CustomerSaleDto, NewProductDto, SellerSaleDto } from '../utils/dtos';
 import { ProductDomainModel } from '@domain-models';
 import { Observable } from 'rxjs';
-import {
-  CustomerSaleRegisterUseCase,
-  ProductPurchaseRegisterUseCase,
-  ProductRegisterUseCase,
-  SellerSaleRegisterUseCase,
-} from 'src/application/use-cases/product';
+import {} from 'src/application/use-cases/product';
 import { AddProductDto } from '../utils/dtos';
-// import { ProductRegisteredPublisher } from '../messaging/publishers';
+import { ProductDelegator } from '@use-cases/product';
 
 @Controller('product')
 export class ProductController {
   constructor(
     private readonly productService: ProductService,
-    private readonly productRegisterUseCase: ProductRegisterUseCase,
-    private readonly productPurchaseRegisterUseCase: ProductPurchaseRegisterUseCase,
-    private readonly sellerSaleRegisterUseCase: SellerSaleRegisterUseCase,
-    private readonly customerSaleRegisterUseCase: CustomerSaleRegisterUseCase,
+    private readonly productDelegator: ProductDelegator,
   ) {}
 
   @Get('info/:id')
@@ -32,28 +24,33 @@ export class ProductController {
   createProduct(
     @Body() product: NewProductDto,
   ): Observable<ProductDomainModel> {
-    return this.productRegisterUseCase.execute(product);
+    // return this.productRegisterUseCase.execute(product);
+    this.productDelegator.toProductRegisterUseCase();
+    return this.productDelegator.execute(product);
   }
 
   @Patch('purchase')
   productPurchase(
     @Body() product: AddProductDto,
   ): Observable<ProductDomainModel> {
-    return this.productPurchaseRegisterUseCase.execute(product);
+    this.productDelegator.toProductPurchaseRegisterUseCase();
+    return this.productDelegator.execute(product);
   }
 
   @Patch('sale/seller')
   productSellerSale(
     @Body() sale: SellerSaleDto,
   ): Observable<ProductDomainModel> {
-    return this.sellerSaleRegisterUseCase.execute(sale);
+    this.productDelegator.toSellerSaleUseCase();
+    return this.productDelegator.execute(sale);
   }
 
   @Patch('sale/customer')
   productCustomerSale(
     @Body() sale: CustomerSaleDto,
   ): Observable<ProductDomainModel> {
-    return this.customerSaleRegisterUseCase.execute(sale);
+    this.productDelegator.toCustomerSaleUseCase();
+    return this.productDelegator.execute(sale);
   }
 
   @Get('all')

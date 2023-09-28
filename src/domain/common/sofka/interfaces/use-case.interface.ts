@@ -1,3 +1,5 @@
+import { Observable } from 'rxjs';
+
 /**
  * Interface representing a use case
  *
@@ -14,5 +16,5 @@ export interface IUseCase<CommandType, ResponseType> {
    * @return {ResponseType} - Output data type
    * @memberof IUseCase
    */
-  execute(command?: CommandType): Promise<ResponseType>;
+  execute(command?: CommandType): Observable<ResponseType>;
 }
