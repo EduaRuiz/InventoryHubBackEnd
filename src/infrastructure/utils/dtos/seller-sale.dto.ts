@@ -33,7 +33,9 @@ export class SellerSaleDto implements ISellerSaleDomainDto {
   @IsNumber()
   // @IsNumberString()
   // @IsPositive()
-  @Min(0.000001, { message: 'Discount must be at least 0%.' })
-  @Max(0.999999, { message: 'Discount cannot be equal or greater than 100%.' })
+  @Min(0.000001, { message: 'El descuento no puede ser menor o igual al 0%.' })
+  @Max(0.999999, {
+    message: 'El descuento no puede ser igual o mayor al 100%.',
+  })
   discount: number;
 }

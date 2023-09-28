@@ -26,6 +26,8 @@ export class SellerSaleRegisterUseCase extends ValueObjectErrorHandler {
   execute(
     customerSaleDto: ISellerSaleDomainDto,
   ): Observable<ProductDomainModel> {
+    const valueObjects = this.createValueObjects(customerSaleDto);
+    this.validateValueObjects(valueObjects);
     return this.product$.getProduct(customerSaleDto.productId).pipe(
       switchMap((product: ProductDomainModel) => {
         product.quantity =
@@ -52,6 +54,7 @@ export class SellerSaleRegisterUseCase extends ValueObjectErrorHandler {
   }
 
   private validateValueObjects(valueObjects: ValueObjectBase<any>[]) {
+    this.cleanErrors();
     for (const valueObject of valueObjects) {
       if (valueObject.hasErrors()) {
         this.setErrors(valueObject.getErrors());

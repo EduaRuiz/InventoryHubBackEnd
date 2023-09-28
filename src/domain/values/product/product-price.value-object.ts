@@ -7,7 +7,7 @@ export class ProductPriceValueObject extends ValueObjectBase<number> {
     if (IsEmptyValidation(this.value)) {
       this.setError({
         field: 'ProductPrice',
-        message: 'El "ProductPrice" no puede ser vacío',
+        message: 'El precio no puede ser vacío',
       } as IErrorValueObject);
     } else {
       this.validateLength();

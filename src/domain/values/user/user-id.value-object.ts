@@ -16,7 +16,7 @@ export class UserIdValueObject extends ValueObjectBase<string> {
     if (this.value && !IsUUID4(this.value)) {
       this.setError({
         field: 'UserId',
-        message: 'El "UserId" no tine un formato de UUID válido',
+        message: 'El id no tine un formato de UUID válido',
       } as IErrorValueObject);
     }
   }

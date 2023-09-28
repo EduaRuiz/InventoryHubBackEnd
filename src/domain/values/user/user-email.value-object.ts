@@ -7,7 +7,7 @@ export class UserEmailValueObject extends ValueObjectBase<string> {
     if (IsEmptyValidation(this.value)) {
       this.setError({
         field: 'UserEmail',
-        message: 'El "UserEmail" no puede ser vacío',
+        message: 'El correo no puede ser vacío',
       } as IErrorValueObject);
     } else {
       this.validateLength();

@@ -23,6 +23,8 @@ export class ProductPurchaseRegisterUseCase extends ValueObjectErrorHandler {
   }
 
   execute(addProductDto: IAddProductDomainDto): Observable<ProductDomainModel> {
+    const valueObjects = this.createValueObjects(addProductDto);
+    this.validateValueObjects(valueObjects);
     return this.product$.getProduct(addProductDto.id).pipe(
       switchMap((product: ProductDomainModel) => {
         product.quantity = product.quantity.valueOf() + addProductDto.quantity;
@@ -44,6 +46,7 @@ export class ProductPurchaseRegisterUseCase extends ValueObjectErrorHandler {
   }
 
   private validateValueObjects(valueObjects: ValueObjectBase<any>[]) {
+    this.cleanErrors();
     for (const valueObject of valueObjects) {
       if (valueObject.hasErrors()) {
         this.setErrors(valueObject.getErrors());

@@ -42,6 +42,7 @@ export class UserRegisterUseCase extends ValueObjectErrorHandler {
   }
 
   private validateValueObjects(valueObjects: ValueObjectBase<any>[]) {
+    this.cleanErrors();
     for (const valueObject of valueObjects) {
       if (valueObject.hasErrors()) {
         this.setErrors(valueObject.getErrors());

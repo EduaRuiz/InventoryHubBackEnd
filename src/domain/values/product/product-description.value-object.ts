@@ -7,7 +7,7 @@ export class ProductDescriptionValueObject extends ValueObjectBase<string> {
     if (IsEmptyValidation(this.value)) {
       this.setError({
         field: 'ProductDescription',
-        message: 'El "ProductDescription" no puede ser vacío',
+        message: 'La descripción no puede ser vacía',
       } as IErrorValueObject);
     } else {
       this.validateLength();
@@ -19,7 +19,7 @@ export class ProductDescriptionValueObject extends ValueObjectBase<string> {
       this.setError({
         field: 'ProductDescription',
         message:
-          'La longitud de "ProductDescription" no se encuentra dentro del rango min: 5 y max: 255',
+          'La longitud de la descripción no se encuentra dentro del rango min: 5 y max: 255',
       } as IErrorValueObject);
     }
   }

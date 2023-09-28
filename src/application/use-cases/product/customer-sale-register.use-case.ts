@@ -54,6 +54,7 @@ export class CustomerSaleRegisterUseCase extends ValueObjectErrorHandler {
   }
 
   private validateValueObjects(valueObjects: ValueObjectBase<any>[]) {
+    this.cleanErrors();
     for (const valueObject of valueObjects) {
       if (valueObject.hasErrors()) {
         this.setErrors(valueObject.getErrors());
@@ -61,7 +62,7 @@ export class CustomerSaleRegisterUseCase extends ValueObjectErrorHandler {
     }
     if (this.hasErrors()) {
       throw new ValueObjectException(
-        'Existen algunos errores en el comando',
+        'Existen algunos errores en los datos ingresados',
         this.getErrors(),
       );
     }

@@ -8,7 +8,7 @@ export class UserNameValueObject extends ValueObjectBase<FullName> {
     if (IsEmptyValidation(this.value)) {
       this.setError({
         field: 'UserName',
-        message: 'El "UserName" no puede ser vacío',
+        message: 'El nombre no puede ser vacío',
       } as IErrorValueObject);
     } else {
       this.validateLength();
@@ -24,7 +24,7 @@ export class UserNameValueObject extends ValueObjectBase<FullName> {
       this.setError({
         field: 'UserName',
         message:
-          'La longitud de "UserName" no se encuentra dentro del rango min: 5 y max: 255',
+          'La longitud del nombre no se encuentra dentro del rango min: 5 y max: 255',
       } as IErrorValueObject);
     }
   }

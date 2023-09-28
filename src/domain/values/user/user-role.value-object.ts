@@ -8,7 +8,7 @@ export class UserRoleValueObject extends ValueObjectBase<string> {
     if (IsEmptyValidation(this.value)) {
       this.setError({
         field: 'UserRole',
-        message: 'El "UserRole" no puede ser vacío',
+        message: 'El rol no puede ser vacío',
       } as IErrorValueObject);
     } else {
       this.validateLength();
@@ -20,7 +20,7 @@ export class UserRoleValueObject extends ValueObjectBase<string> {
       this.setError({
         field: 'UserRole',
         message:
-          'El "UserRole" debe ser uno de los siguientes valores: "Herramientas Manuales", "Herramientas Eléctricas", "Cerrajería", "Ferretería para la Construcción", "Pintura y Accesorios", "Jardinería y Exteriores", "Equipamiento de Seguridad y Protección", "Materiales para Fontanería", "Electricidad", "Artículos para el Hogar"',
+          'El rol no está dentro de los siguientes valores: administrador, super administrador, empleado',
       } as IErrorValueObject);
     }
   }

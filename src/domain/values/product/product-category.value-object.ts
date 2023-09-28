@@ -8,7 +8,7 @@ export class ProductCategoryValueObject extends ValueObjectBase<string> {
     if (IsEmptyValidation(this.value)) {
       this.setError({
         field: 'ProductCategory',
-        message: 'El "ProductCategory" no puede ser vacío',
+        message: 'La categoría no puede ser vacía',
       } as IErrorValueObject);
     } else {
       this.validateLength();
@@ -19,8 +19,7 @@ export class ProductCategoryValueObject extends ValueObjectBase<string> {
     if (this.value && !IsInEnumValidation(this.value, ProductCategoryEnum)) {
       this.setError({
         field: 'ProductCategory',
-        message:
-          'El "ProductCategory" debe ser uno de los siguientes valores: "Herramientas Manuales", "Herramientas Eléctricas", "Cerrajería", "Ferretería para la Construcción", "Pintura y Accesorios", "Jardinería y Exteriores", "Equipamiento de Seguridad y Protección", "Materiales para Fontanería", "Electricidad", "Artículos para el Hogar"',
+        message: `La categoría debe estar dentro de las siguientes: Herramientas Manuales, Herramientas Eléctricas, Cerrajería, Ferretería para la Construcción, Pintura y Accesorios, Jardinería y Exteriores, Equipamiento de Seguridad y Protección, Materiales para Fontanería, Electricidad, Artículos para el Hogar`,
       } as IErrorValueObject);
     }
   }

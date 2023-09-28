@@ -16,7 +16,7 @@ export class ProductIdValueObject extends ValueObjectBase<string> {
     if (this.value && !IsUUID4(this.value)) {
       this.setError({
         field: 'ProductId',
-        message: 'El "ProductId" no tine un formato de UUID válido',
+        message: 'El id no tine un formato de UUID válido',
       } as IErrorValueObject);
     }
   }

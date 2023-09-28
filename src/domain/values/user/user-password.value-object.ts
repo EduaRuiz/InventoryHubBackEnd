@@ -7,7 +7,7 @@ export class UserPasswordValueObject extends ValueObjectBase<string> {
     if (IsEmptyValidation(this.value)) {
       this.setError({
         field: 'UserPassword',
-        message: 'El "UserPassword" no puede ser vacío',
+        message: 'La contraseña no puede ser vacía',
       } as IErrorValueObject);
     } else {
       this.validateLength();

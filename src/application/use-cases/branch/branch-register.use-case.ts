@@ -1,5 +1,5 @@
 ﻿import { BranchDomainModel } from '@domain-models';
-import { Observable, of, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { INewBranchDomainDto } from '@domain-dtos';
 import {
   IBranchDomainService,
@@ -25,14 +25,11 @@ export class BranchRegisterUseCase extends ValueObjectErrorHandler {
   execute(
     registerBranchDto: INewBranchDomainDto,
   ): Observable<BranchDomainModel> {
-    return of(this.entityFactory(registerBranchDto)).pipe(
-      tap((entity) => {
-        registerBranchDto.name = registerBranchDto.name.trim().toUpperCase();
-        return this.branch$.createBranch(entity).pipe(
-          tap((branch: BranchDomainModel) => {
-            this.eventHandler(branch);
-          }),
-        );
+    registerBranchDto.name = registerBranchDto.name?.trim().toUpperCase();
+    const newBranch = this.entityFactory(registerBranchDto);
+    return this.branch$.createBranch(newBranch).pipe(
+      tap((branch: BranchDomainModel) => {
+        this.eventHandler(branch);
       }),
     );
   }
@@ -46,6 +43,7 @@ export class BranchRegisterUseCase extends ValueObjectErrorHandler {
   }
 
   private validateValueObjects(valueObjects: ValueObjectBase<any>[]) {
+    this.cleanErrors();
     for (const valueObject of valueObjects) {
       if (valueObject.hasErrors()) {
         this.setErrors(valueObject.getErrors());
@@ -62,7 +60,8 @@ export class BranchRegisterUseCase extends ValueObjectErrorHandler {
   private entityFactory(
     registerBranchDto: INewBranchDomainDto,
   ): BranchDomainModel {
-    this.validateValueObjects(this.createValueObjects(registerBranchDto));
+    const valueObjects = this.createValueObjects(registerBranchDto);
+    this.validateValueObjects(valueObjects);
     return {
       products: [],
       users: [],

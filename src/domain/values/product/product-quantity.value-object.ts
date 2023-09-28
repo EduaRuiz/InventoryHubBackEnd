@@ -7,7 +7,7 @@ export class ProductQuantityValueObject extends ValueObjectBase<number> {
     if (IsEmptyValidation(this.value)) {
       this.setError({
         field: 'ProductQuantity',
-        message: 'El "ProductQuantity" no puede ser vacío',
+        message: 'La cantidad no puede ser vacía',
       } as IErrorValueObject);
     } else {
       this.validateLength();

@@ -15,6 +15,10 @@ export abstract class ValueObjectErrorHandler {
     this._errors = [...this._errors, ...errors];
   }
 
+  cleanErrors(): void {
+    this._errors = new Array<IErrorValueObject>();
+  }
+
   hasErrors(): boolean {
     return this._errors.length > 0 ? true : false;
   }
