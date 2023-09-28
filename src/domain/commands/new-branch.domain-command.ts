@@ -1,5 +1,5 @@
 import { Location } from '../types/location.type';
-export interface INewBranchDomainDto {
+export interface INewBranchDomainCommand {
   name: string;
   location: Location;
 }

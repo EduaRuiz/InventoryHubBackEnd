@@ -1,43 +1,38 @@
 ﻿import { ProductDomainModel } from '@domain-models';
 import { ConflictException } from '@nestjs/common';
 import { Observable, iif, switchMap, tap, throwError } from 'rxjs';
-import { ISellerSaleDomainDto } from '@domain-dtos';
+import { ISellerSaleDomainCommand } from 'src/domain/commands';
 import { IProductDomainService } from '@domain-services';
 import { SellerSaleRegisteredEventPublisher } from '@domain-publishers';
-import { ValueObjectBase, ValueObjectErrorHandler } from '@sofka/bases';
-import {
-  ProductIdValueObject,
-  ProductQuantityValueObject,
-} from '@value-objects/product';
 import { ValueObjectException } from '@sofka/exceptions';
 import { IUseCase } from '@sofka/interfaces';
 
 export class SellerSaleRegisterUseCase
-  extends ValueObjectErrorHandler
-  implements IUseCase<ISellerSaleDomainDto, ProductDomainModel>
+  implements IUseCase<ISellerSaleDomainCommand, ProductDomainModel>
 {
   constructor(
     private readonly product$: IProductDomainService,
     private readonly sellerSaleRegisteredEventPublisher: SellerSaleRegisteredEventPublisher,
-  ) {
-    super();
-  }
+  ) {}
 
   execute(
-    customerSaleDto: ISellerSaleDomainDto,
+    sellerSaleCommand: ISellerSaleDomainCommand,
   ): Observable<ProductDomainModel> {
-    const valueObjects = this.createValueObjects(customerSaleDto);
-    this.validateValueObjects(valueObjects);
-    return this.product$.getProduct(customerSaleDto.productId).pipe(
+    return this.product$.getProduct(sellerSaleCommand.productId).pipe(
       switchMap((product: ProductDomainModel) => {
-        product.quantity =
-          product.quantity.valueOf() - customerSaleDto.quantity;
+        const productData = this.entityFactory(product, sellerSaleCommand);
+        if (productData.hasErrors()) {
+          throw new ValueObjectException(
+            'Existen algunos errores en los datos ingresados',
+            productData.getErrors(),
+          );
+        }
         return iif(
-          () => product.quantity.valueOf() < 0,
+          () => productData.quantity.valueOf() < 0,
           throwError(() => new ConflictException('Product out of stock')),
-          this.product$.updateProduct(product).pipe(
+          this.product$.updateProduct(productData).pipe(
             tap((product: ProductDomainModel) => {
-              this.eventHandler(product, customerSaleDto.discount);
+              this.eventHandler(product, sellerSaleCommand.discount);
             }),
           ),
         );
@@ -45,27 +40,22 @@ export class SellerSaleRegisterUseCase
     );
   }
 
-  private createValueObjects(
-    command: ISellerSaleDomainDto,
-  ): ValueObjectBase<any>[] {
-    const id = new ProductIdValueObject(command.productId);
-    const quantity = new ProductQuantityValueObject(command.quantity);
-    return [id, quantity];
-  }
-
-  private validateValueObjects(valueObjects: ValueObjectBase<any>[]) {
-    this.cleanErrors();
-    for (const valueObject of valueObjects) {
-      if (valueObject.hasErrors()) {
-        this.setErrors(valueObject.getErrors());
-      }
-    }
-    if (this.hasErrors()) {
-      throw new ValueObjectException(
-        'Existen algunos errores en los datos ingresados',
-        this.getErrors(),
-      );
-    }
+  private entityFactory(
+    product: ProductDomainModel,
+    sellerSaleCommand: ISellerSaleDomainCommand,
+  ): ProductDomainModel {
+    product.quantity = product.quantity.valueOf() - sellerSaleCommand.quantity;
+    const branchData = new ProductDomainModel(
+      product.name,
+      product.description,
+      product.price,
+      product.quantity,
+      product.category,
+      product.branchId,
+      product.id,
+    );
+    branchData;
+    return branchData;
   }
 
   private eventHandler(product: ProductDomainModel, discount: number): void {

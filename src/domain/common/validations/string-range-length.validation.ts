@@ -11,5 +11,9 @@ export const StringRangeLength = (
   min: number,
   max: number,
 ): boolean => {
-  return value.trim().length > max ? false : value.length < min ? false : true;
+  return value?.trim().length > max
+    ? false
+    : value?.length < min
+    ? false
+    : true;
 };

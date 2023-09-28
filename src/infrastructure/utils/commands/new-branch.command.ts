@@ -1,4 +1,4 @@
-import { INewBranchDomainDto } from 'src/domain';
+import { INewBranchDomainCommand } from 'src/domain';
 import {
   IsDefined,
   IsNotEmpty,
@@ -6,9 +6,9 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { LocationDto } from './location.dto';
+import { LocationDto } from './location.command';
 
-export class NewBranchDto implements INewBranchDomainDto {
+export class NewBranchCommand implements INewBranchDomainCommand {
   @IsString()
   @IsDefined()
   @IsNotEmpty()

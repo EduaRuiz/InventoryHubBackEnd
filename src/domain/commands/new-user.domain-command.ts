@@ -1,4 +1,4 @@
-export interface INewUserDomainDto {
+export interface INewUserDomainCommand {
   firstName: string;
   lastName: string;
   email: string;

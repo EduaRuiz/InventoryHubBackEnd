@@ -1,32 +1,31 @@
 ﻿import { BranchDomainModel } from '@domain-models';
 import { Observable, tap } from 'rxjs';
-import { INewBranchDomainDto } from '@domain-dtos';
+import { INewBranchDomainCommand } from 'src/domain/commands';
 import { IBranchDomainService } from '@domain-services';
 import { BranchRegisteredEventPublisher } from '@domain-publishers';
-import { ValueObjectBase, ValueObjectErrorHandler } from '@sofka/bases';
-import {
-  BranchLocationValueObject,
-  BranchNameValueObject,
-} from '@value-objects/branch';
+
 import { ValueObjectException } from '@sofka/exceptions';
 import { IUseCase } from '@sofka/interfaces';
 
 export class BranchRegisterUseCase
-  extends ValueObjectErrorHandler
-  implements IUseCase<INewBranchDomainDto, BranchDomainModel>
+  implements IUseCase<INewBranchDomainCommand, BranchDomainModel>
 {
   constructor(
     private readonly branch$: IBranchDomainService,
     private readonly branchRegisteredEventPublisher: BranchRegisteredEventPublisher,
-  ) {
-    super();
-  }
+  ) {}
 
   execute(
-    registerBranchDto: INewBranchDomainDto,
+    newBranchCommand: INewBranchDomainCommand,
   ): Observable<BranchDomainModel> {
-    registerBranchDto.name = registerBranchDto.name?.trim().toUpperCase();
-    const newBranch = this.entityFactory(registerBranchDto);
+    newBranchCommand.name = newBranchCommand.name?.trim().toUpperCase();
+    const newBranch = this.entityFactory(newBranchCommand);
+    if (newBranch.hasErrors()) {
+      throw new ValueObjectException(
+        'Existen algunos errores en los datos ingresados',
+        newBranch.getErrors(),
+      );
+    }
     return this.branch$.createBranch(newBranch).pipe(
       tap((branch: BranchDomainModel) => {
         this.eventHandler(branch);
@@ -34,43 +33,19 @@ export class BranchRegisterUseCase
     );
   }
 
-  private createValueObjects(
-    command: INewBranchDomainDto,
-  ): ValueObjectBase<any>[] {
-    const location = new BranchLocationValueObject(command.location);
-    const name = new BranchNameValueObject(command.name);
-    return [location, name];
-  }
-
-  private validateValueObjects(valueObjects: ValueObjectBase<any>[]) {
-    this.cleanErrors();
-    for (const valueObject of valueObjects) {
-      if (valueObject.hasErrors()) {
-        this.setErrors(valueObject.getErrors());
-      }
-    }
-    if (this.hasErrors()) {
-      throw new ValueObjectException(
-        'Existen algunos errores en los datos ingresados',
-        this.getErrors(),
-      );
-    }
-  }
-
   private entityFactory(
-    registerBranchDto: INewBranchDomainDto,
+    newBranchCommand: INewBranchDomainCommand,
   ): BranchDomainModel {
-    const valueObjects = this.createValueObjects(registerBranchDto);
-    this.validateValueObjects(valueObjects);
-    return {
-      products: [],
-      users: [],
-      location:
-        registerBranchDto.location?.city +
-        ' ' +
-        registerBranchDto.location?.country,
-      name: registerBranchDto.name,
-    };
+    const branchData = new BranchDomainModel(
+      newBranchCommand.name,
+      newBranchCommand.location?.city +
+        ', ' +
+        newBranchCommand.location?.country,
+      [],
+      [],
+    );
+    branchData;
+    return branchData;
   }
 
   private eventHandler(branch: BranchDomainModel): void {

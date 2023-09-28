@@ -3,7 +3,7 @@ import { UserService } from '../persistence/services';
 import { UserDomainModel } from '@domain-models';
 import { UserRegisterUseCase } from 'src/application/use-cases/user';
 import { Observable } from 'rxjs';
-import { NewUserDto } from '../utils/dtos';
+import { NewUserCommand } from '../utils/commands';
 
 @Controller('user')
 export class UserController {
@@ -13,7 +13,7 @@ export class UserController {
   ) {}
 
   @Post('register')
-  registerUser(@Body() user: NewUserDto): Observable<UserDomainModel> {
+  registerUser(@Body() user: NewUserCommand): Observable<UserDomainModel> {
     return this.userRegisterUseCase.execute(user);
   }
 

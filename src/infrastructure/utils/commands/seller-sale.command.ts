@@ -9,9 +9,9 @@
   Max,
   IsUUID,
 } from 'class-validator';
-import { ISellerSaleDomainDto } from 'src/domain';
+import { ISellerSaleDomainCommand } from 'src/domain';
 
-export class SellerSaleDto implements ISellerSaleDomainDto {
+export class SellerSaleDto implements ISellerSaleDomainCommand {
   @IsString()
   @IsDefined()
   @IsNotEmpty()

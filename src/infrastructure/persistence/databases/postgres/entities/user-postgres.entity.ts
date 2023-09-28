@@ -3,7 +3,7 @@ import { UserDomainModel } from '@domain-models';
 import { BranchPostgresEntity } from './branch-postgres.entity';
 
 @Entity('user', { schema: 'public' })
-export class UserPostgresEntity implements UserDomainModel {
+export class UserPostgresEntity extends UserDomainModel {
   @Column('uuid', {
     primary: true,
     name: 'User_id',

@@ -7,9 +7,9 @@
   IsString,
   IsUUID,
 } from 'class-validator';
-import { IAddProductDomainDto } from 'src/domain';
+import { IAddProductDomainCommand } from 'src/domain';
 
-export class AddProductDto implements IAddProductDomainDto {
+export class AddProductCommand implements IAddProductDomainCommand {
   @IsString()
   @IsDefined()
   @IsNotEmpty()

@@ -1,10 +1,14 @@
 ﻿import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ProductService } from '../persistence/services';
-import { CustomerSaleDto, NewProductDto, SellerSaleDto } from '../utils/dtos';
+import {
+  CustomerSaleDto,
+  NewProductCommand,
+  SellerSaleDto,
+} from '../utils/commands';
 import { ProductDomainModel } from '@domain-models';
 import { Observable } from 'rxjs';
 import {} from 'src/application/use-cases/product';
-import { AddProductDto } from '../utils/dtos';
+import { AddProductCommand } from '../utils/commands';
 import { ProductDelegator } from '@use-cases/product';
 
 @Controller('product')
@@ -22,7 +26,7 @@ export class ProductController {
   }
   @Post('register')
   createProduct(
-    @Body() product: NewProductDto,
+    @Body() product: NewProductCommand,
   ): Observable<ProductDomainModel> {
     // return this.productRegisterUseCase.execute(product);
     this.productDelegator.toProductRegisterUseCase();
@@ -31,7 +35,7 @@ export class ProductController {
 
   @Patch('purchase')
   productPurchase(
-    @Body() product: AddProductDto,
+    @Body() product: AddProductCommand,
   ): Observable<ProductDomainModel> {
     this.productDelegator.toProductPurchaseRegisterUseCase();
     return this.productDelegator.execute(product);

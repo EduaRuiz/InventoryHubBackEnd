@@ -7,9 +7,9 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { INewUserDomainDto } from 'src/domain';
+import { INewUserDomainCommand } from 'src/domain';
 
-export class NewUserDto implements INewUserDomainDto {
+export class NewUserCommand implements INewUserDomainCommand {
   @IsString()
   @IsDefined()
   @IsNotEmpty()

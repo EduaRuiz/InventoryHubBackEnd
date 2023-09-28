@@ -1,36 +1,29 @@
 import { ProductDomainModel } from '@domain-models';
 import { Observable, tap } from 'rxjs';
 import { ProductRegisteredEventPublisher } from '@domain-publishers';
-import { INewProductDomainDto } from '@domain-dtos';
+import { INewProductDomainCommand } from 'src/domain/commands';
 import { IProductDomainService } from '@domain-services';
-import { ValueObjectBase, ValueObjectErrorHandler } from '@sofka/bases';
-import {
-  ProductBranchIdValueObject,
-  ProductCategoryValueObject,
-  ProductDescriptionValueObject,
-  ProductNameValueObject,
-  ProductPriceValueObject,
-} from '@value-objects/product';
 import { ValueObjectException } from '@sofka/exceptions';
 import { IUseCase } from '@sofka/interfaces';
 
 export class ProductRegisterUseCase
-  extends ValueObjectErrorHandler
-  implements IUseCase<INewProductDomainDto, ProductDomainModel>
+  implements IUseCase<INewProductDomainCommand, ProductDomainModel>
 {
   constructor(
     private readonly product$: IProductDomainService,
     private readonly productRegisteredDomainEvent: ProductRegisteredEventPublisher,
-  ) {
-    super();
-  }
+  ) {}
 
   execute(
-    registerProductDto: INewProductDomainDto,
+    newProductCommand: INewProductDomainCommand,
   ): Observable<ProductDomainModel> {
-    registerProductDto.name = registerProductDto.name?.trim().toUpperCase();
-    registerProductDto.description = registerProductDto.description?.trim();
-    const newProduct = this.entityFactory(registerProductDto);
+    const newProduct = this.entityFactory(newProductCommand);
+    if (newProduct.hasErrors()) {
+      throw new ValueObjectException(
+        'Existen algunos errores en los datos ingresados',
+        newProduct.getErrors(),
+      );
+    }
     return this.product$.createProduct(newProduct).pipe(
       tap((product: ProductDomainModel) => {
         this.eventHandler(product);
@@ -38,40 +31,18 @@ export class ProductRegisterUseCase
     );
   }
 
-  private createValueObjects(
-    command: INewProductDomainDto,
-  ): ValueObjectBase<any>[] {
-    const branchId = new ProductBranchIdValueObject(command.branchId);
-    const name = new ProductNameValueObject(command.name);
-    const price = new ProductPriceValueObject(command.price);
-    const description = new ProductDescriptionValueObject(command.description);
-    const category = new ProductCategoryValueObject(command.category);
-    return [name, price, description, category, branchId];
-  }
-
-  private validateValueObjects(valueObjects: ValueObjectBase<any>[]) {
-    this.cleanErrors();
-    for (const valueObject of valueObjects) {
-      if (valueObject.hasErrors()) {
-        this.setErrors(valueObject.getErrors());
-      }
-    }
-    if (this.hasErrors()) {
-      throw new ValueObjectException(
-        'Existen algunos errores en los datos ingresados',
-        this.getErrors(),
-      );
-    }
-  }
-
   private entityFactory(
-    registerProductDto: INewProductDomainDto,
+    newProductCommand: INewProductDomainCommand,
   ): ProductDomainModel {
-    this.validateValueObjects(this.createValueObjects(registerProductDto));
-    return {
-      ...registerProductDto,
-      quantity: 0,
-    };
+    const productData = new ProductDomainModel(
+      newProductCommand.name,
+      newProductCommand.description,
+      newProductCommand.price,
+      0,
+      newProductCommand.category,
+      newProductCommand.branchId,
+    );
+    return productData;
   }
 
   private eventHandler(product: ProductDomainModel): void {

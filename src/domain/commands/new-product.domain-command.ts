@@ -1,4 +1,4 @@
-export interface INewProductDomainDto {
+export interface INewProductDomainCommand {
   name: string;
   description: string;
   price: number;

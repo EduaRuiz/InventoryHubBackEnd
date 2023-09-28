@@ -1,80 +1,50 @@
 ﻿import { UserDomainModel } from '@domain-models';
 import { Observable, tap } from 'rxjs';
-import { INewUserDomainDto } from '@domain-dtos';
+import { INewUserDomainCommand } from 'src/domain/commands';
 import { IUserDomainService } from '@domain-services';
 import { UserRegisteredEventPublisher } from '@domain-publishers';
-import {
-  UserBranchIdValueObject,
-  UserEmailValueObject,
-  UserNameValueObject,
-} from '@value-objects/user';
-import { ValueObjectBase, ValueObjectErrorHandler } from '@sofka/bases';
 import { ValueObjectException } from '@sofka/exceptions';
 import { IUseCase } from '@sofka/interfaces';
 
 export class UserRegisterUseCase
-  extends ValueObjectErrorHandler
-  implements IUseCase<INewUserDomainDto, UserDomainModel>
+  implements IUseCase<INewUserDomainCommand, UserDomainModel>
 {
   constructor(
     private readonly user$: IUserDomainService,
     private readonly userRegisteredDomainEvent: UserRegisteredEventPublisher,
-  ) {
-    super();
-  }
+  ) {}
 
-  execute(registerUserDto: INewUserDomainDto): Observable<UserDomainModel> {
-    const valueObjects = this.createValueObjects(registerUserDto);
-    this.validateValueObjects(valueObjects);
-    const user = this.entityFactory(registerUserDto);
-    return this.user$.createUser(user).pipe(
+  execute(
+    registerUserCommand: INewUserDomainCommand,
+  ): Observable<UserDomainModel> {
+    const userData = this.entityFactory(registerUserCommand);
+    if (userData.hasErrors()) {
+      throw new ValueObjectException(
+        'Existen algunos errores en los datos ingresados',
+        userData.getErrors(),
+      );
+    }
+    return this.user$.createUser(userData).pipe(
       tap((user: UserDomainModel) => {
         this.eventHandler(user);
       }),
     );
   }
 
-  private createValueObjects(
-    command: INewUserDomainDto,
-  ): ValueObjectBase<any>[] {
-    const name = new UserNameValueObject({
-      firstName: command.firstName,
-      lastName: command.lastName,
-    });
-    const email = new UserEmailValueObject(command.email);
-    const response: ValueObjectBase<any>[] = [email, name];
-    if (command.branchId)
-      response.push(new UserBranchIdValueObject(command.branchId));
-    return response;
-  }
-
-  private validateValueObjects(valueObjects: ValueObjectBase<any>[]) {
-    this.cleanErrors();
-    for (const valueObject of valueObjects) {
-      if (valueObject.hasErrors()) {
-        this.setErrors(valueObject.getErrors());
-      }
-    }
-    if (this.hasErrors()) {
-      throw new ValueObjectException(
-        'Existen algunos errores en los datos ingresados',
-        this.getErrors(),
-      );
-    }
-  }
-
-  private entityFactory(registerUserDto: INewUserDomainDto): UserDomainModel {
-    this.validateValueObjects(this.createValueObjects(registerUserDto));
-    return {
-      name:
-        registerUserDto.firstName.trim().toUpperCase() +
+  private entityFactory(
+    registerUserCommand: INewUserDomainCommand,
+  ): UserDomainModel {
+    const userData = new UserDomainModel(
+      registerUserCommand.firstName?.trim()?.toUpperCase() +
         ' ' +
-        registerUserDto.lastName.trim().toUpperCase(),
-      email: registerUserDto.email,
-      password: registerUserDto.password,
-      role: registerUserDto.role,
-      branchId: registerUserDto.branchId,
-    };
+        registerUserCommand.lastName?.trim()?.toUpperCase(),
+      registerUserCommand.email,
+      registerUserCommand.password,
+      registerUserCommand.role,
+      registerUserCommand.branchId,
+    );
+
+    return userData;
   }
 
   private eventHandler(user: UserDomainModel): void {

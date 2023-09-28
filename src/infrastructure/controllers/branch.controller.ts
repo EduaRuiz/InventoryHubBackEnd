@@ -3,7 +3,7 @@ import { BranchService } from '../persistence/services';
 import { BranchDomainModel } from '@domain-models';
 import { BranchRegisterUseCase } from 'src/application/use-cases/branch';
 import { Observable } from 'rxjs';
-import { NewBranchDto } from '../utils/dtos';
+import { NewBranchCommand } from '../utils/commands';
 
 @Controller('branch')
 export class BranchController {
@@ -13,7 +13,9 @@ export class BranchController {
   ) {}
 
   @Post('register')
-  registerBranch(@Body() branch: NewBranchDto): Observable<BranchDomainModel> {
+  registerBranch(
+    @Body() branch: NewBranchCommand,
+  ): Observable<BranchDomainModel> {
     return this.branchRegisterUseCase.execute(branch);
   }
 

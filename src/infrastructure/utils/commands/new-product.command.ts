@@ -8,9 +8,9 @@ import {
   IsUUID,
   IsIn,
 } from 'class-validator';
-import { INewProductDomainDto } from '../../../domain/dtos';
+import { INewProductDomainCommand } from '../../../domain/commands';
 
-export class NewProductDto implements INewProductDomainDto {
+export class NewProductCommand implements INewProductDomainCommand {
   @IsString()
   @IsDefined()
   @IsNotEmpty()

@@ -1,6 +1,4 @@
-﻿import { IStoredEventDomainModel } from './interfaces';
-
-export class StoredEventDomainModel implements IStoredEventDomainModel {
+﻿export class StoredEventDomainModel {
   aggregateRootId: string;
   eventBody: string;
   occurredOn: Date;
