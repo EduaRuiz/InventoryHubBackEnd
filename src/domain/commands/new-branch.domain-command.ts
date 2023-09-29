@@ -1,5 +1,7 @@
-import { Location } from '../types/location.type';
+// import { Location } from '../types/location.type';
 export interface INewBranchDomainCommand {
   name: string;
-  location: Location;
+  // location: Location;
+  city: string;
+  country: string;
 }

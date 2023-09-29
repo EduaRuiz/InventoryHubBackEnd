@@ -1,3 +1,5 @@
+import { EMAIL_REGEX } from '@domain-common/regex';
+
 /**
  * Valida si el valor suministrado cumple con la estructura de un mail (RFC2822)
  *
@@ -5,8 +7,5 @@
  * @return {*}  {boolean}
  */
 export const IsEmailStructureValidation = (value: string): boolean => {
-  const regex = new RegExp(
-    /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
-  );
-  return regex.test(value);
+  return new RegExp(EMAIL_REGEX).test(value);
 };

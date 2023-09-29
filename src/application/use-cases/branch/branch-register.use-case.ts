@@ -38,9 +38,7 @@ export class BranchRegisterUseCase
   ): BranchDomainModel {
     const branchData = new BranchDomainModel(
       newBranchCommand.name,
-      newBranchCommand.location?.city +
-        ', ' +
-        newBranchCommand.location?.country,
+      newBranchCommand.city + ', ' + newBranchCommand.country,
       [],
       [],
     );

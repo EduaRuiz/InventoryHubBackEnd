@@ -5,7 +5,7 @@ import { UserRegisterUseCase } from 'src/application/use-cases/user';
 import { Observable } from 'rxjs';
 import { NewUserCommand } from '../utils/commands';
 
-@Controller('user')
+@Controller('api/v1/user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -17,12 +17,12 @@ export class UserController {
     return this.userRegisterUseCase.execute(user);
   }
 
-  @Get('info/:id')
+  @Get(':id')
   getUserInfo(userId: string): Observable<UserDomainModel> {
     return this.userService.getUserById(userId);
   }
 
-  @Get('all')
+  @Get('all/all')
   getAllUsers(): Observable<UserDomainModel[]> {
     return this.userService.getAllUsers();
   }

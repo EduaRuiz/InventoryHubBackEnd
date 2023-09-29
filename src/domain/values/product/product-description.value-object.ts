@@ -15,11 +15,11 @@ export class ProductDescriptionValueObject extends ValueObjectBase<string> {
   }
 
   private validateLength(): void {
-    if (this.value && !StringRangeLength(this.value, 5, 255)) {
+    if (this.value && !StringRangeLength(this.value, 3, 255)) {
       this.setError({
         field: 'ProductDescription',
         message:
-          'La longitud de la descripción no se encuentra dentro del rango min: 5 y max: 255',
+          'La longitud de la descripción no se encuentra dentro del rango min: 3 y max: 255',
       } as IErrorValueObject);
     }
   }

@@ -16,6 +16,7 @@ import {
   switchMap,
   throwError,
 } from 'rxjs';
+import { PostgresError } from '@types';
 
 export class UserPostgresRepository
   implements IRepositoryBaseInterface<UserPostgresEntity>
@@ -27,9 +28,9 @@ export class UserPostgresRepository
 
   create(entity: UserPostgresEntity): Observable<UserPostgresEntity> {
     return from(this.UserPostgresEntity.save(entity)).pipe(
-      catchError((error: Error) => {
+      catchError((error: PostgresError) => {
         return throwError(
-          () => new ConflictException('User create conflict', error.message),
+          () => new ConflictException('User create conflict', error.detail),
         );
       }),
     );
@@ -51,9 +52,9 @@ export class UserPostgresRepository
         }),
       )
       .pipe(
-        catchError((error: Error) => {
+        catchError((error: PostgresError) => {
           return throwError(
-            () => new ConflictException('User update conflict', error.message),
+            () => new ConflictException('User update conflict', error.detail),
           );
         }),
       );
@@ -67,16 +68,16 @@ export class UserPostgresRepository
         }),
       )
       .pipe(
-        catchError((error: Error) => {
-          return throwError(() => new BadRequestException(error.message));
+        catchError((error: PostgresError) => {
+          return throwError(() => new BadRequestException(error.detail));
         }),
       );
   }
 
   findAll(): Observable<UserPostgresEntity[]> {
     return from(this.UserPostgresEntity.find()).pipe(
-      catchError((error: Error) => {
-        return throwError(() => new BadRequestException(error.message));
+      catchError((error: PostgresError) => {
+        return throwError(() => new BadRequestException(error.detail));
       }),
     );
   }
@@ -87,8 +88,8 @@ export class UserPostgresRepository
         id: entityId,
       }),
     ).pipe(
-      catchError((error: Error) => {
-        throw new BadRequestException('Invalid ID format', error.message);
+      catchError((error: PostgresError) => {
+        throw new BadRequestException('Invalid ID format', error.detail);
       }),
       switchMap((user: UserPostgresEntity) =>
         iif(
@@ -105,8 +106,8 @@ export class UserPostgresRepository
         email: email,
       }),
     ).pipe(
-      catchError((error: Error) => {
-        throw new BadRequestException('Invalid ID format', error.message);
+      catchError((error: PostgresError) => {
+        throw new BadRequestException('Invalid ID format', error.detail);
       }),
       switchMap((user: UserPostgresEntity) =>
         iif(

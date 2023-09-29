@@ -16,15 +16,18 @@ export class UserNameValueObject extends ValueObjectBase<FullName> {
   }
 
   private validateLength(): void {
-    if (
-      this.value &&
-      !StringRangeLength(this.value.firstName, 5, 255) &&
-      !StringRangeLength(this.value.lastName, 5, 255)
-    ) {
+    if (this.value && !StringRangeLength(this.value.firstName, 3, 100)) {
       this.setError({
         field: 'UserName',
         message:
-          'La longitud del nombre no se encuentra dentro del rango min: 5 y max: 255',
+          'La longitud del nombre no se encuentra dentro del rango min: 3 y max: 100',
+      } as IErrorValueObject);
+    }
+    if (this.value && !StringRangeLength(this.value.lastName, 3, 100)) {
+      this.setError({
+        field: 'UserName',
+        message:
+          'La longitud del apellido no se encuentra dentro del rango min: 3 y max: 100',
       } as IErrorValueObject);
     }
   }

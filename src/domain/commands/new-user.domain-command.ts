@@ -4,5 +4,5 @@ export interface INewUserDomainCommand {
   email: string;
   password: string;
   role: string;
-  branchId?: string;
+  branchId: string;
 }

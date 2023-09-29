@@ -8,6 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new ValueObjectExceptionFilter());
+  app.enableCors();
   // app.connectMicroservice({
   //   transport: Transport.RMQ,
   //   options: {

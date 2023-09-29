@@ -16,6 +16,7 @@ import {
   switchMap,
   throwError,
 } from 'rxjs';
+import { PostgresError } from '@types';
 
 export class ProductPostgresRepository
   implements IRepositoryBaseInterface<ProductPostgresEntity>
@@ -28,9 +29,9 @@ export class ProductPostgresRepository
   create(entity: ProductPostgresEntity): Observable<ProductPostgresEntity> {
     console.log(entity);
     return from(this.ProductPostgresEntity.save(entity)).pipe(
-      catchError((error: Error) => {
+      catchError((error: PostgresError) => {
         return throwError(
-          () => new ConflictException('Product create conflict', error.message),
+          () => new ConflictException('Product create conflict', error.detail),
         );
       }),
     );
@@ -52,10 +53,10 @@ export class ProductPostgresRepository
         }),
       )
       .pipe(
-        catchError((error: Error) => {
+        catchError((error: PostgresError) => {
           return throwError(
             () =>
-              new ConflictException('Product update conflict', error.message),
+              new ConflictException('Product update conflict', error.detail),
           );
         }),
       );
@@ -69,16 +70,16 @@ export class ProductPostgresRepository
         }),
       )
       .pipe(
-        catchError((error: Error) => {
-          return throwError(() => new BadRequestException(error.message));
+        catchError((error: PostgresError) => {
+          return throwError(() => new BadRequestException(error.detail));
         }),
       );
   }
 
   findAll(): Observable<ProductPostgresEntity[]> {
     return from(this.ProductPostgresEntity.find()).pipe(
-      catchError((error: Error) => {
-        return throwError(() => new BadRequestException(error.message));
+      catchError((error: PostgresError) => {
+        return throwError(() => new BadRequestException(error.detail));
       }),
     );
   }
@@ -89,8 +90,8 @@ export class ProductPostgresRepository
         id: entityId,
       }),
     ).pipe(
-      catchError((error: Error) => {
-        throw new BadRequestException('Invalid ID format', error.message);
+      catchError((error: PostgresError) => {
+        throw new BadRequestException('Invalid ID format', error.detail);
       }),
       switchMap((product: ProductPostgresEntity) =>
         iif(

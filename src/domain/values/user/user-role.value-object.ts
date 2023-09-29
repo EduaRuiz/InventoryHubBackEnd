@@ -19,8 +19,9 @@ export class UserRoleValueObject extends ValueObjectBase<string> {
     if (this.value && !IsInEnumValidation(this.value, UserRoleEnum)) {
       this.setError({
         field: 'UserRole',
-        message:
-          'El rol no está dentro de los siguientes valores: administrador, super administrador, empleado',
+        message: `El rol no está dentro de los siguientes valores: ${Object.values(
+          UserRoleEnum,
+        )}`,
       } as IErrorValueObject);
     }
   }

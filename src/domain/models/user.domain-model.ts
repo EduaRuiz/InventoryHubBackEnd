@@ -1,4 +1,5 @@
-﻿import { ValueObjectBase, ValueObjectErrorHandler } from '@sofka/bases';
+﻿import { ValueObjectBase } from '@sofka/bases';
+import { IErrorValueObject } from '@sofka/interfaces';
 import {
   UserNameValueObject,
   UserEmailValueObject,
@@ -8,7 +9,7 @@ import {
   UserBranchIdValueObject,
 } from '@value-objects/user';
 
-export class UserDomainModel extends ValueObjectErrorHandler {
+export class UserDomainModel {
   id?: string;
   name: string;
   email: string;
@@ -24,19 +25,12 @@ export class UserDomainModel extends ValueObjectErrorHandler {
     branchId?: string,
     id?: string,
   ) {
-    super();
     this.id = id;
     this.name = name?.toUpperCase()?.trim();
     this.email = email?.trim();
     this.password = password;
     this.role = role;
     this.branchId = branchId;
-    this.init();
-  }
-
-  private init(): void {
-    const valueObjects = this.createValueObjects();
-    this.validateValueObjects(valueObjects);
   }
 
   private createValueObjects(): ValueObjectBase<any>[] {
@@ -56,11 +50,22 @@ export class UserDomainModel extends ValueObjectErrorHandler {
     return response;
   }
 
-  private validateValueObjects(valueObjects: ValueObjectBase<any>[]): void {
+  private validateValueObjects(valueObjects: ValueObjectBase<any>[]) {
+    let errors = new Array<IErrorValueObject>();
     for (const valueObject of valueObjects) {
       if (valueObject.hasErrors()) {
-        this.setErrors(valueObject.getErrors());
+        errors = [...errors, ...valueObject.getErrors()];
       }
     }
+    return errors;
+  }
+
+  hasErrors(): boolean {
+    return !!this.getErrors().length;
+  }
+
+  getErrors(): IErrorValueObject[] {
+    const valueObjects = this.createValueObjects();
+    return this.validateValueObjects(valueObjects);
   }
 }

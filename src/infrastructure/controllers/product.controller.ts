@@ -1,9 +1,9 @@
 ﻿import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ProductService } from '../persistence/services';
 import {
-  CustomerSaleDto,
+  CustomerSaleCommand,
   NewProductCommand,
-  SellerSaleDto,
+  SellerSaleCommand,
 } from '../utils/commands';
 import { ProductDomainModel } from '@domain-models';
 import { Observable } from 'rxjs';
@@ -11,14 +11,14 @@ import {} from 'src/application/use-cases/product';
 import { AddProductCommand } from '../utils/commands';
 import { ProductDelegator } from '@use-cases/product';
 
-@Controller('product')
+@Controller('api/v1/product')
 export class ProductController {
   constructor(
     private readonly productService: ProductService,
     private readonly productDelegator: ProductDelegator,
   ) {}
 
-  @Get('info/:id')
+  @Get(':id')
   getProductInfo(
     @Param('id') productId: string,
   ): Observable<ProductDomainModel> {
@@ -43,7 +43,7 @@ export class ProductController {
 
   @Patch('sale/seller')
   productSellerSale(
-    @Body() sale: SellerSaleDto,
+    @Body() sale: SellerSaleCommand,
   ): Observable<ProductDomainModel> {
     this.productDelegator.toSellerSaleUseCase();
     return this.productDelegator.execute(sale);
@@ -51,13 +51,13 @@ export class ProductController {
 
   @Patch('sale/customer')
   productCustomerSale(
-    @Body() sale: CustomerSaleDto,
+    @Body() sale: CustomerSaleCommand,
   ): Observable<ProductDomainModel> {
     this.productDelegator.toCustomerSaleUseCase();
     return this.productDelegator.execute(sale);
   }
 
-  @Get('all')
+  @Get('all/all')
   getAllProducts(): Observable<ProductDomainModel[]> {
     return this.productService.getAllProducts();
   }

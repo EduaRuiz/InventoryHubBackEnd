@@ -1,14 +1,16 @@
-﻿import { ValueObjectBase, ValueObjectErrorHandler } from '@sofka/bases';
+﻿import { ValueObjectBase } from '@sofka/bases';
 import {
   ProductBranchIdValueObject,
+  ProductCategoryValueObject,
   ProductDescriptionValueObject,
   ProductIdValueObject,
   ProductNameValueObject,
   ProductPriceValueObject,
   ProductQuantityValueObject,
 } from '..';
+import { IErrorValueObject } from '@sofka/interfaces';
 
-export class ProductDomainModel extends ValueObjectErrorHandler {
+export class ProductDomainModel {
   id?: string;
   name: string;
   description: string;
@@ -26,7 +28,6 @@ export class ProductDomainModel extends ValueObjectErrorHandler {
     branchId: string,
     id?: string,
   ) {
-    super();
     this.id = id;
     this.name = name?.toUpperCase()?.trim();
     this.description = description?.trim();
@@ -34,12 +35,6 @@ export class ProductDomainModel extends ValueObjectErrorHandler {
     this.quantity = quantity;
     this.category = category;
     this.branchId = branchId;
-    this.init();
-  }
-
-  private init(): void {
-    const valueObjects = this.createValueObjects();
-    this.validateValueObjects(valueObjects);
   }
 
   private createValueObjects(): ValueObjectBase<any>[] {
@@ -47,23 +42,36 @@ export class ProductDomainModel extends ValueObjectErrorHandler {
     const description = new ProductDescriptionValueObject(this.description);
     const price = new ProductPriceValueObject(this.price);
     const quantity = new ProductQuantityValueObject(this.quantity);
+    const category = new ProductCategoryValueObject(this.category);
     const branchId = new ProductBranchIdValueObject(this.branchId);
     const response: ValueObjectBase<any>[] = [
       name,
       description,
       price,
       quantity,
+      category,
       branchId,
     ];
     if (this.id) response.push(new ProductIdValueObject(this.id));
     return response;
   }
 
-  private validateValueObjects(valueObjects: ValueObjectBase<any>[]): void {
+  private validateValueObjects(valueObjects: ValueObjectBase<any>[]) {
+    let errors = new Array<IErrorValueObject>();
     for (const valueObject of valueObjects) {
       if (valueObject.hasErrors()) {
-        this.setErrors(valueObject.getErrors());
+        errors = [...errors, ...valueObject.getErrors()];
       }
     }
+    return errors;
+  }
+
+  hasErrors(): boolean {
+    return !!this.getErrors().length;
+  }
+
+  getErrors(): IErrorValueObject[] {
+    const valueObjects = this.createValueObjects();
+    return this.validateValueObjects(valueObjects);
   }
 }

@@ -19,7 +19,9 @@ export class ProductCategoryValueObject extends ValueObjectBase<string> {
     if (this.value && !IsInEnumValidation(this.value, ProductCategoryEnum)) {
       this.setError({
         field: 'ProductCategory',
-        message: `La categoría debe estar dentro de las siguientes: Herramientas Manuales, Herramientas Eléctricas, Cerrajería, Ferretería para la Construcción, Pintura y Accesorios, Jardinería y Exteriores, Equipamiento de Seguridad y Protección, Materiales para Fontanería, Electricidad, Artículos para el Hogar`,
+        message: `La categoría debe estar dentro de las siguientes: ${Object.values(
+          ProductCategoryEnum,
+        )}`,
       } as IErrorValueObject);
     }
   }

@@ -23,7 +23,7 @@ export class UserPostgresEntity extends UserDomainModel {
   @Column('character varying', { name: 'role' })
   role: string;
 
-  @Column('uuid', { name: 'branch_id', nullable: true })
+  @Column('uuid', { name: 'branch_id' })
   branchId: string;
 
   @ManyToOne(() => BranchPostgresEntity, (branch) => branch.users)

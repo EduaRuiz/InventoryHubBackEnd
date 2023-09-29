@@ -8,14 +8,15 @@
   Min,
   Max,
   IsUUID,
+  IsInt,
 } from 'class-validator';
 import { ISellerSaleDomainCommand } from 'src/domain';
 
-export class SellerSaleDto implements ISellerSaleDomainCommand {
-  @IsString()
-  @IsDefined()
-  @IsNotEmpty()
-  @IsUUID()
+export class SellerSaleCommand implements ISellerSaleDomainCommand {
+  @IsString({ message: 'El id del producto debe ser un string' })
+  @IsDefined({ message: 'El id del producto es requerido' })
+  @IsNotEmpty({ message: 'El id del producto no puede ser vacío' })
+  @IsUUID(4, { message: 'El id del producto debe ser un UUID' })
   productId: string;
 
   // @IsString()
@@ -23,10 +24,11 @@ export class SellerSaleDto implements ISellerSaleDomainCommand {
   // @IsNotEmpty()
   // branchId: string;
 
-  @IsDefined()
-  @IsNumber()
+  @IsDefined({ message: 'La cantidad es requerida' })
   // @IsNumberString()
-  @IsPositive()
+  @IsNumber({}, { message: 'La cantidad debe ser un número' })
+  @IsPositive({ message: 'La cantidad debe ser un número positivo' })
+  @IsInt({ message: 'La cantidad debe ser un número entero' })
   quantity: number;
 
   @IsDefined()

@@ -37,7 +37,8 @@
       "@domain-publishers/*": ["./src/domain/events/publishers/*"],
       "@domain-publishers": ["./src/domain/events/publishers"],
       "@use-cases/*": ["./src/application/use-cases/*"],
-      "@use-cases": ["./src/application/use-cases"]
+      "@use-cases": ["./src/application/use-cases"],
+      "@domain-common/*": ["./src/domain/common/*"]
     }
   }
 }

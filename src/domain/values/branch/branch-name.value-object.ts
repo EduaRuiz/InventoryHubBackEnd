@@ -15,11 +15,11 @@ export class BranchNameValueObject extends ValueObjectBase<string> {
   }
 
   private validateLength(): void {
-    if (this.value && !StringRangeLength(this.value, 5, 255)) {
+    if (this.value && !StringRangeLength(this.value, 3, 100)) {
       this.setError({
         field: 'BranchName',
         message:
-          'La longitud del nombre no se encuentra dentro del rango min: 5 y max: 255',
+          'La longitud del nombre no se encuentra dentro del rango min: 3 y max: 100',
       } as IErrorValueObject);
     }
   }

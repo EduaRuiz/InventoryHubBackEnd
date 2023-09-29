@@ -78,9 +78,33 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.(t|j)s",
+      "src/**/*.{ts,tsx}",
+      "!src/index.ts"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/",
+      "<rootDir>/main.ts",
+      "<rootDir>/shared/sofka",
+      "<rootDir>/app.module.ts",
+      "/index.ts$",
+      "/enum.ts$",
+      "/module.ts$"
+    ],
+    "moduleNameMapper": {
+      "^@sofka(.)$": "<rootDir>/shared/domain/sofka$1",
+      "^@validations(.)$": "<rootDir>/shared/domain/validations$1",
+      "^@enums(.)$": "<rootDir>/shared/domain/enums$1",
+      "^@types(.)$": "<rootDir>/shared/domain/types$1",
+      "^@domain-models(.)$": "<rootDir>/domain/models$1",
+      "^@domain-commands(.)$": "<rootDir>/domain/commands$1",
+      "^@domain-services(.)$": "<rootDir>/domain/services$1",
+      "^@value-objects(.)$": "<rootDir>/domain/values$1",
+      "^@domain-publishers(.)$": "<rootDir>/domain/events/publishers$1",
+      "^@use-cases(.)$": "<rootDir>/application/use-cases$1"
+    }
   }
 }

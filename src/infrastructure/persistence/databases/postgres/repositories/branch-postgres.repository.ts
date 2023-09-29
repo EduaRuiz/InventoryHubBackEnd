@@ -16,6 +16,7 @@ import {
   switchMap,
   throwError,
 } from 'rxjs';
+import { PostgresError } from '@types';
 
 export class BranchPostgresRepository
   implements IRepositoryBaseInterface<BranchPostgresEntity>
@@ -27,9 +28,9 @@ export class BranchPostgresRepository
 
   create(entity: BranchPostgresEntity): Observable<BranchPostgresEntity> {
     return from(this.BranchPostgresEntity.save(entity)).pipe(
-      catchError((error: Error) => {
+      catchError((error: PostgresError) => {
         return throwError(
-          () => new ConflictException('Branch create conflict', error.message),
+          () => new ConflictException('Branch create conflict', error.detail),
         );
       }),
     );
@@ -51,10 +52,9 @@ export class BranchPostgresRepository
         }),
       )
       .pipe(
-        catchError((error: Error) => {
+        catchError((error: PostgresError) => {
           return throwError(
-            () =>
-              new ConflictException('Branch update conflict', error.message),
+            () => new ConflictException('Branch update conflict', error.detail),
           );
         }),
       );
@@ -68,25 +68,26 @@ export class BranchPostgresRepository
         }),
       )
       .pipe(
-        catchError((error: Error) => {
-          return throwError(() => new BadRequestException(error.message));
+        catchError((error: PostgresError) => {
+          return throwError(() => new BadRequestException(error.detail));
         }),
       );
   }
 
   findAll(): Observable<BranchPostgresEntity[]> {
-    return from(this.BranchPostgresEntity.find()).pipe(
-      catchError((error: Error) => {
-        return throwError(() => new BadRequestException(error.message));
+    return from(
+      this.BranchPostgresEntity.find({
+        relations: ['users', 'products'],
+      }),
+    ).pipe(
+      catchError((error: PostgresError) => {
+        return throwError(() => new BadRequestException(error.detail));
       }),
     );
   }
 
   findOneById(entityId: string): Observable<BranchPostgresEntity> {
     return from(
-      // this.BranchPostgresEntity.findOneBy({
-      //   id: entityId,
-      // }),
       this.BranchPostgresEntity.findOne({
         where: {
           id: entityId,
@@ -94,8 +95,8 @@ export class BranchPostgresRepository
         relations: ['users', 'products'],
       }),
     ).pipe(
-      catchError((error: Error) => {
-        throw new BadRequestException('Invalid ID format', error.message);
+      catchError((error: PostgresError) => {
+        throw new BadRequestException('Invalid ID format', error.detail);
       }),
       switchMap((branch: BranchPostgresEntity) =>
         iif(

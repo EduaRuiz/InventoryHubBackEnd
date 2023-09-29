@@ -16,18 +16,18 @@ export class BranchLocationValueObject extends ValueObjectBase<Location> {
   }
 
   private validateLength(): void {
-    if (
-      this.value &&
-      !StringRangeLength(
-        this.value.city,
-        5,
-        255 || !StringRangeLength(this.value.country, 5, 255),
-      )
-    ) {
+    if (this.value && !StringRangeLength(this.value.city, 3, 100)) {
       this.setError({
-        field: 'BranchLocation',
+        field: 'BranchLocation.city',
         message:
-          'La longitud de la ubicación no se encuentra dentro del rango min: 5 y max: 255',
+          'La longitud del nombre de la ciudad no se encuentra dentro del rango min: 3 y max: 100',
+      } as IErrorValueObject);
+    }
+    if (this.value && !StringRangeLength(this.value.country, 3, 50)) {
+      this.setError({
+        field: 'BranchLocation.country',
+        message:
+          'La longitud del nombre del país no se encuentra dentro del rango min: 3 y max: 50',
       } as IErrorValueObject);
     }
   }

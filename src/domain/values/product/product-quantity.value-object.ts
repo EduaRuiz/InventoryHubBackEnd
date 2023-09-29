@@ -11,6 +11,7 @@ export class ProductQuantityValueObject extends ValueObjectBase<number> {
       } as IErrorValueObject);
     } else {
       this.validateLength();
+      this.validateInteger();
     }
   }
 
@@ -19,6 +20,15 @@ export class ProductQuantityValueObject extends ValueObjectBase<number> {
       this.setError({
         field: 'ProductQuantity',
         message: 'La cantidad de producto no puede ser negativa',
+      } as IErrorValueObject);
+    }
+  }
+
+  private validateInteger(): void {
+    if (this.value && !Number.isInteger(this.value)) {
+      this.setError({
+        field: 'ProductQuantity',
+        message: 'La cantidad de producto debe ser un entero',
       } as IErrorValueObject);
     }
   }

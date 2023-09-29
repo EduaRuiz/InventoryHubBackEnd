@@ -1,6 +1,7 @@
-﻿import { ValueObjectBase } from '@sofka/bases';
+﻿import { EMAIL_REGEX } from '@domain-common/regex';
+import { ValueObjectBase } from '@sofka/bases';
 import { IErrorValueObject } from '@sofka/interfaces';
-import { IsEmailStructureValidation, IsEmptyValidation } from '@validations';
+import { IsEmptyValidation } from '@validations';
 
 export class UserEmailValueObject extends ValueObjectBase<string> {
   validateData(): void {
@@ -15,7 +16,7 @@ export class UserEmailValueObject extends ValueObjectBase<string> {
   }
 
   private validateLength(): void {
-    if (this.value && !IsEmailStructureValidation(this.value)) {
+    if (this.value && !EMAIL_REGEX.test(this.value)) {
       this.setError({
         field: 'UserEmail',
         message: 'No es un correo electrónico válido',

@@ -5,7 +5,7 @@ import { BranchRegisterUseCase } from 'src/application/use-cases/branch';
 import { Observable } from 'rxjs';
 import { NewBranchCommand } from '../utils/commands';
 
-@Controller('branch')
+@Controller('api/v1/branch')
 export class BranchController {
   constructor(
     private readonly branchService: BranchService,
@@ -19,12 +19,12 @@ export class BranchController {
     return this.branchRegisterUseCase.execute(branch);
   }
 
-  @Get('info/:id')
+  @Get(':id')
   getBranchInfo(@Param('id') branchId: string): Observable<BranchDomainModel> {
     return this.branchService.getBranchById(branchId);
   }
 
-  @Get('all')
+  @Get('all/all')
   getAllBranches(): Observable<BranchDomainModel[]> {
     return this.branchService.getAllBranches();
   }
