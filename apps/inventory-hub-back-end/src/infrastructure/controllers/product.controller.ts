@@ -7,9 +7,9 @@ import {
 } from '../utils/commands';
 import { ProductDomainModel } from '@domain-models';
 import { Observable } from 'rxjs';
-import {} from '@use-cases/product';
+import {} from '@use-cases-inv/product';
 import { AddProductCommand } from '../utils/commands';
-import { ProductDelegator } from '@use-cases/product';
+import { ProductDelegator } from '@use-cases-inv/product';
 
 @Controller('api/v1/product')
 export class ProductController {

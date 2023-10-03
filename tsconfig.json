@@ -35,10 +35,14 @@
       "@domain-publishers": ["./apps/domain/events/publishers"],
       "@domain-common/*": ["./apps/domain/common/*"],
 
-      "@use-cases/*": [
+      "@use-cases-inv/*": [
         "./apps/inventory-hub-back-end/src/application/use-cases/*"
       ],
-      "@use-cases": ["./apps/inventory-hub-back-end/src/application/use-cases"]
+      "@use-cases-inv": [
+        "./apps/inventory-hub-back-end/src/application/use-cases"
+      ],
+      "@use-cases-con/*": ["./apps/event-consumer/src/application/use-cases/*"],
+      "@use-cases-con": ["./apps/event-consumer/src/application/use-cases"]
     }
   }
 }

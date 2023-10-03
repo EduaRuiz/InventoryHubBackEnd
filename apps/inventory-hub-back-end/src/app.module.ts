@@ -9,8 +9,8 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
 import { MessagingModule } from './infrastructure/messaging';
-import { BranchRegisterUseCase, UserRegisterUseCase } from '@use-cases';
-import { ProductDelegator } from '@use-cases/product';
+import { BranchRegisterUseCase, UserRegisterUseCase } from '@use-cases-inv';
+import { ProductDelegator } from '@use-cases-inv/product';
 import { EventPublisher } from './infrastructure/messaging/publishers/event.publisher';
 
 @Module({

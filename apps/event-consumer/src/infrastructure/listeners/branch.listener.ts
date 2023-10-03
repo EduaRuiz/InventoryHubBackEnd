@@ -1,24 +1,21 @@
-﻿import { Controller } from '@nestjs/common';
-import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
+﻿import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { Controller } from '@nestjs/common';
+import { Event } from '../utils/events';
+import { BranchRegisteredUseCase } from '@use-cases-con/index';
 
 @Controller()
 export class BranchListener {
-  constructor() {}
+  constructor(
+    private readonly branchRegisteredUseCase: BranchRegisteredUseCase,
+  ) {}
 
-  @EventPattern([
-    'branch_registered',
-    'product_registered',
-    'user_registered',
-    'product_purchase_registered',
-    'customer_sale_registered',
-    'seller_sale_registered',
-  ])
-  handleBranchRegistered(
-    @Payload() data: string,
-    @Ctx() context: RmqContext,
-  ): void {
-    const toManage = JSON.parse(data);
-    console.log(context.getPattern(), toManage);
-    console.log(`Pattern: ${context.getPattern()}`);
+  @RabbitSubscribe({
+    exchange: 'inventory-hub-exchange',
+    routingKey: 'branch_registered',
+    queue: 'inventory.branch_registered',
+  })
+  public branchRegistered(msg: string): void {
+    const event: Event = JSON.parse(msg);
+    this.branchRegisteredUseCase.execute(event);
   }
 }

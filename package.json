@@ -28,6 +28,7 @@
     "test:e2e": "jest --config ./apps/inventory-hub-back-end/test/jest-e2e.json"
   },
   "dependencies": {
+    "@golevelup/nestjs-rabbitmq": "^4.0.0",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.0.0",
@@ -112,7 +113,7 @@
       "^@domain-services(.)$": "<rootDir>/domain/services$1",
       "^@value-objects(.)$": "<rootDir>/domain/values$1",
       "^@domain-publishers(.)$": "<rootDir>/domain/events/publishers$1",
-      "^@use-cases(.)$": "<rootDir>/application/use-cases$1"
+      "^@use-cases-inv(.)$": "<rootDir>/application/use-cases$1"
     },
     "roots": [
       "<rootDir>/apps/"

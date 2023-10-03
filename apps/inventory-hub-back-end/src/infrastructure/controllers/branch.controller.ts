@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { BranchService } from '../persistence/services';
 import { BranchDomainModel } from '@domain-models';
-import { BranchRegisterUseCase } from '@use-cases/branch';
+import { BranchRegisterUseCase } from '@use-cases-inv/branch';
 import { Observable } from 'rxjs';
 import { NewBranchCommand } from '../utils/commands';
 

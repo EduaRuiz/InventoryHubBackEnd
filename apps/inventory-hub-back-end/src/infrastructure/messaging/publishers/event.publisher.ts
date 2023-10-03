@@ -1,20 +1,22 @@
-﻿import { Inject, Injectable } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { IEventPublisher } from '@sofka/interfaces';
-import { Observable } from 'rxjs';
+﻿import { Injectable } from '@nestjs/common';
+import { Observable, from } from 'rxjs';
 import { EventEntity } from '../../persistence';
 import { DomainEventPublisher } from '@domain-publishers';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
 export class EventPublisher extends DomainEventPublisher<EventEntity> {
-  constructor(@Inject('INVENTORY') private readonly proxy: ClientProxy) {
-    super(proxy as unknown as IEventPublisher);
+  constructor(private readonly amqpConnection: AmqpConnection) {
+    super();
   }
 
   publish<EventEntity>(): Observable<EventEntity> {
-    if (this.response && !Array.isArray(this.response)) {
-      return this.emit(this.response.typeName, JSON.stringify(this.response));
-    }
-    return this.emit('unknown', JSON.stringify(this.response));
+    return from(
+      this.amqpConnection.publish(
+        'inventory-hub-exchange',
+        this.response.typeName,
+        JSON.stringify(this.response),
+      ),
+    );
   }
 }
