@@ -7,17 +7,25 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "set SCOPE=dev & nest start --watch",
-    "start:debug": "set SCOPE=dev & nest start --debug --watch",
-    "start:prod": "set SCOPE=prod & node dist/main",
+    "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
+    "start": "set SCOPE=prod & nest start & nest start event-consumer",
+    "start-inv": "set SCOPE=prod & nest start",
+    "start-con": "set SCOPE=prod & nest start event-consumer",
+    "start:dev": "set SCOPE=dev & nest start --watch & nest start event-consumer --watch",
+    "start-inv:dev": "set SCOPE=dev & nest start --watch",
+    "start-con:dev": "set SCOPE=dev & nest start event-consumer --watch",
+    "start:debug": "set SCOPE=dev & nest start --debug --watch & nest start event-consumer --debug --watch",
+    "start-inv:debug": "set SCOPE=dev & nest start --debug --watch",
+    "start-con:debug": "set SCOPE=dev & nest start event-consumer --debug --watch",
+    "start:prod": "node dist/apps/inventory-hub-back-end/main & node dist/apps/event-consumer/main",
+    "start-inv:prod": "node dist/apps/inventory-hub-back-end/main",
+    "start-con:prod": "node dist/apps/event-consumer/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./apps/inventory-hub-back-end/test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -72,7 +80,7 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": ".",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -82,7 +90,7 @@
       "src/**/*.{ts,tsx}",
       "!src/index.ts"
     ],
-    "coverageDirectory": "../coverage",
+    "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "coveragePathIgnorePatterns": [
       "/node_modules/",
@@ -105,6 +113,9 @@
       "^@value-objects(.)$": "<rootDir>/domain/values$1",
       "^@domain-publishers(.)$": "<rootDir>/domain/events/publishers$1",
       "^@use-cases(.)$": "<rootDir>/application/use-cases$1"
-    }
+    },
+    "roots": [
+      "<rootDir>/apps/"
+    ]
   }
 }

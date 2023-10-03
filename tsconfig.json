@@ -18,27 +18,27 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@contexts/student-inscription/*": [
-        "./src/subdomains/academic-programming/contexts/student-inscription/*"
+      "@sofka/*": ["./apps/domain/common/sofka/*"],
+      "@sofka": ["./apps/domain/common/sofka"],
+      "@validations": ["./apps/domain/common/validations"],
+      "@enums": ["./apps/domain/enums"],
+      "@types": ["./apps/domain/types"],
+      "@domain-models/*": ["./apps/domain/models/*"],
+      "@domain-models": ["./apps/domain/models"],
+      "@domain-commands/*": ["apps/domain/commands/*"],
+      "@domain-commands": ["apps/domain/commands"],
+      "@domain-services/*": ["./apps/domain/services/*"],
+      "@domain-services": ["./apps/domain/services"],
+      "@value-objects/*": ["./apps/domain/values/*"],
+      "@value-objects": ["./apps/domain/values"],
+      "@domain-publishers/*": ["./apps/domain/events/publishers/*"],
+      "@domain-publishers": ["./apps/domain/events/publishers"],
+      "@domain-common/*": ["./apps/domain/common/*"],
+
+      "@use-cases/*": [
+        "./apps/inventory-hub-back-end/src/application/use-cases/*"
       ],
-      "@sofka/*": ["./src/domain/common/sofka/*"],
-      "@sofka": ["./src/domain/common/sofka"],
-      "@validations": ["./src/domain/common/validations"],
-      "@enums": ["./src/domain/enums"],
-      "@types": ["./src/domain/types"],
-      "@domain-models/*": ["./src/domain/models/*"],
-      "@domain-models": ["./src/domain/models"],
-      "@domain-commands/*": ["src/domain/commands/*"],
-      "@domain-commands": ["src/domain/commands"],
-      "@domain-services/*": ["./src/domain/services/*"],
-      "@domain-services": ["./src/domain/services"],
-      "@value-objects/*": ["./src/domain/values/*"],
-      "@value-objects": ["./src/domain/values"],
-      "@domain-publishers/*": ["./src/domain/events/publishers/*"],
-      "@domain-publishers": ["./src/domain/events/publishers"],
-      "@use-cases/*": ["./src/application/use-cases/*"],
-      "@use-cases": ["./src/application/use-cases"],
-      "@domain-common/*": ["./src/domain/common/*"]
+      "@use-cases": ["./apps/inventory-hub-back-end/src/application/use-cases"]
     }
   }
 }
