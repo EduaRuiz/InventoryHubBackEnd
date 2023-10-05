@@ -27,24 +27,67 @@ export class StoreEventMongoRepository
     private storedEventMongoModel: Model<StoreEventMongoModel>,
   ) {}
 
+  getLastEventByEntityId(
+    entityId: string,
+    array: TypeNameEnum[],
+    aggregateRootId?: string,
+  ): Observable<StoreEventMongoModel> {
+    let query: object = {
+      'eventBody.id': entityId,
+      typeName: { $in: array },
+    };
+    if (aggregateRootId !== undefined) query = { ...query, aggregateRootId };
+    return from(
+      this.storedEventMongoModel.findOne(query).sort({ occurredOn: -1 }).exec(),
+    ).pipe(
+      catchError((error: Error) => {
+        throw new BadRequestException('Event invalid ID format', error.message);
+      }),
+      switchMap((storedEvent: StoreEventMongoModel) =>
+        iif(
+          () => storedEvent === null,
+          throwError(() => new NotFoundException('Event not found')),
+          of(storedEvent),
+        ),
+      ),
+    );
+  }
+
+  entityAlreadyExist(
+    key: string,
+    value: string,
+    aggregateRootId?: string,
+  ): Observable<boolean> {
+    let query: any = {};
+    query[`eventBody.${key}`] = value;
+    if (aggregateRootId != undefined) query = { ...query, aggregateRootId };
+    return from(
+      this.storedEventMongoModel.findOne(query).sort({ _id: -1 }).exec(),
+    ).pipe(
+      catchError((error: Error) => {
+        throw new BadRequestException('Invalid', error.message);
+      }),
+      map((event: StoreEventMongoModel) => {
+        if (event && event !== null) return true;
+        return false;
+      }),
+    );
+  }
+
   storeEventUpdate(
     entity: StoreEventMongoModel,
   ): Observable<StoreEventMongoModel> {
     return from(this.storedEventMongoModel.create(entity)).pipe(
       catchError((error: Error) => {
-        throw new ConflictException(
-          'StoreEvent create conflict',
-          error.message,
-        );
+        throw new ConflictException('Event create conflict', error.message);
       }),
     );
   }
 
   storeEvent(entity: StoreEventMongoModel): Observable<StoreEventMongoModel> {
-    const eventBody = JSON.parse(entity.eventBody);
-    const subString = eventBody.email
-      ? `"email":"${eventBody.email}"`
-      : `"name":"${eventBody.name}"`;
+    const subString = 'eventBody.email'
+      ? `"email":"${'eventBody.email'}"`
+      : `"name":"${'eventBody.name'}"`;
     return this.findByEventBody(
       subString,
       entity.typeName,
@@ -58,10 +101,7 @@ export class StoreEventMongoRepository
         }
         return from(this.storedEventMongoModel.create(entity)).pipe(
           catchError((error: Error) => {
-            throw new ConflictException(
-              'StoreEvent create conflict',
-              error.message,
-            );
+            throw new ConflictException('Event create conflict', error.message);
           }),
         );
       }),
@@ -85,15 +125,12 @@ export class StoreEventMongoRepository
       this.storedEventMongoModel.findById({ _id: entityId.toString() }, {}),
     ).pipe(
       catchError((error: Error) => {
-        throw new BadRequestException(
-          'StoreEvent invalid ID format',
-          error.message,
-        );
+        throw new BadRequestException('Event invalid ID format', error.message);
       }),
       switchMap((storedEvent: StoreEventMongoModel) =>
         iif(
           () => storedEvent === null,
-          throwError(() => new NotFoundException('StoreEvent not found')),
+          throwError(() => new NotFoundException('Event not found')),
           of(storedEvent),
         ),
       ),
@@ -141,7 +178,7 @@ export class StoreEventMongoRepository
       switchMap((storedEvent: StoreEventMongoModel) =>
         storedEvent
           ? of(storedEvent)
-          : throwError(() => new NotFoundException('StoreEvent not found')),
+          : throwError(() => new NotFoundException('Event not found')),
       ),
     );
   }
@@ -164,7 +201,7 @@ export class StoreEventMongoRepository
       switchMap((storedEvent: StoreEventMongoModel) =>
         storedEvent
           ? of(storedEvent)
-          : throwError(() => new NotFoundException('StoreEvent not found')),
+          : throwError(() => new NotFoundException('Event not found')),
       ),
     );
   }

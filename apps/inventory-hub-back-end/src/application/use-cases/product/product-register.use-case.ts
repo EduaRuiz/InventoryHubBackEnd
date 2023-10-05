@@ -1,17 +1,18 @@
 import { EventDomainModel, ProductDomainModel } from '@domain-models';
-import { Observable, of, switchMap } from 'rxjs';
+import { Observable, catchError, map, switchMap } from 'rxjs';
 import { DomainEventPublisher } from '@domain-publishers';
 import { INewProductDomainCommand } from '@domain-commands';
-import { IStoreEventDomainService } from '@domain-services';
+import { IEventDomainService } from '@domain-services';
 import { ValueObjectException } from '@sofka/exceptions';
 import { IUseCase } from '@sofka/interfaces';
 import { TypeNameEnum } from '@enums';
+import { ConflictException } from '@nestjs/common';
 
 export class ProductRegisterUseCase
   implements IUseCase<INewProductDomainCommand, ProductDomainModel>
 {
   constructor(
-    private readonly storeEvent$: IStoreEventDomainService,
+    private readonly event$: IEventDomainService,
     private readonly eventPublisher: DomainEventPublisher,
   ) {}
 
@@ -19,18 +20,33 @@ export class ProductRegisterUseCase
     newProductCommand: INewProductDomainCommand,
   ): Observable<ProductDomainModel> {
     const newProduct = this.entityFactory(newProductCommand);
-    const event = this.eventFactory(newProduct);
-    return this.storeEvent$
-      .getEventByAggregateRootId(newProductCommand.branchId)
+    const newEvent = this.eventFactory(newProduct);
+    return this.event$
+      .entityAlreadyExist('name', newProduct.name, newProduct.branchId)
       .pipe(
-        switchMap(() => {
-          return this.storeEvent$.storeEvent(event).pipe(
-            switchMap((event: EventDomainModel) => {
-              this.eventPublisher.response = event;
-              this.eventPublisher.publish();
-              return of(newProduct);
-            }),
-          );
+        switchMap((exist: boolean) => {
+          if (exist)
+            throw new ConflictException(
+              'El nombre ya existe en la sucursal actual',
+            );
+          return this.event$
+            .getLastEventByEntityId(newProduct.branchId, [
+              TypeNameEnum.BRANCH_REGISTERED,
+            ])
+            .pipe(
+              switchMap(() => {
+                return this.event$.storeEvent(newEvent).pipe(
+                  map((event: EventDomainModel) => {
+                    this.eventPublisher.response = event;
+                    this.eventPublisher.publish();
+                    return newProduct;
+                  }),
+                );
+              }),
+              catchError(() => {
+                throw new ConflictException('La sucursal no existe');
+              }),
+            );
         }),
       );
   }
@@ -55,10 +71,10 @@ export class ProductRegisterUseCase
     return productData;
   }
 
-  private eventFactory(productData: ProductDomainModel): EventDomainModel {
+  private eventFactory(product: ProductDomainModel): EventDomainModel {
     const event = new EventDomainModel(
-      productData.branchId,
-      JSON.stringify(productData),
+      product.branchId,
+      product,
       new Date(),
       TypeNameEnum.PRODUCT_REGISTERED,
     );

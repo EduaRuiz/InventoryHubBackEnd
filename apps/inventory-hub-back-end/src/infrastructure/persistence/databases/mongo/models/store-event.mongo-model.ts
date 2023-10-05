@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { EventDomainModel } from '@domain-models';
+import { TypeNameEnum } from '@enums';
 
-@Schema({ collection: 'stored-event', versionKey: false })
+@Schema({ collection: 'event', versionKey: false })
 export class StoreEventMongoModel extends EventDomainModel {
   _id?: string;
 
@@ -14,9 +15,9 @@ export class StoreEventMongoModel extends EventDomainModel {
 
   @Prop({
     required: true,
-    type: String,
+    type: Object,
   })
-  eventBody: string;
+  eventBody: object;
 
   @Prop({
     required: true,
@@ -28,7 +29,7 @@ export class StoreEventMongoModel extends EventDomainModel {
     required: true,
     type: String,
   })
-  typeName: string;
+  typeName: TypeNameEnum;
 }
 
 export const StoredEventSchema =

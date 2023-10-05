@@ -2,10 +2,7 @@ import { Module } from '@nestjs/common';
 import { UserController } from './infrastructure/controllers/user.controller';
 import { BranchController } from './infrastructure/controllers/branch.controller';
 import { ProductController } from './infrastructure/controllers/product.controller';
-import {
-  PersistenceModule,
-  StoreEventService,
-} from './infrastructure/persistence';
+import { PersistenceModule, EventService } from './infrastructure/persistence';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
 import { MessagingModule } from './infrastructure/messaging';
@@ -32,26 +29,26 @@ import { EventPublisher } from './infrastructure/messaging/publishers/event.publ
     {
       provide: ProductDelegator,
       useFactory: (
-        storeEventService: StoreEventService,
+        storeEventService: EventService,
         eventPublisher: EventPublisher,
       ) => new ProductDelegator(storeEventService, eventPublisher),
-      inject: [StoreEventService, EventPublisher],
+      inject: [EventService, EventPublisher],
     },
     {
       provide: BranchRegisterUseCase,
       useFactory: (
-        storeService: StoreEventService,
+        storeService: EventService,
         eventPublisher: EventPublisher,
       ) => new BranchRegisterUseCase(storeService, eventPublisher),
-      inject: [StoreEventService, EventPublisher],
+      inject: [EventService, EventPublisher],
     },
     {
       provide: UserRegisterUseCase,
       useFactory: (
-        storeService: StoreEventService,
+        storeService: EventService,
         eventPublisher: EventPublisher,
       ) => new UserRegisterUseCase(storeService, eventPublisher),
-      inject: [StoreEventService, EventPublisher],
+      inject: [EventService, EventPublisher],
     },
   ],
 })

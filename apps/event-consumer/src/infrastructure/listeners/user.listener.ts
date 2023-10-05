@@ -1,19 +1,19 @@
 ﻿import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { Controller } from '@nestjs/common';
-import { Event } from '../utils/events';
 import { UserRegisteredUseCase } from '@use-cases-con/index';
+import { EventDomainModel } from '@domain-models';
+import { TypeNameEnum } from '@enums';
 
 @Controller()
 export class UserListener {
   constructor(private readonly userRegisteredUseCase: UserRegisteredUseCase) {}
 
   @RabbitSubscribe({
-    exchange: 'inventory-hub-exchange',
-    routingKey: 'user_registered',
-    queue: 'inventory.user_registered',
+    exchange: 'inventory_exchange',
+    routingKey: TypeNameEnum.USER_REGISTERED,
+    queue: TypeNameEnum.USER_REGISTERED + '.view',
   })
-  public userRegistered(msg: string): void {
-    const event: Event = JSON.parse(msg);
-    this.userRegisteredUseCase.execute(event);
+  public userRegistered(msg: EventDomainModel): void {
+    this.userRegisteredUseCase.execute(msg);
   }
 }

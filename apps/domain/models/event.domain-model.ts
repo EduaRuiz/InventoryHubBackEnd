@@ -1,14 +1,16 @@
-﻿export class EventDomainModel {
+﻿import { TypeNameEnum } from '@enums';
+
+export class EventDomainModel {
   aggregateRootId: string;
-  eventBody: string;
+  eventBody: object;
   occurredOn: Date;
-  typeName: string;
+  typeName: TypeNameEnum;
 
   constructor(
     aggregateRootId: string,
-    eventBody: string,
+    eventBody: object,
     occurredOn: Date,
-    typeName: string,
+    typeName: TypeNameEnum,
   ) {
     this.aggregateRootId = aggregateRootId;
     this.eventBody = eventBody;

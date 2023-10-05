@@ -1,5 +1,4 @@
-﻿import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
-import { ProductService } from '../persistence/services';
+﻿import { Body, Controller, Patch, Post } from '@nestjs/common';
 import {
   CustomerSaleCommand,
   NewProductCommand,
@@ -13,17 +12,8 @@ import { ProductDelegator } from '@use-cases-inv/product';
 
 @Controller('api/v1/product')
 export class ProductController {
-  constructor(
-    private readonly productService: ProductService,
-    private readonly productDelegator: ProductDelegator,
-  ) {}
+  constructor(private readonly productDelegator: ProductDelegator) {}
 
-  @Get(':id')
-  getProductInfo(
-    @Param('id') productId: string,
-  ): Observable<ProductDomainModel> {
-    return this.productService.getProductById(productId);
-  }
   @Post('register')
   createProduct(
     @Body() product: NewProductCommand,
@@ -55,10 +45,5 @@ export class ProductController {
   ): Observable<ProductDomainModel> {
     this.productDelegator.toCustomerSaleUseCase();
     return this.productDelegator.execute(sale);
-  }
-
-  @Get('all/all')
-  getAllProducts(): Observable<ProductDomainModel[]> {
-    return this.productService.getAllProducts();
   }
 }

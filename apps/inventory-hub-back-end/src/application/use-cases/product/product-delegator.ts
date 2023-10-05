@@ -1,6 +1,6 @@
 ﻿import { ProductDomainModel } from '@domain-models/product.domain-model';
 import { DomainEventPublisher } from '@domain-publishers/index';
-import { IStoreEventDomainService } from '@domain-services/index';
+import { IEventDomainService } from '@domain-services/index';
 import { IUseCase } from '@sofka/interfaces';
 import { Observable } from 'rxjs';
 import {
@@ -16,7 +16,7 @@ export class ProductDelegator
   private delegate: IUseCase<any, any>;
 
   constructor(
-    private readonly storeEvent$: IStoreEventDomainService,
+    private readonly event$: IEventDomainService,
     private readonly eventPublisher: DomainEventPublisher,
   ) {}
 
@@ -26,28 +26,28 @@ export class ProductDelegator
 
   toProductRegisterUseCase(): void {
     this.delegate = new ProductRegisterUseCase(
-      this.storeEvent$,
+      this.event$,
       this.eventPublisher,
     );
   }
 
   toProductPurchaseRegisterUseCase(): void {
     this.delegate = new ProductPurchaseRegisterUseCase(
-      this.storeEvent$,
+      this.event$,
       this.eventPublisher,
     );
   }
 
   toSellerSaleUseCase(): void {
     this.delegate = new SellerSaleRegisterUseCase(
-      this.storeEvent$,
+      this.event$,
       this.eventPublisher,
     );
   }
 
   toCustomerSaleUseCase(): void {
     this.delegate = new CustomerSaleRegisterUseCase(
-      this.storeEvent$,
+      this.event$,
       this.eventPublisher,
     );
   }

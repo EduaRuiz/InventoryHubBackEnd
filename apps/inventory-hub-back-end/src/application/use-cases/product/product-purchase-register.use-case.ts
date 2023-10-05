@@ -1,41 +1,42 @@
 import { EventDomainModel, ProductDomainModel } from '@domain-models';
-import { Observable, of, switchMap } from 'rxjs';
+import { Observable, map, switchMap } from 'rxjs';
 import { DomainEventPublisher } from '@domain-publishers';
 import { IAddProductDomainCommand } from '@domain-commands';
-import { IStoreEventDomainService } from '@domain-services';
+import { IEventDomainService } from '@domain-services';
 import { ValueObjectException } from '@sofka/exceptions';
 import { IUseCase } from '@sofka/interfaces';
 import { TypeNameEnum } from '@enums';
-import { ConflictException } from '@nestjs/common';
 
 export class ProductPurchaseRegisterUseCase
   implements IUseCase<IAddProductDomainCommand, ProductDomainModel>
 {
   constructor(
-    private readonly storeEvent$: IStoreEventDomainService,
+    private readonly event$: IEventDomainService,
     private readonly eventPublisher: DomainEventPublisher,
   ) {}
 
   execute(
     addProductCommand: IAddProductDomainCommand,
   ): Observable<ProductDomainModel> {
-    return this.storeEvent$
-      .getLastEventByIdEventBody(addProductCommand.id)
+    return this.event$
+      .getLastEventByEntityId(addProductCommand.id, [
+        TypeNameEnum.PRODUCT_PURCHASE_REGISTERED,
+        TypeNameEnum.CUSTOMER_SALE_REGISTERED,
+        TypeNameEnum.SELLER_SALE_REGISTERED,
+        TypeNameEnum.PRODUCT_REGISTERED,
+      ])
       .pipe(
         switchMap((event: EventDomainModel) => {
-          const product = JSON.parse(event.eventBody);
-          if (product?.price === undefined) {
-            throw new ConflictException(
-              'El producto con el id ingresado no existe',
-            );
-          }
-          const newProduct = this.entityFactory(product, addProductCommand);
+          const newProduct = this.entityFactory(
+            event.eventBody as ProductDomainModel,
+            addProductCommand,
+          );
           const eventData = this.eventFactory(newProduct);
-          return this.storeEvent$.storeEventUpdate(eventData).pipe(
-            switchMap((event: EventDomainModel) => {
+          return this.event$.storeEvent(eventData).pipe(
+            map((event: EventDomainModel) => {
               this.eventPublisher.response = event;
               this.eventPublisher.publish();
-              return of(JSON.parse(event.eventBody));
+              return event.eventBody as ProductDomainModel;
             }),
           );
         }),
@@ -68,7 +69,7 @@ export class ProductPurchaseRegisterUseCase
   private eventFactory(product: ProductDomainModel): EventDomainModel {
     return new EventDomainModel(
       product.branchId,
-      JSON.stringify(product),
+      product,
       new Date(),
       TypeNameEnum.PRODUCT_PURCHASE_REGISTERED,
     );

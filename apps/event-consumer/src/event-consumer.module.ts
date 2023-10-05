@@ -13,45 +13,74 @@ import {
   ProductListener,
   UserListener,
 } from './infrastructure/listeners';
+import {
+  BranchService,
+  PersistenceModule,
+  ProductService,
+  UserService,
+} from './infrastructure/persistence';
+import { ConfigModule } from '@nestjs/config';
+import { join } from 'path';
+import { ProductController } from './infrastructure/controllers/product.controller';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: join(
+        process.cwd(),
+        'environments',
+        `.env.${process.env.SCOPE?.trimEnd()}`,
+      ),
+    }),
     RabbitMQModule.forRoot(RabbitMQModule, {
       uri: 'amqp://root:password@localhost:5672',
       connectionInitOptions: { wait: false },
     }),
+    PersistenceModule,
   ],
-  controllers: [BranchListener, ProductListener, UserListener],
+  controllers: [
+    BranchListener,
+    ProductListener,
+    UserListener,
+    ProductController,
+  ],
   providers: [
     {
       provide: ProductRegisteredUseCase,
-      useFactory: () => new ProductRegisteredUseCase(),
-      inject: [],
+      useFactory: (productService: ProductService) =>
+        new ProductRegisteredUseCase(productService),
+      inject: [ProductService],
     },
     {
       provide: ProductPurchaseRegisteredUseCase,
-      useFactory: () => new ProductPurchaseRegisteredUseCase(),
-      inject: [],
+      useFactory: (productService: ProductService) =>
+        new ProductPurchaseRegisteredUseCase(productService),
+      inject: [ProductService],
     },
     {
       provide: CustomerSaleRegisteredUseCase,
-      useFactory: () => new CustomerSaleRegisteredUseCase(),
-      inject: [],
+      useFactory: (productService: ProductService) =>
+        new CustomerSaleRegisteredUseCase(productService),
+      inject: [ProductService],
     },
     {
       provide: SellerSaleRegisteredUseCase,
-      useFactory: () => new SellerSaleRegisteredUseCase(),
-      inject: [],
+      useFactory: (productService: ProductService) =>
+        new SellerSaleRegisteredUseCase(productService),
+      inject: [ProductService],
     },
     {
       provide: BranchRegisteredUseCase,
-      useFactory: () => new BranchRegisteredUseCase(),
-      inject: [],
+      useFactory: (branchService: BranchService) =>
+        new BranchRegisteredUseCase(branchService),
+      inject: [BranchService],
     },
     {
       provide: UserRegisteredUseCase,
-      useFactory: () => new UserRegisteredUseCase(),
-      inject: [],
+      useFactory: (userService: UserService) =>
+        new UserRegisteredUseCase(userService),
+      inject: [UserService],
     },
     BranchListener,
     ProductListener,

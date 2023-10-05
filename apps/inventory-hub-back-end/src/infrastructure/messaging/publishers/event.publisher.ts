@@ -13,9 +13,9 @@ export class EventPublisher extends DomainEventPublisher<EventEntity> {
   publish<EventEntity>(): Observable<EventEntity> {
     return from(
       this.amqpConnection.publish(
-        'inventory-hub-exchange',
+        'inventory_exchange',
         this.response.typeName,
-        JSON.stringify(this.response),
+        this.response,
       ),
     );
   }

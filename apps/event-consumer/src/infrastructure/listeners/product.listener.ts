@@ -7,6 +7,8 @@ import {
   ProductRegisteredUseCase,
   SellerSaleRegisteredUseCase,
 } from '@use-cases-con';
+import { EventDomainModel } from '@domain-models/event.domain-model';
+import { TypeNameEnum } from '@enums';
 
 @Controller()
 export class ProductListener {
@@ -18,39 +20,36 @@ export class ProductListener {
   ) {}
 
   @RabbitSubscribe({
-    exchange: 'inventory-hub-exchange',
-    routingKey: 'product_purchase_registered',
-    queue: 'inventory.product_purchase_registered',
+    exchange: 'inventory_exchange',
+    routingKey: TypeNameEnum.PRODUCT_PURCHASE_REGISTERED,
+    queue: TypeNameEnum.PRODUCT_PURCHASE_REGISTERED + '.view',
   })
-  public productPurchaseRegistered(msg: string): void {
-    const event: Event = JSON.parse(msg);
-    this.productPurchaseRegisteredUseCase.execute(event);
+  public productPurchaseRegistered(msg: EventDomainModel): void {
+    this.productPurchaseRegisteredUseCase.execute(msg);
   }
 
   @RabbitSubscribe({
-    exchange: 'inventory-hub-exchange',
-    routingKey: 'product_registered',
-    queue: 'inventory.product_registered',
+    exchange: 'inventory_exchange',
+    routingKey: TypeNameEnum.PRODUCT_REGISTERED,
+    queue: TypeNameEnum.PRODUCT_REGISTERED + '.view',
   })
-  public productRegistered(msg: object): void {
-    const event: Event = JSON.parse(JSON.stringify(msg));
-    this.productRegisteredUseCase.execute(event);
+  public productRegistered(msg: EventDomainModel): void {
+    this.productRegisteredUseCase.execute(msg);
   }
 
   @RabbitSubscribe({
-    exchange: 'inventory-hub-exchange',
-    routingKey: 'customer_sale_registered',
-    queue: 'inventory.customer_sale_registered',
+    exchange: 'inventory_exchange',
+    routingKey: TypeNameEnum.CUSTOMER_SALE_REGISTERED,
+    queue: TypeNameEnum.CUSTOMER_SALE_REGISTERED + '.view',
   })
-  public customerSaleRegistered(msg: object): void {
-    const event: Event = JSON.parse(JSON.stringify(msg));
-    this.customerSaleRegisteredUseCase.execute(event);
+  public customerSaleRegistered(msg: EventDomainModel): void {
+    this.customerSaleRegisteredUseCase.execute(msg);
   }
 
   @RabbitSubscribe({
-    exchange: 'inventory-hub-exchange',
-    routingKey: 'seller_sale_registered',
-    queue: 'inventory.seller_sale_registered',
+    exchange: 'inventory_exchange',
+    routingKey: TypeNameEnum.SELLER_SALE_REGISTERED,
+    queue: TypeNameEnum.SELLER_SALE_REGISTERED + '.view',
   })
   public sellerSaleRegistered(msg: object): void {
     const event: Event = JSON.parse(JSON.stringify(msg));

@@ -1,9 +1,6 @@
 ﻿import { BranchDomainModel } from '@domain-models/branch.domain-model';
 import { DomainEventPublisher } from '@domain-publishers/index';
-import {
-  IBranchDomainService,
-  IStoreEventDomainService,
-} from '@domain-services/index';
+import { IEventDomainService } from '@domain-services/index';
 import { IUseCase } from '@sofka/interfaces';
 import { Observable } from 'rxjs';
 import { BranchRegisterUseCase } from './branch-register.use-case';
@@ -14,7 +11,7 @@ export class MailSenderDelegator
   private delegate: IUseCase<any, any>;
 
   constructor(
-    private readonly store$: IStoreEventDomainService,
+    private readonly event$: IEventDomainService,
     private readonly eventPublisher: DomainEventPublisher,
   ) {}
 
@@ -23,6 +20,6 @@ export class MailSenderDelegator
   }
 
   toBranchRegisterUseCase(): void {
-    this.delegate = new BranchRegisterUseCase(this.store$, this.eventPublisher);
+    this.delegate = new BranchRegisterUseCase(this.event$, this.eventPublisher);
   }
 }

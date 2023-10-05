@@ -7,7 +7,7 @@ import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
     RabbitMQModule.forRoot(RabbitMQModule, {
       exchanges: [
         {
-          name: 'inventory-hub-exchange',
+          name: 'inventory_exchange',
           type: 'topic',
           createExchangeIfNotExists: true,
           options: {

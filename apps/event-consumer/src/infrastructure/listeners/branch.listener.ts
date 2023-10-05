@@ -1,7 +1,8 @@
 ﻿import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { Controller } from '@nestjs/common';
-import { Event } from '../utils/events';
 import { BranchRegisteredUseCase } from '@use-cases-con/index';
+import { EventDomainModel } from '@domain-models/event.domain-model';
+import { TypeNameEnum } from '@enums';
 
 @Controller()
 export class BranchListener {
@@ -10,12 +11,12 @@ export class BranchListener {
   ) {}
 
   @RabbitSubscribe({
-    exchange: 'inventory-hub-exchange',
-    routingKey: 'branch_registered',
-    queue: 'inventory.branch_registered',
+    exchange: 'inventory_exchange',
+    routingKey: TypeNameEnum.BRANCH_REGISTERED,
+    queue: TypeNameEnum.BRANCH_REGISTERED + '.view',
   })
-  public branchRegistered(msg: string): void {
-    const event: Event = JSON.parse(msg);
-    this.branchRegisteredUseCase.execute(event);
+  public branchRegistered(msg: EventDomainModel): void {
+    console.log(msg);
+    this.branchRegisteredUseCase.execute(msg);
   }
 }

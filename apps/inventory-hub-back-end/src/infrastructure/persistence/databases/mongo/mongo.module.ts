@@ -3,7 +3,7 @@ import { MongooseConfigService } from './configs';
 import { MongooseModule } from '@nestjs/mongoose';
 import { StoreEventMongoModel, StoredEventSchema } from './models';
 import { StoreEventMongoRepository } from './repositories';
-import { StoreEventMongoService } from './services';
+import { EventMongoService } from './services';
 
 @Module({
   imports: [
@@ -18,8 +18,8 @@ import { StoreEventMongoService } from './services';
   providers: [
     MongooseConfigService,
     StoreEventMongoRepository,
-    StoreEventMongoService,
+    EventMongoService,
   ],
-  exports: [StoreEventMongoRepository, StoreEventMongoService],
+  exports: [StoreEventMongoRepository, EventMongoService],
 })
 export class MongoModule {}

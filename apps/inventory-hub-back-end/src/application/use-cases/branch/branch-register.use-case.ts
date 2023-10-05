@@ -1,18 +1,19 @@
 ﻿import { BranchDomainModel, EventDomainModel } from '@domain-models';
 import { Observable, of, switchMap } from 'rxjs';
 import { INewBranchDomainCommand } from '@domain-commands';
-import { IStoreEventDomainService } from '@domain-services';
+import { IEventDomainService } from '@domain-services';
 import { DomainEventPublisher } from '@domain-publishers';
 
 import { ValueObjectException } from '@sofka/exceptions';
 import { IUseCase } from '@sofka/interfaces';
 import { TypeNameEnum } from '@enums';
+import { ConflictException } from '@nestjs/common';
 
 export class BranchRegisterUseCase
   implements IUseCase<INewBranchDomainCommand, BranchDomainModel>
 {
   constructor(
-    private readonly storeEvent$: IStoreEventDomainService,
+    private readonly event$: IEventDomainService,
     private readonly eventPublisher: DomainEventPublisher,
   ) {}
 
@@ -22,11 +23,16 @@ export class BranchRegisterUseCase
     newBranchCommand.name = newBranchCommand.name?.trim().toUpperCase();
     const newBranch = this.entityFactory(newBranchCommand);
     const event = this.eventFactory(newBranch);
-    return this.storeEvent$.storeEvent(event).pipe(
-      switchMap((event: EventDomainModel) => {
-        this.eventPublisher.response = event;
-        this.eventPublisher.publish();
-        return of(newBranch);
+    return this.event$.entityAlreadyExist('name', newBranch.name).pipe(
+      switchMap((exist: boolean) => {
+        if (exist) throw new ConflictException('El nombre ya existe');
+        return this.event$.storeEvent(event).pipe(
+          switchMap((event: EventDomainModel) => {
+            this.eventPublisher.response = event;
+            this.eventPublisher.publish();
+            return of(newBranch);
+          }),
+        );
       }),
     );
   }
@@ -52,7 +58,7 @@ export class BranchRegisterUseCase
   private eventFactory(branch: BranchDomainModel): EventDomainModel {
     const event = new EventDomainModel(
       branch?.id ?? '',
-      JSON.stringify(branch),
+      branch,
       new Date(),
       TypeNameEnum.BRANCH_REGISTERED,
     );

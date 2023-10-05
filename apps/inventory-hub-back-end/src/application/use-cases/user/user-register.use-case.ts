@@ -1,17 +1,18 @@
 ﻿import { EventDomainModel, UserDomainModel } from '@domain-models';
-import { Observable, of, switchMap } from 'rxjs';
+import { Observable, catchError, map, switchMap } from 'rxjs';
 import { INewUserDomainCommand } from '@domain-commands';
-import { IStoreEventDomainService } from '@domain-services';
+import { IEventDomainService } from '@domain-services';
 import { DomainEventPublisher } from '@domain-publishers';
 import { ValueObjectException } from '@sofka/exceptions';
 import { IUseCase } from '@sofka/interfaces';
 import { TypeNameEnum } from '@enums';
+import { ConflictException } from '@nestjs/common';
 
 export class UserRegisterUseCase
   implements IUseCase<INewUserDomainCommand, UserDomainModel>
 {
   constructor(
-    private readonly storeEvent$: IStoreEventDomainService,
+    private readonly event$: IEventDomainService,
     private readonly eventPublisher: DomainEventPublisher,
   ) {}
 
@@ -19,18 +20,37 @@ export class UserRegisterUseCase
     registerUserCommand: INewUserDomainCommand,
   ): Observable<UserDomainModel> {
     const newUser = this.entityFactory(registerUserCommand);
-    const event = this.eventFactory(newUser);
-    return this.storeEvent$
-      .getEventByAggregateRootId(registerUserCommand.branchId)
+    const newEvent = this.eventFactory(newUser);
+    return this.event$
+      .entityAlreadyExist(
+        'email',
+        registerUserCommand.email,
+        registerUserCommand.branchId,
+      )
       .pipe(
-        switchMap(() => {
-          return this.storeEvent$.storeEvent(event).pipe(
-            switchMap((event: EventDomainModel) => {
-              this.eventPublisher.response = event;
-              this.eventPublisher.publish();
-              return of(newUser);
-            }),
-          );
+        switchMap((exist: boolean) => {
+          if (exist)
+            throw new ConflictException(
+              'El correo electrónico ya existe en la sucursal actual',
+            );
+          return this.event$
+            .getLastEventByEntityId(newUser.branchId, [
+              TypeNameEnum.BRANCH_REGISTERED,
+            ])
+            .pipe(
+              switchMap(() => {
+                return this.event$.storeEvent(newEvent).pipe(
+                  map((event: EventDomainModel) => {
+                    this.eventPublisher.response = event;
+                    this.eventPublisher.publish();
+                    return newUser;
+                  }),
+                );
+              }),
+              catchError(() => {
+                throw new ConflictException('La sucursal no existe');
+              }),
+            );
         }),
       );
   }
@@ -56,10 +76,10 @@ export class UserRegisterUseCase
     return userData;
   }
 
-  private eventFactory(userData: UserDomainModel): EventDomainModel {
+  private eventFactory(user: UserDomainModel): EventDomainModel {
     const event = new EventDomainModel(
-      userData.branchId,
-      JSON.stringify(userData),
+      user.branchId,
+      user,
       new Date(),
       TypeNameEnum.USER_REGISTERED,
     );
