@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany } from 'typeorm';
-import { ProductPostgresEntity } from '.';
+import { ProductPostgresEntity, SalePostgresEntity } from '.';
 import { BranchDomainModel } from '@domain-models';
 import { UserPostgresEntity } from './user-postgres.entity';
 
@@ -32,4 +32,7 @@ export class BranchPostgresEntity extends BranchDomainModel {
 
   @OneToMany(() => UserPostgresEntity, (user) => user.branch)
   users: UserPostgresEntity[];
+
+  @OneToMany(() => SalePostgresEntity, (sale) => sale.branch)
+  sales: SalePostgresEntity[];
 }

@@ -1,6 +1,7 @@
 ﻿import { ValueObjectBase } from '@sofka/bases';
 import {
   ProductBranchIdValueObject,
+  ProductCategoryEnum,
   ProductCategoryValueObject,
   ProductDescriptionValueObject,
   ProductIdValueObject,
@@ -16,7 +17,7 @@ export class ProductDomainModel extends EntityBase {
   description: string;
   price: number;
   quantity: number;
-  category: string;
+  category: ProductCategoryEnum;
   branchId: string;
 
   constructor(
@@ -24,7 +25,7 @@ export class ProductDomainModel extends EntityBase {
     description: string,
     price: number,
     quantity: number,
-    category: string,
+    category: ProductCategoryEnum,
     branchId: string,
     id?: string,
   ) {

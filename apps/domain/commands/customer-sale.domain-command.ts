@@ -1,5 +1,5 @@
 ﻿export interface ICustomerSaleDomainCommand {
-  productId: string;
-  // branchId: string;
-  quantity: number;
+  productos: { productId: string; quantity: number }[];
+  branchId: string;
+  userId: string;
 }

@@ -6,5 +6,5 @@
  * @return {*}  {boolean}
  */
 export const CurrentDateTimeValidation = (value: Date, now: Date): boolean => {
-  return !(Math.abs(value.getTime() - now.getTime()) > 1000);
+  return Math.abs(value.getTime() - now.getTime()) > 10000;
 };

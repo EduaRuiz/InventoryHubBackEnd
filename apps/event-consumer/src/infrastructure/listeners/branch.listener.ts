@@ -16,7 +16,6 @@ export class BranchListener {
     queue: TypeNameEnum.BRANCH_REGISTERED + '.view',
   })
   public branchRegistered(msg: EventDomainModel): void {
-    console.log(msg);
     this.branchRegisteredUseCase.execute(msg);
   }
 }

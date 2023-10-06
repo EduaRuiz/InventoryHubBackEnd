@@ -6,11 +6,24 @@
  * @return {*}  {boolean}
  */
 export const IsEmptyValidation = (
-  value: boolean | number | bigint | [] | object | string | null | undefined,
+  value:
+    | Date
+    | boolean
+    | number
+    | bigint
+    | []
+    | object
+    | string
+    | null
+    | undefined,
 ): boolean => {
-  if (typeof value === 'string') return value.trim() === '' ? true : false;
-  else if (value === null || value === undefined) return true;
-  else if (typeof value === 'object')
-    return Object.keys(value).length === 0 ? true : false;
+  if (value === null || value === undefined) return true;
+  if (typeof value === 'string') return value.trim() === '';
+  if (typeof value === 'object') {
+    if (value instanceof Date) {
+      return isNaN(value.getTime()); // Consider Date as empty if it's an invalid date
+    }
+    return Object.keys(value).length === 0;
+  }
   return false;
 };

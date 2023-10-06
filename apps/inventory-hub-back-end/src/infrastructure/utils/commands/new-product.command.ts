@@ -44,7 +44,7 @@ export class NewProductCommand implements INewProductDomainCommand {
       ProductCategoryEnum,
     )}`,
   })
-  category: string;
+  category: ProductCategoryEnum;
 
   @IsString({ message: 'El id de la sucursal debe ser un string' })
   @IsDefined({ message: 'El id de la sucursal es requerido' })

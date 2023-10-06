@@ -1,6 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { UserDomainModel } from '@domain-models';
 import { BranchPostgresEntity } from './branch-postgres.entity';
+import { SalePostgresEntity } from './sale-postgres.entity';
 
 @Entity('user', { schema: 'public' })
 export class UserPostgresEntity extends UserDomainModel {
@@ -29,4 +30,7 @@ export class UserPostgresEntity extends UserDomainModel {
   @ManyToOne(() => BranchPostgresEntity, (branch) => branch.users)
   @JoinColumn({ name: 'branch_id' })
   branch: BranchPostgresEntity;
+
+  @OneToMany(() => SalePostgresEntity, (saleProduct) => saleProduct.user)
+  sale: SalePostgresEntity[];
 }

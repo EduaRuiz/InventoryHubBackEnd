@@ -51,4 +51,14 @@ export class EventMongoService
   getAllEvents(): Observable<StoreEventMongoModel[]> {
     return this.storedEventMongoRepository.findAll();
   }
+
+  generateIncrementalSaleId(
+    aggregateRootId: string,
+    typeName: TypeNameEnum[],
+  ): Observable<number> {
+    return this.storedEventMongoRepository.generateIncrementalSaleId(
+      aggregateRootId,
+      typeName,
+    );
+  }
 }

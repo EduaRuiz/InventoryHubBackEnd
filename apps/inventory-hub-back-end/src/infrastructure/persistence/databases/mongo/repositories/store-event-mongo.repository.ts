@@ -205,4 +205,24 @@ export class StoreEventMongoRepository
       ),
     );
   }
+
+  generateIncrementalSaleId(
+    aggregateRootId: string,
+    typeName: TypeNameEnum[],
+  ): Observable<number> {
+    return from(
+      this.storedEventMongoModel.countDocuments({
+        aggregateRootId,
+        typeName: { $in: typeName },
+      }),
+    ).pipe(
+      map((count: number) => count + 1),
+      catchError((error: Error) => {
+        throw new BadRequestException(
+          'Error searching by event body substring',
+          error.message,
+        );
+      }),
+    );
+  }
 }

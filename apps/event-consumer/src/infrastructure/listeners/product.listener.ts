@@ -5,6 +5,7 @@ import {
   CustomerSaleRegisteredUseCase,
   ProductPurchaseRegisteredUseCase,
   ProductRegisteredUseCase,
+  ProductUpdatedUseCase,
   SellerSaleRegisteredUseCase,
 } from '@use-cases-con';
 import { EventDomainModel } from '@domain-models/event.domain-model';
@@ -17,12 +18,13 @@ export class ProductListener {
     private readonly productPurchaseRegisteredUseCase: ProductPurchaseRegisteredUseCase,
     private readonly customerSaleRegisteredUseCase: CustomerSaleRegisteredUseCase,
     private readonly sellerSaleRegisteredUseCase: SellerSaleRegisteredUseCase,
+    private readonly productUpdatedUseCase: ProductUpdatedUseCase,
   ) {}
 
   @RabbitSubscribe({
     exchange: 'inventory_exchange',
     routingKey: TypeNameEnum.PRODUCT_PURCHASE_REGISTERED,
-    queue: TypeNameEnum.PRODUCT_PURCHASE_REGISTERED + '.view',
+    queue: `${TypeNameEnum.PRODUCT_PURCHASE_REGISTERED}.view`,
   })
   public productPurchaseRegistered(msg: EventDomainModel): void {
     this.productPurchaseRegisteredUseCase.execute(msg);
@@ -35,6 +37,15 @@ export class ProductListener {
   })
   public productRegistered(msg: EventDomainModel): void {
     this.productRegisteredUseCase.execute(msg);
+  }
+
+  @RabbitSubscribe({
+    exchange: 'inventory_exchange',
+    routingKey: TypeNameEnum.PRODUCT_UPDATED,
+    queue: TypeNameEnum.PRODUCT_UPDATED + '.view',
+  })
+  public productUpdated(msg: EventDomainModel): void {
+    this.productUpdatedUseCase.execute(msg);
   }
 
   @RabbitSubscribe({

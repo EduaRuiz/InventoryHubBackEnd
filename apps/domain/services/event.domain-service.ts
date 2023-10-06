@@ -1,6 +1,6 @@
 import { EventDomainModel } from '@domain-models';
 import { Observable } from 'rxjs';
-import { TypeNameEnum } from '../enums/type-name.enum';
+import { TypeNameEnum } from '@enums';
 
 export interface IEventDomainService<
   Entity extends EventDomainModel = EventDomainModel,
@@ -19,4 +19,8 @@ export interface IEventDomainService<
     typeName: TypeNameEnum[],
     aggregateRootId?: string,
   ): Observable<Entity>;
+  generateIncrementalSaleId(
+    aggregateRootId: string,
+    typeName: TypeNameEnum[],
+  ): Observable<number>;
 }

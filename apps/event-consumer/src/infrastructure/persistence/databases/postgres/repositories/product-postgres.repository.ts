@@ -48,7 +48,6 @@ export class ProductPostgresRepository
             ...entity,
             id: entityId,
           } as ProductPostgresEntity;
-          console.log('++++++++++++++++++++++++++++');
           return this.create(entityUpdated);
         }),
       )
@@ -104,7 +103,6 @@ export class ProductPostgresRepository
   }
 
   findOneById(entityId: string): Observable<ProductPostgresEntity> {
-    console.log(entityId);
     return from(
       this.productPostgresEntity.findOne({ where: { id: entityId } }),
     ).pipe(

@@ -1,6 +1,11 @@
 import { Module } from '@nestjs/common';
 import { PostgresModule } from './databases/postgres/postgres.module';
-import { UserService, ProductService, BranchService } from './services';
+import {
+  UserService,
+  ProductService,
+  BranchService,
+  SaleService,
+} from './services';
 
 /**
  * Modulo de persistencia
@@ -11,7 +16,7 @@ import { UserService, ProductService, BranchService } from './services';
 @Module({
   imports: [PostgresModule],
   controllers: [],
-  providers: [UserService, ProductService, BranchService],
-  exports: [UserService, ProductService, BranchService],
+  providers: [UserService, ProductService, BranchService, SaleService],
+  exports: [UserService, ProductService, BranchService, SaleService],
 })
 export class PersistenceModule {}

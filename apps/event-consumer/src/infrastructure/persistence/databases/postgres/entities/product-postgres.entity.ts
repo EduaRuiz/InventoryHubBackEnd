@@ -1,6 +1,7 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { ProductDomainModel } from '@domain-models';
 import { BranchPostgresEntity } from './branch-postgres.entity';
+import { ProductCategoryEnum } from '@enums';
 
 @Entity('product', { schema: 'public' })
 @Index(['name', 'branchId'], { unique: true })
@@ -30,7 +31,7 @@ export class ProductPostgresEntity extends ProductDomainModel {
   quantity: number;
 
   @Column('character varying', { name: 'category', nullable: false })
-  category: string;
+  category: ProductCategoryEnum;
 
   @Column('uuid', { name: 'branch_id', nullable: false })
   branchId: string;

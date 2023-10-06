@@ -1,35 +1,36 @@
-﻿import { EventDomainModel, ProductDomainModel } from '@domain-models';
-import { IProductDomainService } from '@domain-services';
+﻿import { EventDomainModel, SaleDomainModel } from '@domain-models';
+import { ISaleDomainService } from '@domain-services';
 import { ValueObjectException } from '@sofka/exceptions';
 import { IUseCase } from '@sofka/interfaces';
 import { Observable } from 'rxjs';
 
 export class SellerSaleRegisteredUseCase
-  implements IUseCase<EventDomainModel, ProductDomainModel>
+  implements IUseCase<EventDomainModel, SaleDomainModel>
 {
-  constructor(private readonly product$: IProductDomainService) {}
-  execute(command: EventDomainModel): Observable<ProductDomainModel> {
-    const productSold = command.eventBody as ProductDomainModel;
-    const newProduct = this.entityFactory(productSold);
-    return this.product$.createProduct(newProduct);
+  constructor(private readonly sale$: ISaleDomainService) {}
+  execute(command: EventDomainModel): Observable<SaleDomainModel> {
+    const saleRegistered = command.eventBody as SaleDomainModel;
+    const newSale = this.entityFactory(saleRegistered);
+    return this.sale$.createSale(newSale);
   }
 
-  private entityFactory(productSold: ProductDomainModel): ProductDomainModel {
-    const productData = new ProductDomainModel(
-      productSold.name,
-      productSold.description,
-      productSold.price,
-      productSold.quantity,
-      productSold.category,
-      productSold.branchId,
-      productSold.id,
+  private entityFactory(saleRegistered: SaleDomainModel): SaleDomainModel {
+    const saleData = new SaleDomainModel(
+      saleRegistered.numberId,
+      saleRegistered.products,
+      saleRegistered.date,
+      saleRegistered.type,
+      saleRegistered.total,
+      saleRegistered.branchId,
+      saleRegistered.userId,
+      saleRegistered.id,
     );
-    if (productData.hasErrors()) {
+    if (saleData.hasErrors()) {
       throw new ValueObjectException(
-        'Existen algunos errores en los datos ingresados',
-        productData.getErrors(),
+        'Existen algunos errores en los datos ingresados en la venta',
+        saleData.getErrors(),
       );
     }
-    return productData;
+    return saleData;
   }
 }

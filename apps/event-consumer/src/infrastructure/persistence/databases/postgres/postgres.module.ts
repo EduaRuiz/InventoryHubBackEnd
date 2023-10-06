@@ -5,16 +5,21 @@ import {
   UserPostgresEntity,
   ProductPostgresEntity,
   BranchPostgresEntity,
+  SalePostgresEntity,
+  SaleProductPostgresEntity,
 } from './entities';
 import {
   UserPostgresRepository,
   ProductPostgresRepository,
   BranchPostgresRepository,
+  SalePostgresRepository,
+  SaleProductPostgresRepository,
 } from './repositories';
 import {
   UserPostgresService,
   ProductPostgresService,
   BranchPostgresService,
+  SalePostgresService,
 } from './services';
 
 @Module({
@@ -26,6 +31,8 @@ import {
       ProductPostgresEntity,
       UserPostgresEntity,
       BranchPostgresEntity,
+      SalePostgresEntity,
+      SaleProductPostgresEntity,
     ]),
   ],
   controllers: [],
@@ -37,14 +44,21 @@ import {
     ProductPostgresService,
     UserPostgresService,
     BranchPostgresService,
+    SalePostgresRepository,
+    SalePostgresService,
+    SaleProductPostgresRepository,
   ],
   exports: [
+    TypeOrmPostgresConfigService,
     ProductPostgresRepository,
     UserPostgresRepository,
     BranchPostgresRepository,
     ProductPostgresService,
     UserPostgresService,
     BranchPostgresService,
+    SalePostgresRepository,
+    SalePostgresService,
+    SaleProductPostgresRepository,
   ],
 })
 export class PostgresModule {}

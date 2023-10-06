@@ -20,10 +20,9 @@ export class ProductPurchaseRegisterUseCase
   ): Observable<ProductDomainModel> {
     return this.event$
       .getLastEventByEntityId(addProductCommand.id, [
-        TypeNameEnum.PRODUCT_PURCHASE_REGISTERED,
-        TypeNameEnum.CUSTOMER_SALE_REGISTERED,
-        TypeNameEnum.SELLER_SALE_REGISTERED,
         TypeNameEnum.PRODUCT_REGISTERED,
+        TypeNameEnum.PRODUCT_UPDATED,
+        TypeNameEnum.PRODUCT_PURCHASE_REGISTERED,
       ])
       .pipe(
         switchMap((event: EventDomainModel) => {

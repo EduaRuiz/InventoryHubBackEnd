@@ -1,12 +1,28 @@
-﻿import { EventDomainModel, ProductDomainModel } from '@domain-models';
+﻿import {
+  EventDomainModel,
+  ProductDomainModel,
+  SaleDomainModel,
+} from '@domain-models';
 import { ConflictException } from '@nestjs/common';
-import { Observable, of, switchMap } from 'rxjs';
+import {
+  Observable,
+  catchError,
+  concat,
+  concatMap,
+  forkJoin,
+  from,
+  map,
+  mergeMap,
+  of,
+  switchMap,
+  toArray,
+} from 'rxjs';
 import { ISellerSaleDomainCommand } from '@domain-commands';
 import { IEventDomainService } from '@domain-services';
 import { DomainEventPublisher } from '@domain-publishers';
 import { ValueObjectException } from '@sofka/exceptions';
 import { IUseCase } from '@sofka/interfaces';
-import { TypeNameEnum } from '@enums';
+import { SaleTypeEnum, TypeNameEnum } from '@enums';
 
 export class SellerSaleRegisterUseCase
   implements IUseCase<ISellerSaleDomainCommand, ProductDomainModel>
@@ -20,38 +36,61 @@ export class SellerSaleRegisterUseCase
     sellerSaleCommand: ISellerSaleDomainCommand,
   ): Observable<ProductDomainModel> {
     return this.event$
-      .getLastEventByEntityId(sellerSaleCommand.productId, [
-        TypeNameEnum.PRODUCT_REGISTERED,
-        TypeNameEnum.PRODUCT_PURCHASE_REGISTERED,
-        TypeNameEnum.SELLER_SALE_REGISTERED,
-        TypeNameEnum.CUSTOMER_SALE_REGISTERED,
+      .getLastEventByEntityId(sellerSaleCommand.userId, [
+        TypeNameEnum.USER_REGISTERED,
       ])
       .pipe(
+        catchError(() => {
+          throw new ConflictException(
+            'El usuario no existe o no se encuentra registrado',
+          );
+        }),
         switchMap((event: EventDomainModel) => {
-          const product = event.eventBody as ProductDomainModel;
-          if (product?.price === undefined) {
+          if (event.aggregateRootId !== sellerSaleCommand.branchId) {
             throw new ConflictException(
-              'El producto con el id ingresado no existe',
+              'El usuario no pertenece a la sucursal seleccionada',
             );
           }
-          const newProduct = this.entityFactory(product, sellerSaleCommand);
-          const eventData = this.eventFactory(newProduct);
-          return this.event$.storeEvent(eventData).pipe(
-            switchMap((event: EventDomainModel) => {
-              this.eventPublisher.response = event;
-              this.eventPublisher.publish();
-              return of(event.eventBody as ProductDomainModel);
-            }),
-          );
+          return this.sale(sellerSaleCommand);
         }),
       );
   }
 
-  private entityFactory(
-    product: ProductDomainModel,
+  private sale(
     sellerSaleCommand: ISellerSaleDomainCommand,
+  ): Observable<ProductDomainModel> {
+    const products$ = this.getProducts(sellerSaleCommand);
+    const events$ = this.factoryEvents(products$);
+    const eventsStored$ = this.storeEvents(events$);
+    const productsInSale$ = this.productsInSale(products$, sellerSaleCommand);
+    const sale$ = this.saleFactory(
+      productsInSale$,
+      sellerSaleCommand.branchId,
+      sellerSaleCommand.userId,
+      sellerSaleCommand.discount,
+    );
+    return this.saleEventFactory(sale$).pipe(
+      switchMap((event: EventDomainModel) => {
+        return this.publishEvents(eventsStored$).pipe(
+          switchMap(() => {
+            return this.event$.storeEvent(event).pipe(
+              switchMap((event: EventDomainModel) => {
+                this.eventPublisher.response = event;
+                this.eventPublisher.publish();
+                return of(event.eventBody as ProductDomainModel);
+              }),
+            );
+          }),
+        );
+      }),
+    );
+  }
+
+  private productFactory(
+    product: ProductDomainModel,
+    quantity: number,
   ): ProductDomainModel {
-    product.quantity = product.quantity?.valueOf() - sellerSaleCommand.quantity;
+    product.quantity = product.quantity?.valueOf() - quantity;
     const productData = new ProductDomainModel(
       product.name,
       product.description,
@@ -61,26 +100,170 @@ export class SellerSaleRegisterUseCase
       product.branchId,
       product.id,
     );
+
     if (productData.quantity?.valueOf() < 0) {
       throw new ConflictException(
         'No hay suficientes productos para realizar la venta',
       );
     }
+
     if (productData.hasErrors()) {
       throw new ValueObjectException(
         'Existen algunos errores en los datos ingresados',
         productData.getErrors(),
       );
     }
+
     return productData;
   }
 
-  private eventFactory(product: ProductDomainModel): EventDomainModel {
+  private saleFactory(
+    products: Observable<ProductDomainModel[]>,
+    branchId: string,
+    userId: string,
+    discount: number,
+  ): Observable<SaleDomainModel> {
+    return products.pipe(
+      switchMap((productArray) => {
+        const total = productArray.reduce(
+          (acc, product) =>
+            acc + product.price * (1 - discount) * product.quantity,
+          0,
+        );
+        const saleItems = productArray.map((product) => ({
+          name: product.name,
+          quantity: product.quantity,
+          price: product.price * (1 - discount),
+        }));
+        return this.event$
+          .generateIncrementalSaleId(branchId, [
+            TypeNameEnum.CUSTOMER_SALE_REGISTERED,
+            TypeNameEnum.SELLER_SALE_REGISTERED,
+          ])
+          .pipe(
+            map((numberId: number) => {
+              return new SaleDomainModel(
+                numberId,
+                saleItems,
+                new Date(),
+                SaleTypeEnum.CUSTOMER_SALE,
+                total,
+                branchId,
+                userId,
+              );
+            }),
+          );
+      }),
+    );
+  }
+
+  private productEventFactory(product: ProductDomainModel): EventDomainModel {
     return new EventDomainModel(
       product.branchId,
       product,
       new Date(),
-      TypeNameEnum.SELLER_SALE_REGISTERED,
+      TypeNameEnum.PRODUCT_UPDATED,
+    );
+  }
+
+  private saleEventFactory(
+    saleObservable: Observable<SaleDomainModel>,
+  ): Observable<EventDomainModel> {
+    return saleObservable.pipe(
+      map((sale: SaleDomainModel) => {
+        return new EventDomainModel(
+          sale.branchId,
+          sale,
+          new Date(),
+          TypeNameEnum.CUSTOMER_SALE_REGISTERED,
+        );
+      }),
+    );
+  }
+
+  private getProducts(
+    sale: ISellerSaleDomainCommand,
+  ): Observable<ProductDomainModel[]> {
+    const observables$ = sale.productos.map(({ productId, quantity }) => {
+      return this.event$
+        .getLastEventByEntityId(
+          productId,
+          [
+            TypeNameEnum.PRODUCT_REGISTERED,
+            TypeNameEnum.PRODUCT_UPDATED,
+            TypeNameEnum.PRODUCT_PURCHASE_REGISTERED,
+          ],
+          sale.branchId,
+        )
+        .pipe(
+          mergeMap((event: EventDomainModel) => {
+            return of({
+              product: event.eventBody as ProductDomainModel,
+              quantity,
+            });
+          }),
+        );
+    });
+
+    return forkJoin(observables$).pipe(
+      map((productsWithQuantity) => {
+        return productsWithQuantity.map((item) =>
+          this.productFactory(item.product, item.quantity),
+        );
+      }),
+    );
+  }
+
+  private factoryEvents(
+    products: Observable<ProductDomainModel[]>,
+  ): Observable<EventDomainModel[]> {
+    return products.pipe(
+      map((productArray: ProductDomainModel[]) => {
+        return productArray.map((product) => this.productEventFactory(product));
+      }),
+    );
+  }
+
+  private storeEvents(
+    events: Observable<EventDomainModel[]>,
+  ): Observable<EventDomainModel[]> {
+    return events.pipe(
+      mergeMap((eventArray) => from(eventArray)),
+      mergeMap((event) => this.event$.storeEvent(event)),
+      toArray(),
+    );
+  }
+
+  private publishEvents(
+    events: Observable<EventDomainModel[]>,
+  ): Observable<void> {
+    return events.pipe(
+      concatMap((eventArray) => {
+        const publishObservables$ = eventArray.map((event) => {
+          this.eventPublisher.response = event;
+          return from(this.eventPublisher.publish());
+        });
+        return concat(...publishObservables$);
+      }),
+    );
+  }
+
+  private productsInSale(
+    products: Observable<ProductDomainModel[]>,
+    p: ISellerSaleDomainCommand,
+  ): Observable<ProductDomainModel[]> {
+    return products.pipe(
+      map((productArray) => {
+        return productArray.map((product) => {
+          const commandProduct = p.productos.find(
+            (commandProd) => commandProd.productId === product.id,
+          );
+          if (commandProduct) {
+            product.quantity = commandProduct.quantity;
+          }
+          return product;
+        });
+      }),
     );
   }
 }

@@ -5,6 +5,7 @@ import {
   CustomerSaleRegisteredUseCase,
   ProductPurchaseRegisteredUseCase,
   ProductRegisteredUseCase,
+  ProductUpdatedUseCase,
   SellerSaleRegisteredUseCase,
   UserRegisteredUseCase,
 } from '@use-cases-con';
@@ -17,6 +18,7 @@ import {
   BranchService,
   PersistenceModule,
   ProductService,
+  SaleService,
   UserService,
 } from './infrastructure/persistence';
 import { ConfigModule } from '@nestjs/config';
@@ -53,6 +55,12 @@ import { ProductController } from './infrastructure/controllers/product.controll
       inject: [ProductService],
     },
     {
+      provide: ProductUpdatedUseCase,
+      useFactory: (productService: ProductService) =>
+        new ProductUpdatedUseCase(productService),
+      inject: [ProductService],
+    },
+    {
       provide: ProductPurchaseRegisteredUseCase,
       useFactory: (productService: ProductService) =>
         new ProductPurchaseRegisteredUseCase(productService),
@@ -60,15 +68,15 @@ import { ProductController } from './infrastructure/controllers/product.controll
     },
     {
       provide: CustomerSaleRegisteredUseCase,
-      useFactory: (productService: ProductService) =>
+      useFactory: (productService: SaleService) =>
         new CustomerSaleRegisteredUseCase(productService),
-      inject: [ProductService],
+      inject: [SaleService],
     },
     {
       provide: SellerSaleRegisteredUseCase,
-      useFactory: (productService: ProductService) =>
+      useFactory: (productService: SaleService) =>
         new SellerSaleRegisteredUseCase(productService),
-      inject: [ProductService],
+      inject: [SaleService],
     },
     {
       provide: BranchRegisteredUseCase,

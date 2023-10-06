@@ -1,5 +1,8 @@
 ﻿import { ProductDomainModel } from '@domain-models/product.domain-model';
-import { IProductDomainService } from '@domain-services/index';
+import {
+  IProductDomainService,
+  ISaleDomainService,
+} from '@domain-services/index';
 import { IUseCase } from '@sofka/interfaces';
 import { Observable } from 'rxjs';
 import {
@@ -14,7 +17,10 @@ export class ProductDelegator
 {
   private delegate: IUseCase<any, any>;
 
-  constructor(private readonly product$: IProductDomainService) {}
+  constructor(
+    private readonly product$: IProductDomainService,
+    private readonly sale$: ISaleDomainService,
+  ) {}
 
   execute<Response>(...args: any[]): Observable<Response> {
     return this.delegate.execute(...args);
@@ -29,10 +35,10 @@ export class ProductDelegator
   }
 
   toSellerSaleUseCase(): void {
-    this.delegate = new SellerSaleRegisteredUseCase(this.product$);
+    this.delegate = new SellerSaleRegisteredUseCase(this.sale$);
   }
 
   toCustomerSaleUseCase(): void {
-    this.delegate = new CustomerSaleRegisteredUseCase(this.product$);
+    this.delegate = new CustomerSaleRegisteredUseCase(this.sale$);
   }
 }

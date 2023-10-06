@@ -5,6 +5,8 @@ import {
   ProductPostgresEntity,
   BranchPostgresEntity,
   UserPostgresEntity,
+  SalePostgresEntity,
+  SaleProductPostgresEntity,
 } from '../entities';
 
 @Injectable()
@@ -28,6 +30,8 @@ export class TypeOrmPostgresConfigService implements TypeOrmOptionsFactory {
         ProductPostgresEntity,
         BranchPostgresEntity,
         UserPostgresEntity,
+        SalePostgresEntity,
+        SaleProductPostgresEntity,
       ],
       synchronize: true,
       logging: true,

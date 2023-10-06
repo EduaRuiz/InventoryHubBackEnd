@@ -1,7 +1,7 @@
 ﻿import { ValueObjectBase } from '@sofka/bases';
 import { IErrorValueObject } from '@sofka/interfaces';
 import { IsEmptyValidation, IsInEnumValidation } from '@validations';
-import { ProductCategoryEnum } from '../../enums';
+import { ProductCategoryEnum } from '@enums';
 
 export class ProductCategoryValueObject extends ValueObjectBase<string> {
   validateData(): void {
