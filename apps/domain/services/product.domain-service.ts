@@ -9,4 +9,9 @@ export interface IProductDomainService<
   createProduct(product: Entity): Observable<Entity>;
   updateProduct(product: Entity): Observable<Entity>;
   getAllProducts(): Observable<Entity[]>;
+  getAllProductsByBranchId(
+    branchId: string,
+    page: number,
+    pageSize: number,
+  ): Observable<Entity[]>;
 }

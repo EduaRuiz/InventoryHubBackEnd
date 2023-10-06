@@ -17,7 +17,7 @@ import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
           },
         },
       ],
-      uri: 'amqp://root:password@localhost:5672',
+      uri: process.env.RMQ_URI || 'amqp://root:password@localhost:5672',
       connectionInitOptions: { wait: false },
     }),
   ],

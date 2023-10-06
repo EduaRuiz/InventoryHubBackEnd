@@ -24,5 +24,5 @@ export class CustomerSaleCommand implements ICustomerSaleDomainCommand {
 
   @ValidateNested()
   @Type(() => ProductSaleDto)
-  productos: ProductSaleDto[];
+  products: ProductSaleDto[];
 }

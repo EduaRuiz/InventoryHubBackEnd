@@ -9,9 +9,15 @@ import { MessagingModule } from './infrastructure/messaging';
 import { BranchRegisterUseCase, UserRegisterUseCase } from '@use-cases-inv';
 import { ProductDelegator } from '@use-cases-inv/product';
 import { EventPublisher } from './infrastructure/messaging/publishers/event.publisher';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthService } from './infrastructure/utils/services/auth.service';
 
 @Module({
   imports: [
+    JwtModule.register({
+      secret: 'YOUR_SECRET_KEY', // Reemplaza con tu clave secreta
+      signOptions: { expiresIn: '1h' }, // Cambia según tus necesidades
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: join(
@@ -26,6 +32,7 @@ import { EventPublisher } from './infrastructure/messaging/publishers/event.publ
   ],
   controllers: [UserController, BranchController, ProductController],
   providers: [
+    AuthService,
     {
       provide: ProductDelegator,
       useFactory: (

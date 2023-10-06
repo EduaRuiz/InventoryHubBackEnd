@@ -184,7 +184,7 @@ export class SellerSaleRegisterUseCase
   private getProducts(
     sale: ISellerSaleDomainCommand,
   ): Observable<ProductDomainModel[]> {
-    const observables$ = sale.productos.map(({ productId, quantity }) => {
+    const observables$ = sale.products.map(({ productId, quantity }) => {
       return this.event$
         .getLastEventByEntityId(
           productId,
@@ -255,7 +255,7 @@ export class SellerSaleRegisterUseCase
     return products.pipe(
       map((productArray) => {
         return productArray.map((product) => {
-          const commandProduct = p.productos.find(
+          const commandProduct = p.products.find(
             (commandProd) => commandProd.productId === product.id,
           );
           if (commandProduct) {

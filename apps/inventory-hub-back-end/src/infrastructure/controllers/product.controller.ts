@@ -43,6 +43,7 @@ export class ProductController {
   productCustomerSale(
     @Body() sale: CustomerSaleCommand,
   ): Observable<ProductDomainModel> {
+    console.log(sale);
     this.productDelegator.toCustomerSaleUseCase();
     return this.productDelegator.execute(sale);
   }

@@ -118,4 +118,24 @@ export class UserPostgresRepository
       ),
     );
   }
+
+  auth(email: string, password: string): Observable<UserPostgresEntity> {
+    return from(
+      this.UserPostgresEntity.findOneBy({
+        email: email,
+        password: password,
+      }),
+    ).pipe(
+      catchError((error: PostgresError) => {
+        throw new BadRequestException('Invalid ID format', error.detail);
+      }),
+      switchMap((user: UserPostgresEntity) =>
+        iif(
+          () => user === null,
+          throwError(() => new NotFoundException('User not found!')),
+          of(user),
+        ),
+      ),
+    );
+  }
 }

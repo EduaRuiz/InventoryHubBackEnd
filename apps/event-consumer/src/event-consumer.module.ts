@@ -23,7 +23,12 @@ import {
 } from './infrastructure/persistence';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
-import { ProductController } from './infrastructure/controllers/product.controller';
+import {
+  ProductController,
+  SaleController,
+} from './infrastructure/controllers';
+import { BranchController } from './infrastructure/controllers/branch.controller';
+import { UserController } from './infrastructure/controllers/user.controller';
 
 @Module({
   imports: [
@@ -36,7 +41,7 @@ import { ProductController } from './infrastructure/controllers/product.controll
       ),
     }),
     RabbitMQModule.forRoot(RabbitMQModule, {
-      uri: 'amqp://root:password@localhost:5672',
+      uri: process.env.RMQ_URI || 'amqp://root:password@localhost:5672',
       connectionInitOptions: { wait: false },
     }),
     PersistenceModule,
@@ -46,6 +51,9 @@ import { ProductController } from './infrastructure/controllers/product.controll
     ProductListener,
     UserListener,
     ProductController,
+    SaleController,
+    BranchController,
+    UserController,
   ],
   providers: [
     {

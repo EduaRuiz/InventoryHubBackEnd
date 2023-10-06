@@ -27,6 +27,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/event-consumer/tsconfig.app.json"
       }
+    },
+    "proxy": {
+      "type": "application",
+      "root": "apps/proxy",
+      "entryFile": "main",
+      "sourceRoot": "apps/proxy/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/proxy/tsconfig.app.json"
+      }
     }
   }
 }

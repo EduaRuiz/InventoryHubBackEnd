@@ -1,5 +1,58 @@
 version: '3'
 services:
+
+  command-app:
+    container_name: command-app
+    build:
+      context: ./
+      dockerfile: command.dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      MONGO_DB_URI: mongodb://root:password@mongo:27017/inventory?authSource=admin
+      RMQ_URI: amqp://root:password@rabbitmq:5672
+    links:
+      - mongo
+      - rabbitmq
+    volumes:
+      - inventory-app:/command/app
+
+  query-app:
+    container_name: query-app
+    build:
+      context: ./
+      dockerfile: query.dockerfile
+    ports:
+      - 3001:3001
+    environment:
+      POSTGRES_DB_HOST: postgres
+      POSTGRES_DB_PORT: 5432
+      POSTGRES_DB_USER: root
+      POSTGRES_DB_PASSWORD: password
+      POSTGRES_DB_NAME: inventory
+      RMQ_URI: amqp://root:password@rabbitmq:5672
+
+    links:
+      - mongo
+      - rabbitmq
+    volumes:
+      - inventory-app:/query/app
+
+  proxy-app:
+    container_name: proxy-app
+    build:
+      context: ./
+      dockerfile: proxy.dockerfile
+    ports:
+      - 3002:3002
+      - 81:81
+    environment:
+      RMQ_URI: amqp://root:password@rabbitmq:5672
+    links:
+      - rabbitmq
+    volumes:
+      - inventory-app:/command/app
+
   postgres:
     image: postgres:latest
     container_name: postgres
@@ -45,4 +98,10 @@ volumes:
     driver: local
   data-mongo:
     name: data-mongo
+    driver: local
+  data-rabbitmq:
+    name: data-rabbitmq
+    driver: local
+  inventory-app:
+    name: inventory-app
     driver: local

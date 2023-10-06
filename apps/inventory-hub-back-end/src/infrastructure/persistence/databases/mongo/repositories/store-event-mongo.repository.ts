@@ -225,4 +225,29 @@ export class StoreEventMongoRepository
       }),
     );
   }
+
+  auth(
+    email: string,
+    password: string,
+    aggregateRootId?: string,
+  ): Observable<StoreEventMongoModel> {
+    let query: any = {
+      'eventBody.email': email,
+      'eventBody.password': password,
+      typeName: TypeNameEnum.USER_REGISTERED,
+    };
+    if (aggregateRootId !== undefined) query = { ...query, aggregateRootId };
+    return from(this.storedEventMongoModel.findOne(query).exec()).pipe(
+      catchError((error: Error) => {
+        throw new BadRequestException('Invalid', error.message);
+      }),
+      switchMap((storedEvent: StoreEventMongoModel) =>
+        iif(
+          () => storedEvent === null,
+          throwError(() => new NotFoundException('Event not found')),
+          of(storedEvent),
+        ),
+      ),
+    );
+  }
 }

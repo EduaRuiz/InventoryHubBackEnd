@@ -25,6 +25,7 @@ export class ProductController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
   ): Observable<ProductDomainModel[]> {
+    console.log('branchId', branchId);
     return this.productService.getAllProductsByBranchId(
       branchId,
       page,

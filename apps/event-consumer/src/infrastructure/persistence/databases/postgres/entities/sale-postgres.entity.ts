@@ -27,6 +27,9 @@ export class SalePostgresEntity extends SaleDomainModel {
   @Column('character varying', { name: 'type', nullable: false })
   type: SaleTypeEnum;
 
+  @Column('int', { name: 'total', nullable: false })
+  total: number;
+
   @Column('uuid', { name: 'user_id', nullable: false })
   userId: string;
 

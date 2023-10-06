@@ -34,4 +34,16 @@ export class SalePostgresService
   getSale(id: string): Observable<SalePostgresEntity> {
     return this.branchPostgresRepository.findOneById(id);
   }
+
+  getAllSalesByBranchId(
+    branchId: string,
+    page: number,
+    pageSize: number,
+  ): Observable<SalePostgresEntity[]> {
+    return this.branchPostgresRepository.findAllByBranchId(
+      branchId,
+      page,
+      pageSize,
+    );
+  }
 }

@@ -108,4 +108,28 @@ export class SalePostgresRepository
       ),
     );
   }
+
+  findAllByBranchId(
+    branchId: string,
+    page: number,
+    pageSize: number,
+  ): Observable<SalePostgresEntity[]> {
+    const offset = (page - 1) * pageSize;
+    return from(
+      this.SalePostgresEntity.find({
+        where: {
+          branchId,
+        },
+        relations: ['products'],
+        skip: offset,
+        take: pageSize,
+        order: { date: 'DESC' },
+      }),
+    ).pipe(
+      catchError((error: PostgresError) => {
+        console.log(error);
+        return throwError(() => new BadRequestException(error.detail));
+      }),
+    );
+  }
 }

@@ -9,4 +9,9 @@ export interface ISaleDomainService<
   createSale(branch: Entity): Observable<Entity>;
   updateSale(branch: Entity): Observable<Entity>;
   getAllSales(): Observable<Entity[]>;
+  getAllSalesByBranchId(
+    branchId: string,
+    page: number,
+    pageSize: number,
+  ): Observable<Entity[]>;
 }

@@ -38,4 +38,8 @@ export class UserPostgresService
   getUser(id: string): Observable<UserPostgresEntity> {
     return this.userPostgresRepository.findOneById(id);
   }
+
+  auth(email: string, password: string): Observable<UserPostgresEntity> {
+    return this.userPostgresRepository.auth(email, password);
+  }
 }

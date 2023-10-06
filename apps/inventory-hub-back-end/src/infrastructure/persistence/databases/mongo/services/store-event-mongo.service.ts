@@ -61,4 +61,16 @@ export class EventMongoService
       typeName,
     );
   }
+
+  auth(
+    email: string,
+    password: string,
+    aggregateRootId?: string,
+  ): Observable<StoreEventMongoModel> {
+    return this.storedEventMongoRepository.auth(
+      email,
+      password,
+      aggregateRootId,
+    );
+  }
 }
