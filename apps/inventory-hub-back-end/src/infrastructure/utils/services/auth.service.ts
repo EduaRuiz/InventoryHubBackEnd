@@ -29,7 +29,7 @@ export class AuthService {
     const payload = {
       branchId: user.branchId,
       role: user.role,
-      sub: user.id,
+      userId: user.id,
     };
     return { token: this.jwtService.sign(payload) };
   }

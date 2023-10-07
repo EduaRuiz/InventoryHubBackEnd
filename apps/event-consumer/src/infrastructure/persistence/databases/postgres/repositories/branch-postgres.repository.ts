@@ -75,6 +75,7 @@ export class BranchPostgresRepository
   }
 
   findAll(): Observable<BranchPostgresEntity[]> {
+    console.log('findAll');
     return from(
       this.BranchPostgresEntity.find({
         relations: ['users', 'products'],

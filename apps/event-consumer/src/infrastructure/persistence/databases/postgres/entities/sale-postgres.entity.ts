@@ -10,7 +10,6 @@ export class SalePostgresEntity extends SaleDomainModel {
   @Column('uuid', {
     primary: true,
     name: 'sale_id',
-    default: () => 'uuid_generate_v4()',
   })
   id: string;
 

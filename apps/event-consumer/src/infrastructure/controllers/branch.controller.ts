@@ -9,4 +9,10 @@ export class BranchController {
   getBranch(@Param('id') id: string) {
     return this.branchService.getBranchById(id);
   }
+
+  @Get('get/all')
+  getAllBranches() {
+    console.log('here');
+    return this.branchService.getAllBranches();
+  }
 }

@@ -14,6 +14,7 @@ export class UserController {
 
   @Post('register')
   registerUser(@Body() user: NewUserCommand): Observable<UserDomainModel> {
+    console.log(user);
     return this.userRegisterUseCase.execute(user);
   }
 

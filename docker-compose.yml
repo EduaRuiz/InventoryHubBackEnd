@@ -1,6 +1,5 @@
 version: '3'
 services:
-
   command-app:
     container_name: command-app
     build:
@@ -9,7 +8,12 @@ services:
     ports:
       - 3000:3000
     environment:
+      MONGO_HOST: localhost
+      MONGO_PORT: 27017
+      MONGO_USER: root
+      MONGO_PASSWORD: password
       MONGO_DB_URI: mongodb://root:password@mongo:27017/inventory?authSource=admin
+      MONGO_DB_NAME: inventory
       RMQ_URI: amqp://root:password@rabbitmq:5672
     links:
       - mongo
@@ -31,9 +35,8 @@ services:
       POSTGRES_DB_PASSWORD: password
       POSTGRES_DB_NAME: inventory
       RMQ_URI: amqp://root:password@rabbitmq:5672
-
     links:
-      - mongo
+      - postgres
       - rabbitmq
     volumes:
       - inventory-app:/query/app
@@ -51,21 +54,22 @@ services:
     links:
       - rabbitmq
     volumes:
-      - inventory-app:/command/app
+      - inventory-app:/proxy/app
 
   postgres:
     image: postgres:latest
     container_name: postgres
-    restart: always
     ports:
       - 5432:5432
+    restart: always
+    command:
+
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
-      POSTGRES_HOST_AUTH_METHOD: md5
-      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: inventory
     volumes:
-      - ./docker-data/data-postgres:/var/lib/postgresql/data
+      - data-postgres:/data/db
 
   mongo:
     image: mongo:latest
@@ -77,7 +81,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
-      - ./docker-data/data-mongo:/data/db
+      - data-mongo:/data/db
 
   rabbitmq:
     image: "rabbitmq:management"
@@ -90,7 +94,7 @@ services:
       RABBITMQ_DEFAULT_USER: root
       RABBITMQ_DEFAULT_PASS: password
     volumes:
-      - ./docker-data/data-rabbitmq:/var/lib/rabbitmq
+      - data-rabbitmq:/var/lib/rabbitmq
 
 volumes:
   data-postgres:

@@ -9,7 +9,6 @@ export class ProductPostgresEntity extends ProductDomainModel {
   @Column('uuid', {
     primary: true,
     name: 'product_id',
-    default: () => 'uuid_generate_v4()',
   })
   id: string;
 

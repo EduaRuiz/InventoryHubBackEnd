@@ -8,7 +8,6 @@ export class BranchPostgresEntity extends BranchDomainModel {
   @Column('uuid', {
     primary: true,
     name: 'branch_id',
-    default: () => 'uuid_generate_v4()',
   })
   id: string;
 

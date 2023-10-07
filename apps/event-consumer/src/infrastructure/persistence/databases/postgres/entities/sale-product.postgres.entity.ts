@@ -1,14 +1,16 @@
-﻿import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+﻿import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { SaleProductDomainModel } from '@domain-models';
 import { SalePostgresEntity } from './sale-postgres.entity';
 
 @Entity('sale_product', { schema: 'public' })
 export class SaleProductPostgresEntity extends SaleProductDomainModel {
-  @Column('uuid', {
-    primary: true,
-    name: 'sale_product_id',
-    default: () => 'uuid_generate_v4()',
-  })
+  @PrimaryGeneratedColumn('uuid', { name: 'sale_product_id' })
   id: string;
 
   @Column('character varying', { name: 'name', nullable: false })

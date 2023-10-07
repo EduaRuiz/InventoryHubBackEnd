@@ -8,7 +8,6 @@ export class UserPostgresEntity extends UserDomainModel {
   @Column('uuid', {
     primary: true,
     name: 'User_id',
-    default: () => 'uuid_generate_v4()',
   })
   id: string;
 
