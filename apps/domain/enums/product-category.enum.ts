@@ -9,4 +9,5 @@
   PLUMBING_SUPPLIES = 'plumbing supplies',
   ELECTRICAL = 'electrical',
   HOME_FIXTURES = 'home fixtures',
+  OTHERS = 'others',
 }

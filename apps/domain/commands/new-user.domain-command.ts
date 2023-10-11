@@ -1,6 +1,6 @@
+import { FullName } from '@types';
 export interface INewUserDomainCommand {
-  firstName: string;
-  lastName: string;
+  fullName: FullName;
   email: string;
   password: string;
   role: string;

@@ -1,60 +1,63 @@
 version: '3'
 services:
-  command-app:
-    container_name: command-app
-    build:
-      context: ./
-      dockerfile: command.dockerfile
-    ports:
-      - 3000:3000
-    environment:
-      MONGO_HOST: mongo
-      MONGO_PORT: 27017
-      MONGO_USER: root
-      MONGO_PASSWORD: password
-      MONGO_DB_URI: mongodb://root:password@mongo:27017/inventory?authSource=admin
-      MONGO_DB_NAME: inventory
-      RMQ_URI: amqp://root:password@rabbitmq:5672
-    links:
-      - mongo
-      - rabbitmq
-    volumes:
-      - inventory-app:/command/app
+  # command-app:
+  #   container_name: command-app
+  #   # image: command-app
+  #   build:
+  #     context: ./
+  #     dockerfile: command.dockerfile
+  #   ports:
+  #     - 3000:3000
+  #   environment:
+  #     MONGO_HOST: mongo
+  #     MONGO_PORT: 27017
+  #     MONGO_USER: root
+  #     MONGO_PASSWORD: password
+  #     MONGO_DB_URI: mongodb://root:password@mongo:27017/inventory?authSource=admin
+  #     MONGO_DB_NAME: inventory
+  #     RMQ_URI: amqp://root:password@rabbitmq:5672
+  #   links:
+  #     - mongo
+  #     - rabbitmq
+  #   volumes:
+  #     - inventory-app:/command-app
 
-  query-app:
-    container_name: query-app
-    build:
-      context: ./
-      dockerfile: query.dockerfile
-    ports:
-      - 3001:3001
-    environment:
-      POSTGRES_DB_HOST: postgres
-      POSTGRES_DB_PORT: 5432
-      POSTGRES_DB_USER: root
-      POSTGRES_DB_PASSWORD: password
-      POSTGRES_DB_NAME: inventory
-      RMQ_URI: amqp://root:password@rabbitmq:5672
-    links:
-      - postgres
-      - rabbitmq
-    volumes:
-      - inventory-app:/query/app
+  # query-app:
+  #   container_name: query-app
+  #   # image: query-app
+  #   build:
+  #     context: ./
+  #     dockerfile: query.dockerfile
+  #   ports:
+  #     - 3001:3001
+  #   environment:
+  #     POSTGRES_DB_HOST: postgres
+  #     POSTGRES_DB_PORT: 5432
+  #     POSTGRES_DB_USER: root
+  #     POSTGRES_DB_PASSWORD: password
+  #     POSTGRES_DB_NAME: inventory
+  #     RMQ_URI: amqp://root:password@rabbitmq:5672
+  #   links:
+  #     - postgres
+  #     - rabbitmq
+  #   volumes:
+  #     - inventory-app:/query-app
 
-  proxy-app:
-    container_name: proxy-app
-    build:
-      context: ./
-      dockerfile: proxy.dockerfile
-    ports:
-      - 3002:3002
-      - 81:81
-    environment:
-      RMQ_URI: amqp://root:password@rabbitmq:5672
-    links:
-      - rabbitmq
-    volumes:
-      - inventory-app:/proxy/app
+  # proxy-app:
+  #   # image: proxy-app
+  #   container_name: proxy-app
+  #   build:
+  #     context: ./
+  #     dockerfile: inventory-proxy.dockerfile
+  #   ports:
+  #     - 3002:3002
+  #     - 81:81
+  #   environment:
+  #     RMQ_URI: amqp://root:password@rabbitmq:5672
+  #   links:
+  #     - rabbitmq
+  #   volumes:
+  #     - inventory-app:/proxy-app
 
   postgres:
     image: postgres:latest
@@ -68,7 +71,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: inventory
     volumes:
-      - data-postgres:/data/db
+      - data-postgres:/var/lib/postgresql/data
 
   mongo:
     image: mongo:latest
@@ -79,11 +82,12 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: inventory
     volumes:
       - data-mongo:/data/db
 
   rabbitmq:
-    image: "rabbitmq:management"
+    image: rabbitmq:management
     container_name: rabbitmq
     restart: always
     ports:

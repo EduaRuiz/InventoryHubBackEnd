@@ -16,5 +16,5 @@ export interface IUseCase<CommandType, ResponseType> {
    * @return {ResponseType} - Output data type
    * @memberof IUseCase
    */
-  execute(command?: CommandType): Observable<ResponseType>;
+  execute(command?: CommandType, id?: string): Observable<ResponseType>;
 }

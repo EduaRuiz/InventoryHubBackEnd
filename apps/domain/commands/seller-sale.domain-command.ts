@@ -1,6 +1,6 @@
 ﻿export interface ISellerSaleDomainCommand {
-  products: { productId: string; quantity: number }[];
+  products: { id: string; quantity: number }[];
   branchId: string;
-  userId: string;
+  userId?: string;
   discount: number;
 }
