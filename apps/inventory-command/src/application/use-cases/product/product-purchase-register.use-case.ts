@@ -17,9 +17,10 @@ export class ProductPurchaseRegisterUseCase
 
   execute(
     addProductCommand: IAddProductDomainCommand,
+    productId: string,
   ): Observable<ProductDomainModel> {
     return this.event$
-      .getLastEventByEntityId(addProductCommand.id, [
+      .getLastEventByEntityId(productId, [
         TypeNameEnum.PRODUCT_REGISTERED,
         TypeNameEnum.PRODUCT_UPDATED,
         TypeNameEnum.PRODUCT_PURCHASE_REGISTERED,

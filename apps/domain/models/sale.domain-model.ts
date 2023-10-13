@@ -13,7 +13,7 @@ import { EntityBase } from '@sofka/bases/entity.base';
 import { SaleProductType } from '../types/sale-product.type';
 
 export class SaleDomainModel extends EntityBase {
-  numberId: number;
+  number: number;
   products: SaleProductType[];
   date: Date;
   type: SaleTypeEnum;
@@ -22,7 +22,7 @@ export class SaleDomainModel extends EntityBase {
   userId: string;
 
   constructor(
-    numberId: number,
+    number: number,
     products: SaleProductType[],
     date: Date,
     type: SaleTypeEnum,
@@ -32,7 +32,7 @@ export class SaleDomainModel extends EntityBase {
     id?: string,
   ) {
     super(id);
-    this.numberId = numberId;
+    this.number = number;
     this.products = products;
     this.date = date;
     this.type = type;
@@ -42,13 +42,13 @@ export class SaleDomainModel extends EntityBase {
   }
 
   private createValueObjects(): ValueObjectBase<any>[] {
-    const numberId = new SaleNumberValueObject(this.numberId);
+    const number = new SaleNumberValueObject(this.number);
     const type = new SaleTypeValueObject(this.type);
     const total = new SaleTotalValueObject(this.total);
     const branchId = new SaleBranchIdValueObject(this.branchId);
     const userId = new SaleUserIdValueObject(this.branchId);
     const response: ValueObjectBase<any>[] = [
-      numberId,
+      number,
       type,
       total,
       branchId,

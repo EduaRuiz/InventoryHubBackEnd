@@ -5,25 +5,22 @@ import { SalePostgresEntity } from './sale-postgres.entity';
 
 @Entity('user', { schema: 'public' })
 export class UserPostgresEntity extends UserDomainModel {
-  @Column('uuid', {
-    primary: true,
-    name: 'User_id',
-  })
+  @Column('uuid', { primary: true, name: 'User_id' })
   id: string;
 
-  @Column('character varying', { name: 'name' })
+  @Column('varchar', { name: 'name' })
   name: string;
 
-  @Column('character varying', { name: 'email', unique: true })
+  @Column('varchar', { name: 'email', unique: true })
   email: string;
 
-  @Column('character varying', { name: 'password' })
+  @Column('varchar', { name: 'password' })
   password: string;
 
-  @Column('character varying', { name: 'role' })
+  @Column('varchar', { name: 'role' })
   role: string;
 
-  @Column('uuid', { name: 'branch_id' })
+  @Column('uuid', { name: 'branch_id', nullable: true })
   branchId: string;
 
   @ManyToOne(() => BranchPostgresEntity, (branch) => branch.users)

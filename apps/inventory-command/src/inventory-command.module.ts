@@ -7,17 +7,12 @@ import { join } from 'path';
 import { BranchRegisterUseCase, UserRegisterUseCase } from '@use-cases-inv';
 import { ProductDelegator } from '@use-cases-inv/product';
 import { EventPublisher } from './infrastructure/messaging/publishers';
-import { JwtModule } from '@nestjs/jwt';
-import { AuthService } from './infrastructure/utils/services';
 import { InfrastructureModule } from './infrastructure/infrastructure.module';
 import { EventService } from './infrastructure/persistence/services';
+import { JwtStrategy } from './infrastructure/utils/strategies/jwt.strategy';
 
 @Module({
   imports: [
-    JwtModule.register({
-      secret: 'INVENTORY_SECRET_KEY',
-      signOptions: { expiresIn: '1h' },
-    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: join(
@@ -30,7 +25,7 @@ import { EventService } from './infrastructure/persistence/services';
   ],
   controllers: [UserController, BranchController, ProductController],
   providers: [
-    AuthService,
+    JwtStrategy,
     {
       provide: ProductDelegator,
       useFactory: (
@@ -56,5 +51,6 @@ import { EventService } from './infrastructure/persistence/services';
       inject: [EventService, EventPublisher],
     },
   ],
+  exports: [],
 })
 export class InventoryCommandModule {}

@@ -12,10 +12,10 @@ export class ProductPostgresEntity extends ProductDomainModel {
   })
   id: string;
 
-  @Column('character varying', { name: 'name', nullable: false })
+  @Column('varchar', { name: 'name', nullable: false })
   name: string;
 
-  @Column('character varying', { name: 'description', nullable: false })
+  @Column('varchar', { name: 'description', nullable: false })
   description: string;
 
   @Column('decimal', {
@@ -29,7 +29,7 @@ export class ProductPostgresEntity extends ProductDomainModel {
   @Column('int', { name: 'quantity', default: 0 })
   quantity: number;
 
-  @Column('character varying', { name: 'category', nullable: false })
+  @Column('varchar', { name: 'category', nullable: false })
   category: ProductCategoryEnum;
 
   @Column('uuid', { name: 'branch_id', nullable: false })

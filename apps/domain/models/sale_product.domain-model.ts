@@ -7,33 +7,33 @@ import {
 } from '@value-objects/sale';
 
 export class SaleProductDomainModel extends EntityBase {
-  numberId: number;
+  number: number;
   productName: string;
   productQuantity: number;
   productPrice: number;
 
   constructor(
-    numberId: number,
+    number: number,
     productName: string,
     productQuantity: number,
     productPrice: number,
     id?: string,
   ) {
     super(id);
-    this.numberId = numberId;
+    this.number = number;
     this.productName = productName;
     this.productQuantity = productQuantity;
     this.productPrice = productPrice;
   }
 
   private createValueObjects(): ValueObjectBase<any>[] {
-    const numberId = new SaleNumberValueObject(this.numberId);
+    const number = new SaleNumberValueObject(this.number);
     const product = new SaleProductValueObject({
       name: this.productName,
       quantity: this.productQuantity,
       price: this.productPrice,
     });
-    const response: ValueObjectBase<any>[] = [numberId, numberId, product];
+    const response: ValueObjectBase<any>[] = [number, number, product];
     if (this.id) response.push(new SaleIdValueObject(this.id));
     return response;
   }

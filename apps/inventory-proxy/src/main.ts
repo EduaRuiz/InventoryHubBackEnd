@@ -5,5 +5,6 @@ async function bootstrap() {
   const app = await NestFactory.create(InventoryProxyModule);
   await app.listen(process.env.PROXY_PORT || 3002);
   console.log(`🚀Application is running on: ${await app.getUrl()}  PROXY🚀`);
+  console.log('RMQ', process.env.RMQ_URI);
 }
 bootstrap();

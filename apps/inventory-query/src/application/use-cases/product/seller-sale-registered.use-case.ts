@@ -16,7 +16,7 @@ export class SellerSaleRegisteredUseCase
 
   private entityFactory(saleRegistered: SaleDomainModel): SaleDomainModel {
     const saleData = new SaleDomainModel(
-      saleRegistered.numberId,
+      saleRegistered.number,
       saleRegistered.products,
       saleRegistered.date,
       saleRegistered.type,

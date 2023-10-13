@@ -25,6 +25,9 @@ export class SalePostgresRepository
     @InjectRepository(SalePostgresEntity)
     private SalePostgresEntity: Repository<SalePostgresEntity>,
   ) {}
+  findAll(): Observable<SalePostgresEntity[]> {
+    throw new Error('Method not implemented.');
+  }
 
   create(entity: SalePostgresEntity): Observable<SalePostgresEntity> {
     return from(this.SalePostgresEntity.save(entity)).pipe(
@@ -74,10 +77,14 @@ export class SalePostgresRepository
       );
   }
 
-  findAll(): Observable<SalePostgresEntity[]> {
+  getAll(page: number, pageSize: number): Observable<SalePostgresEntity[]> {
+    const offset = (page - 1) * pageSize;
     return from(
       this.SalePostgresEntity.find({
-        relations: ['sale_product'],
+        relations: ['products'],
+        skip: offset,
+        take: pageSize,
+        order: { date: 'DESC' },
       }),
     ).pipe(
       catchError((error: PostgresError) => {
@@ -126,6 +133,7 @@ export class SalePostgresRepository
       }),
     ).pipe(
       catchError((error: PostgresError) => {
+        console.log('++++++++++++++++++++++++++++error', error);
         return throwError(() => new BadRequestException(error.detail));
       }),
     );

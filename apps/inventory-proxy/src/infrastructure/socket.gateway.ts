@@ -13,7 +13,7 @@ import {
   SaleDomainModel,
 } from '@domain-models';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { TypeNameEnum } from '@enums';
+import { ProxyEnumEvents, TypeNameEnum } from '@enums';
 
 @WebSocketGateway(81, {
   cors: { origin: '*' },
@@ -23,17 +23,25 @@ export class SocketGateway
 {
   @WebSocketServer() server: Server;
   afterInit(server: any) {
-    console.log('Server initialized', server);
+    console.log('Server initialized');
   }
   handleConnection(client: any, ...args: any[]) {
-    console.log('Client connected', client, args);
+    console.log('Client connected');
   }
   handleDisconnect(client: any) {
-    console.log('Client disconnected', client);
+    console.log('Client disconnected');
   }
 
-  @SubscribeMessage('inventory.join')
-  handleJoin(client: Socket, branchId: string) {
+  @SubscribeMessage(ProxyEnumEvents.JoinInventory)
+  handleJoinInventory(client: Socket, branchId: string) {
+    const room = `branch.${branchId}`;
+    client.join(room);
+    client.emit('joined', room);
+    console.log('joinedOn:', room);
+  }
+
+  @SubscribeMessage(ProxyEnumEvents.JoinSale)
+  handleJoinSale(client: Socket, branchId: string) {
     const room = `branch.${branchId}`;
     client.join(room);
     client.emit('joined', room);
@@ -64,39 +72,50 @@ export class SocketGateway
     console.log('leftOn:', room);
   }
 
+  @SubscribeMessage(ProxyEnumEvents.EventInventory)
+  handleIncomingInventory(client: Socket, product: ProductDomainModel) {
+    const room = `branch.${product.branchId}`;
+    this.server.to(room).emit(ProxyEnumEvents.ProductChange, product);
+  }
+
+  @SubscribeMessage(ProxyEnumEvents.LeaveInventory)
+  handleRoomLeave(client: Socket, id: string) {
+    client.leave(`branch.${id}`);
+  }
+
   @SubscribeMessage(TypeNameEnum.PRODUCT_REGISTERED)
   handleProductAdded(client: Socket, product: ProductDomainModel) {
     this.server
       .to(`branch.${product.branchId}`)
-      .emit(TypeNameEnum.PRODUCT_REGISTERED, product);
+      .emit(ProxyEnumEvents.ProductCreate, product);
   }
 
   @SubscribeMessage(TypeNameEnum.PRODUCT_UPDATED)
   handleProductChanged(client: Socket, product: ProductDomainModel) {
     this.server
       .to(`branch.${product.branchId}`)
-      .emit(TypeNameEnum.PRODUCT_UPDATED, product);
+      .emit(ProxyEnumEvents.ProductChange, product);
   }
 
   @SubscribeMessage(TypeNameEnum.PRODUCT_PURCHASE_REGISTERED)
   handleProductPurchased(client: Socket, product: ProductDomainModel) {
     this.server
       .to(`branch.${product.branchId}`)
-      .emit(TypeNameEnum.PRODUCT_PURCHASE_REGISTERED, product);
+      .emit(ProxyEnumEvents.ProductChange, product);
   }
 
   @SubscribeMessage(TypeNameEnum.CUSTOMER_SALE_REGISTERED)
   handleCustomerSaleRegistered(client: Socket, sale: SaleDomainModel) {
     this.server
       .to(`branch.${sale.branchId}`)
-      .emit(TypeNameEnum.CUSTOMER_SALE_REGISTERED, sale);
+      .emit(ProxyEnumEvents.ProductChange, sale);
   }
 
   @SubscribeMessage(TypeNameEnum.SELLER_SALE_REGISTERED)
   handleSellerSaleRegistered(client: Socket, sale: SaleDomainModel) {
     this.server
       .to(`branch.${sale.branchId}`)
-      .emit(TypeNameEnum.SELLER_SALE_REGISTERED, sale);
+      .emit(ProxyEnumEvents.ProductChange, sale);
   }
 
   @RabbitSubscribe({
@@ -108,7 +127,7 @@ export class SocketGateway
     const productRegistered = msg.eventBody as ProductDomainModel;
     this.server
       .to(`branch.${productRegistered.branchId}`)
-      .emit(TypeNameEnum.PRODUCT_REGISTERED, productRegistered);
+      .emit(ProxyEnumEvents.ProductCreate, productRegistered);
   }
 
   @RabbitSubscribe({
@@ -120,7 +139,7 @@ export class SocketGateway
     const productUpdated = msg.eventBody as ProductDomainModel;
     this.server
       .to(`branch.${productUpdated.branchId}`)
-      .emit(TypeNameEnum.PRODUCT_UPDATED, productUpdated);
+      .emit(ProxyEnumEvents.ProductChange, productUpdated);
   }
 
   @RabbitSubscribe({
@@ -132,7 +151,7 @@ export class SocketGateway
     const productPurchased = msg.eventBody as ProductDomainModel;
     this.server
       .to(`branch.${productPurchased.branchId}`)
-      .emit(TypeNameEnum.PRODUCT_PURCHASE_REGISTERED, productPurchased);
+      .emit(ProxyEnumEvents.ProductChange, productPurchased);
   }
 
   @RabbitSubscribe({
@@ -144,7 +163,7 @@ export class SocketGateway
     const sellerSale = msg.eventBody as SaleDomainModel;
     this.server
       .to(`branch.${sellerSale.branchId}`)
-      .emit(TypeNameEnum.SELLER_SALE_REGISTERED, sellerSale);
+      .emit(ProxyEnumEvents.SaleCreate, sellerSale);
   }
 
   @RabbitSubscribe({
@@ -153,10 +172,9 @@ export class SocketGateway
     queue: `${TypeNameEnum.CUSTOMER_SALE_REGISTERED}.proxy`,
   })
   customerSaleRegistered(msg: EventDomainModel) {
-    console.log(msg);
     const customerSale = msg.eventBody as SaleDomainModel;
     this.server
       .to(`branch.${customerSale.branchId}`)
-      .emit(TypeNameEnum.CUSTOMER_SALE_REGISTERED, customerSale);
+      .emit(ProxyEnumEvents.SaleCreate, customerSale);
   }
 }

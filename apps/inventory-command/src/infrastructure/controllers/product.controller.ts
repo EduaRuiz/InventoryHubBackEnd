@@ -1,4 +1,4 @@
-﻿import { Body, Controller, Patch, Post } from '@nestjs/common';
+﻿import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
 import {
   CustomerSaleCommand,
   NewProductCommand,
@@ -9,11 +9,13 @@ import { Observable } from 'rxjs';
 import {} from '@use-cases-inv/product';
 import { AddProductCommand } from '../utils/commands';
 import { ProductDelegator } from '@use-cases-inv/product';
+import { Auth } from '../utils/decorators/auth.decorator';
+import { UserRoleEnum } from '@enums';
 
 @Controller('api/v1/product')
 export class ProductController {
   constructor(private readonly productDelegator: ProductDelegator) {}
-
+  @Auth(UserRoleEnum.ADMIN, UserRoleEnum.EMPLOYEE, UserRoleEnum.SUPER_ADMIN)
   @Post('register')
   createProduct(
     @Body() product: NewProductCommand,
@@ -22,14 +24,17 @@ export class ProductController {
     return this.productDelegator.execute(product);
   }
 
-  @Patch('purchase')
+  @Auth(UserRoleEnum.ADMIN, UserRoleEnum.EMPLOYEE, UserRoleEnum.SUPER_ADMIN)
+  @Patch('purchase/:id')
   productPurchase(
     @Body() product: AddProductCommand,
+    @Param('id') id: string,
   ): Observable<ProductDomainModel> {
     this.productDelegator.toProductPurchaseRegisterUseCase();
-    return this.productDelegator.execute(product);
+    return this.productDelegator.execute(product, id);
   }
 
+  @Auth(UserRoleEnum.ADMIN, UserRoleEnum.EMPLOYEE, UserRoleEnum.SUPER_ADMIN)
   @Patch('seller-sale')
   productSellerSale(
     @Body() sale: SellerSaleCommand,
@@ -38,11 +43,12 @@ export class ProductController {
     return this.productDelegator.execute(sale, '');
   }
 
+  @Auth(UserRoleEnum.ADMIN, UserRoleEnum.EMPLOYEE, UserRoleEnum.SUPER_ADMIN)
   @Patch('customer-sale')
   productCustomerSale(
     @Body() sale: CustomerSaleCommand,
   ): Observable<ProductDomainModel> {
     this.productDelegator.toCustomerSaleUseCase();
-    return this.productDelegator.execute(sale, 'd');
+    return this.productDelegator.execute(sale, sale.userId);
   }
 }

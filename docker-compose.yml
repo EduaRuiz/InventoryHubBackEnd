@@ -60,7 +60,8 @@ services:
   #     - inventory-app:/proxy-app
 
   postgres:
-    image: postgres:latest
+    image: eduarandres/postgres-app:latest
+    # image: postgres-app
     container_name: postgres
     ports:
       - 5432:5432
@@ -69,12 +70,13 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: inventory
+      # POSTGRES_DB: inventory
+      DB_NAMES: "inventory,auth"
     volumes:
       - data-postgres:/var/lib/postgresql/data
 
   mongo:
-    image: mongo:latest
+    image: eduarandres/mongo-app:latest
     container_name: mongo
     restart: always
     ports:

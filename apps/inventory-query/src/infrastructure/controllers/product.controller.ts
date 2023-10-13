@@ -9,16 +9,20 @@
 import { ProductService } from '../persistence';
 import { Observable } from 'rxjs';
 import { ProductDomainModel } from '@domain-models/product.domain-model';
+import { Auth } from '../utils/decorators/auth.decorator';
+import { UserRoleEnum } from '@enums';
 
 @Controller('api/v1')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Get('product:id')
+  @Auth(UserRoleEnum.ADMIN, UserRoleEnum.EMPLOYEE, UserRoleEnum.SUPER_ADMIN)
+  @Get('product/:id')
   getProduct(@Param('id') id: string) {
     return this.productService.getProductById(id);
   }
 
+  @Auth(UserRoleEnum.ADMIN, UserRoleEnum.EMPLOYEE, UserRoleEnum.SUPER_ADMIN)
   @Get('products/:branchId')
   getAllProductsByBranch(
     @Param('branchId') branchId: string,

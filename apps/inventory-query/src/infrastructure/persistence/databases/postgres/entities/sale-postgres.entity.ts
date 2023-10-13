@@ -18,12 +18,12 @@ export class SalePostgresEntity extends SaleDomainModel {
     nullable: false,
     unique: false,
   })
-  numberId: number;
+  number: number;
 
   @Column('date', { name: 'date', nullable: false })
   date: Date;
 
-  @Column('character varying', { name: 'type', nullable: false })
+  @Column('varchar', { name: 'type', nullable: false })
   type: SaleTypeEnum;
 
   @Column('int', { name: 'total', nullable: false })

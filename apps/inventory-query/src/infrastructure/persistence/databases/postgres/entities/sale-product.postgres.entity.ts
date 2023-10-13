@@ -13,7 +13,7 @@ export class SaleProductPostgresEntity extends SaleProductDomainModel {
   @PrimaryGeneratedColumn('uuid', { name: 'sale_product_id' })
   id: string;
 
-  @Column('character varying', { name: 'name', nullable: false })
+  @Column('varchar', { name: 'name', nullable: false })
   name: string;
 
   @Column('decimal', {

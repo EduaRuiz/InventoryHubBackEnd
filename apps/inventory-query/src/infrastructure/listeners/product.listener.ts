@@ -23,7 +23,7 @@ export class ProductListener {
   @RabbitSubscribe({
     exchange: 'inventory_exchange',
     routingKey: TypeNameEnum.PRODUCT_PURCHASE_REGISTERED,
-    queue: `${TypeNameEnum.PRODUCT_PURCHASE_REGISTERED}.view`,
+    queue: `${TypeNameEnum.PRODUCT_PURCHASE_REGISTERED}.query`,
   })
   public productPurchaseRegistered(msg: EventDomainModel): void {
     this.productPurchaseRegisteredUseCase.execute(msg);
@@ -32,7 +32,7 @@ export class ProductListener {
   @RabbitSubscribe({
     exchange: 'inventory_exchange',
     routingKey: TypeNameEnum.PRODUCT_REGISTERED,
-    queue: TypeNameEnum.PRODUCT_REGISTERED + '.view',
+    queue: TypeNameEnum.PRODUCT_REGISTERED + '.query',
   })
   public productRegistered(msg: EventDomainModel): void {
     this.productRegisteredUseCase.execute(msg);
@@ -41,7 +41,7 @@ export class ProductListener {
   @RabbitSubscribe({
     exchange: 'inventory_exchange',
     routingKey: TypeNameEnum.PRODUCT_UPDATED,
-    queue: TypeNameEnum.PRODUCT_UPDATED + '.view',
+    queue: TypeNameEnum.PRODUCT_UPDATED + '.query',
   })
   public productUpdated(msg: EventDomainModel): void {
     this.productUpdatedUseCase.execute(msg);
@@ -50,7 +50,7 @@ export class ProductListener {
   @RabbitSubscribe({
     exchange: 'inventory_exchange',
     routingKey: TypeNameEnum.CUSTOMER_SALE_REGISTERED,
-    queue: TypeNameEnum.CUSTOMER_SALE_REGISTERED + '.view',
+    queue: TypeNameEnum.CUSTOMER_SALE_REGISTERED + '.query',
   })
   public customerSaleRegistered(msg: EventDomainModel): void {
     this.customerSaleRegisteredUseCase.execute(msg);
@@ -59,7 +59,7 @@ export class ProductListener {
   @RabbitSubscribe({
     exchange: 'inventory_exchange',
     routingKey: TypeNameEnum.SELLER_SALE_REGISTERED,
-    queue: TypeNameEnum.SELLER_SALE_REGISTERED + '.view',
+    queue: TypeNameEnum.SELLER_SALE_REGISTERED + '.query',
   })
   public sellerSaleRegistered(msg: EventDomainModel): void {
     this.sellerSaleRegisteredUseCase.execute(msg);

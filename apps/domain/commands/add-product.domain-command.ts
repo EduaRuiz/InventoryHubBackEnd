@@ -1,4 +1,4 @@
 ﻿export interface IAddProductDomainCommand {
-  id: string;
+  id?: string;
   quantity: number;
 }

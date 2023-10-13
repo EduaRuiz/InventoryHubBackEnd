@@ -11,7 +11,7 @@ export class BranchPostgresEntity extends BranchDomainModel {
   })
   id: string;
 
-  @Column('character varying', {
+  @Column('varchar', {
     name: 'name',
     length: 36,
     nullable: false,
@@ -19,7 +19,7 @@ export class BranchPostgresEntity extends BranchDomainModel {
   })
   name: string;
 
-  @Column('character varying', {
+  @Column('varchar', {
     name: 'location',
     length: 50,
     nullable: false,

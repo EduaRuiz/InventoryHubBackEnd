@@ -11,8 +11,11 @@ export class SalePostgresService
   constructor(
     private readonly branchPostgresRepository: SalePostgresRepository,
   ) {}
-  getAllSales(): Observable<SalePostgresEntity[]> {
-    return this.branchPostgresRepository.findAll();
+  getAllSales(
+    page: number,
+    pageSize: number,
+  ): Observable<SalePostgresEntity[]> {
+    return this.branchPostgresRepository.getAll(page, pageSize);
   }
 
   getSaleById(id: string): Observable<SalePostgresEntity> {

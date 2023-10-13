@@ -36,6 +36,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/inventory-proxy/tsconfig.app.json"
       }
+    },
+    "inventory-auth": {
+      "type": "application",
+      "root": "apps/inventory-auth",
+      "entryFile": "main",
+      "sourceRoot": "apps/inventory-auth/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/inventory-auth/tsconfig.app.json"
+      }
     }
   }
 }

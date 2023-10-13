@@ -45,6 +45,7 @@ export class NewUserCommand implements INewUserDomainCommand {
   @IsUUID(4, { message: 'El id de la sucursal debe ser un UUID' })
   branchId: string;
 
+  @IsDefined({ message: 'El nombre es requerido' })
   @ValidateNested()
   @Type(() => FullNameCommand)
   fullName: FullNameCommand;

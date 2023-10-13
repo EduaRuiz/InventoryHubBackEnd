@@ -16,7 +16,6 @@ import {
 } from './infrastructure/listeners';
 import {
   BranchService,
-  PersistenceModule,
   ProductService,
   SaleService,
   UserService,
@@ -29,6 +28,7 @@ import {
 } from './infrastructure/controllers';
 import { BranchController } from './infrastructure/controllers/branch.controller';
 import { UserController } from './infrastructure/controllers/user.controller';
+import { InfrastructureModule } from './infrastructure/infrastructure.module';
 
 @Module({
   imports: [
@@ -44,7 +44,7 @@ import { UserController } from './infrastructure/controllers/user.controller';
       uri: process.env.RMQ_URI || 'amqp://root:password@localhost:5672',
       connectionInitOptions: { wait: false },
     }),
-    PersistenceModule,
+    InfrastructureModule,
   ],
   controllers: [
     BranchListener,

@@ -13,7 +13,7 @@ export class BranchListener {
   @RabbitSubscribe({
     exchange: 'inventory_exchange',
     routingKey: TypeNameEnum.BRANCH_REGISTERED,
-    queue: TypeNameEnum.BRANCH_REGISTERED + '.view',
+    queue: TypeNameEnum.BRANCH_REGISTERED + '.query',
   })
   public branchRegistered(msg: EventDomainModel): void {
     this.branchRegisteredUseCase.execute(msg);

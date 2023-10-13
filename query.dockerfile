@@ -6,3 +6,6 @@ RUN npm install
 COPY ./dist/apps/inventory-query .
 EXPOSE 3001
 CMD ["node", "main.js"]
+
+# docker tag query-app eduarandres/query-app:latest
+# docker push eduarandres/query-app:latest

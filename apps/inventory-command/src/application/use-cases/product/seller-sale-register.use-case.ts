@@ -2,6 +2,7 @@
   EventDomainModel,
   ProductDomainModel,
   SaleDomainModel,
+  UserDomainModel,
 } from '@domain-models';
 import { ConflictException } from '@nestjs/common';
 import {
@@ -22,7 +23,7 @@ import { IEventDomainService } from '@domain-services';
 import { DomainEventPublisher } from '@domain-publishers';
 import { ValueObjectException } from '@sofka/exceptions';
 import { IUseCase } from '@sofka/interfaces';
-import { SaleTypeEnum, TypeNameEnum } from '@enums';
+import { SaleTypeEnum, TypeNameEnum, UserRoleEnum } from '@enums';
 
 export class SellerSaleRegisterUseCase
   implements IUseCase<ISellerSaleDomainCommand, ProductDomainModel>
@@ -45,7 +46,11 @@ export class SellerSaleRegisterUseCase
           );
         }),
         switchMap((event: EventDomainModel) => {
-          if (event.aggregateRootId !== sellerSaleCommand.branchId) {
+          if (
+            event.aggregateRootId !== sellerSaleCommand.branchId &&
+            (event.eventBody as UserDomainModel).role !==
+              UserRoleEnum.SUPER_ADMIN
+          ) {
             throw new ConflictException(
               'El usuario no pertenece a la sucursal seleccionada',
             );
@@ -141,9 +146,9 @@ export class SellerSaleRegisterUseCase
             TypeNameEnum.SELLER_SALE_REGISTERED,
           ])
           .pipe(
-            map((numberId: number) => {
+            map((number: number) => {
               return new SaleDomainModel(
-                numberId,
+                number,
                 saleItems,
                 new Date(),
                 SaleTypeEnum.CUSTOMER_SALE,

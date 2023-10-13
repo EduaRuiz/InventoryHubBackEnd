@@ -13,5 +13,10 @@ async function bootstrap() {
   await app.startAllMicroservices();
   await app.listen(process.env.COMMAND_PORT || 3000);
   console.log(`🚀Application is running on: ${await app.getUrl()} COMMAND🚀`);
+  console.log('RMQ', process.env.RMQ_URI);
+  console.log(
+    'DB',
+    `${process.env.MONGO_DB_URI}/${process.env.MONGO_DB_NAME}?authSource=admin`,
+  );
 }
 bootstrap();
