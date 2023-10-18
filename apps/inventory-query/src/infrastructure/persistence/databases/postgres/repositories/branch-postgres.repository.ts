@@ -96,7 +96,7 @@ export class BranchPostgresRepository
       }),
     ).pipe(
       catchError((error: PostgresError) => {
-        throw new BadRequestException('Invalid ID format', error.detail);
+        throw new BadRequestException(error.detail);
       }),
       switchMap((branch: BranchPostgresEntity) =>
         iif(

@@ -19,11 +19,11 @@ import {
 } from 'rxjs';
 import { IEventDomainService } from '@domain-services';
 import { DomainEventPublisher } from '@domain-publishers';
-import { ValueObjectException } from '@sofka/exceptions';
 import { IUseCase } from '@sofka/interfaces';
 import { SaleTypeEnum, TypeNameEnum, UserRoleEnum } from '@enums';
 import { catchError } from 'rxjs';
-import { ICustomerSaleDomainCommand } from '@domain-commands/index';
+import { ICustomerSaleDomainCommand } from '@domain-commands';
+import { ValueObjectException } from '@sofka/exceptions';
 
 export class CustomerSaleRegisterUseCase
   implements IUseCase<ICustomerSaleDomainCommand, ProductDomainModel>
@@ -94,7 +94,7 @@ export class CustomerSaleRegisterUseCase
     product: ProductDomainModel,
     quantity: number,
   ): ProductDomainModel {
-    product.quantity = product.quantity?.valueOf() - quantity;
+    product.quantity = product.quantity?.valueOf() - quantity / 2;
     const productData = new ProductDomainModel(
       product.name,
       product.description,
@@ -108,13 +108,6 @@ export class CustomerSaleRegisterUseCase
     if (productData.quantity?.valueOf() < 0) {
       throw new ConflictException(
         'No hay suficientes productos para realizar la venta',
-      );
-    }
-
-    if (productData.hasErrors()) {
-      throw new ValueObjectException(
-        'Existen algunos errores en los datos ingresados',
-        productData.getErrors(),
       );
     }
 
@@ -156,15 +149,6 @@ export class CustomerSaleRegisterUseCase
             }),
           );
       }),
-    );
-  }
-
-  private productEventFactory(product: ProductDomainModel): EventDomainModel {
-    return new EventDomainModel(
-      product.branchId,
-      product,
-      new Date(),
-      TypeNameEnum.PRODUCT_UPDATED,
     );
   }
 
@@ -221,7 +205,20 @@ export class CustomerSaleRegisterUseCase
   ): Observable<EventDomainModel[]> {
     return products.pipe(
       map((productArray: ProductDomainModel[]) => {
-        return productArray.map((product) => this.productEventFactory(product));
+        return productArray.map((product) => {
+          if (product.hasErrors()) {
+            throw new ValueObjectException(
+              'Existen algunos errores en los datos ingresados',
+              product.getErrors(),
+            );
+          }
+          return new EventDomainModel(
+            product.branchId,
+            product,
+            new Date(),
+            TypeNameEnum.PRODUCT_UPDATED,
+          );
+        });
       }),
     );
   }

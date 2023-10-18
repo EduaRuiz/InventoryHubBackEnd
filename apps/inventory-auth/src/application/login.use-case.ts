@@ -1,9 +1,6 @@
-import { ILoginDomainCommand } from '@domain-commands/index';
+import { ILoginDomainCommand } from '@domain-commands';
 import { UserDomainModel } from '@domain-models';
-import {
-  IAuthDomainService,
-  IUserAuthDomainService,
-} from '@domain-services/index';
+import { IAuthDomainService, IUserAuthDomainService } from '@domain-services';
 import { IUseCase } from '@sofka/interfaces';
 import { ILoginResponse } from 'apps/domain/interfaces';
 import { Observable, switchMap } from 'rxjs';

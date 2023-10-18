@@ -1,4 +1,4 @@
-import { UserDomainModel } from '@domain-models/index';
+import { UserDomainModel } from '@domain-models';
 import { Observable } from 'rxjs';
 import { ILoginResponse } from '../interfaces';
 

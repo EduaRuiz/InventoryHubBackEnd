@@ -1,15 +1,16 @@
-﻿import { ProductDomainModel } from '@domain-models/product.domain-model';
+﻿import { ProductDomainModel } from '@domain-models';
 import {
+  IMailDomainService,
   IProductDomainService,
   ISaleDomainService,
-} from '@domain-services/index';
+  IUserDomainService,
+} from '@domain-services';
 import { IUseCase } from '@sofka/interfaces';
 import { Observable } from 'rxjs';
 import {
-  CustomerSaleRegisteredUseCase,
+  SaleRegisteredUseCase,
   ProductPurchaseRegisteredUseCase,
   ProductRegisteredUseCase,
-  SellerSaleRegisteredUseCase,
 } from '.';
 
 export class ProductDelegator
@@ -20,6 +21,8 @@ export class ProductDelegator
   constructor(
     private readonly product$: IProductDomainService,
     private readonly sale$: ISaleDomainService,
+    private readonly user$: IUserDomainService,
+    private readonly notification$: IMailDomainService,
   ) {}
 
   execute<Response>(...args: any[]): Observable<Response> {
@@ -35,10 +38,20 @@ export class ProductDelegator
   }
 
   toSellerSaleUseCase(): void {
-    this.delegate = new SellerSaleRegisteredUseCase(this.sale$);
+    this.delegate = new SaleRegisteredUseCase(
+      this.sale$,
+      this.product$,
+      this.user$,
+      this.notification$,
+    );
   }
 
   toCustomerSaleUseCase(): void {
-    this.delegate = new CustomerSaleRegisteredUseCase(this.sale$);
+    this.delegate = new SaleRegisteredUseCase(
+      this.sale$,
+      this.product$,
+      this.user$,
+      this.notification$,
+    );
   }
 }

@@ -8,8 +8,8 @@ export class UserPostgresEntity extends UserDomainModel {
   @Column('uuid', { primary: true, name: 'User_id' })
   id: string;
 
-  @Column('varchar', { name: 'name' })
-  name: string;
+  @Column('varchar', { name: 'full_name' })
+  fullName: string;
 
   @Column('varchar', { name: 'email', unique: true })
   email: string;

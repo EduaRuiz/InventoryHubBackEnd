@@ -1,6 +1,6 @@
 ﻿import { IsString, IsDefined, IsNotEmpty, Matches } from 'class-validator';
 import { ILoginDomainCommand } from '@domain-commands';
-import { EMAIL_REGEX } from '@domain-common/regex';
+import { EMAIL_REGEX } from '@domain/common/regex';
 
 export class LoginCommand implements ILoginDomainCommand {
   @IsString({ message: 'El correo debe ser un string' })

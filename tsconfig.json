@@ -18,66 +18,34 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@sofka/*": [
-        "./apps/domain/common/sofka/*"
-      ],
-      "@sofka": [
-        "./apps/domain/common/sofka"
-      ],
-      "@validations": [
-        "./apps/domain/common/validations"
-      ],
-      "@enums": [
-        "./apps/domain/enums"
-      ],
-      "@types": [
-        "./apps/domain/types"
-      ],
-      "@domain-models/*": [
-        "./apps/domain/models/*"
-      ],
-      "@domain-models": [
-        "./apps/domain/models"
-      ],
-      "@domain-commands/*": [
-        "apps/domain/commands/*"
-      ],
-      "@domain-commands": [
-        "apps/domain/commands"
-      ],
-      "@domain-services/*": [
-        "./apps/domain/services/*"
-      ],
-      "@domain-services": [
-        "./apps/domain/services"
-      ],
-      "@value-objects/*": [
-        "./apps/domain/values/*"
-      ],
-      "@value-objects": [
-        "./apps/domain/values"
-      ],
-      "@domain-publishers/*": [
-        "./apps/domain/events/publishers/*"
-      ],
-      "@domain-publishers": [
-        "./apps/domain/events/publishers"
-      ],
-      "@domain-common/*": [
-        "./apps/domain/common/*"
-      ],
-      "@use-cases-inv/*": [
+      "@sofka/*": ["./apps/domain/common/sofka/*"],
+      "@domain": ["./apps/domain"],
+      "@domain/*": ["./apps/domain/*"],
+      "@validations": ["./apps/domain/common/validations"],
+      "@enums": ["./apps/domain/enums"],
+      "@types": ["./apps/domain/types"],
+      "@domain-models/*": ["./apps/domain/models/*"],
+      "@domain-models": ["./apps/domain/models"],
+      "@domain-commands/*": ["apps/domain/commands/*"],
+      "@domain-commands": ["apps/domain/commands"],
+      "@domain-services/*": ["./apps/domain/services/*"],
+      "@domain-services": ["./apps/domain/services"],
+      "@value-objects/*": ["./apps/domain/values/*"],
+      "@value-objects": ["./apps/domain/values"],
+      "@domain-publishers/*": ["./apps/domain/events/publishers/*"],
+      "@domain-publishers": ["./apps/domain/events/publishers"],
+      "@use-cases-command/*": [
         "./apps/inventory-command/src/application/use-cases/*"
       ],
-      "@use-cases-inv": [
+      "@use-cases-command": [
         "./apps/inventory-command/src/application/use-cases"
       ],
-      "@use-cases-con/*": [
+      "@use-cases-query/*": [
         "./apps/inventory-query/src/application/use-cases/*"
       ],
-      "@use-cases-con": [
-        "./apps/inventory-query/src/application/use-cases"
-      ]
+      "@use-cases-query": ["./apps/inventory-query/src/application/use-cases"],
+      "@use-cases-auth/*": ["./apps/inventory-auth/src/application/*"],
+      "@use-cases-auth": ["./apps/inventory-auth/src/application"]
     }
   }
 }

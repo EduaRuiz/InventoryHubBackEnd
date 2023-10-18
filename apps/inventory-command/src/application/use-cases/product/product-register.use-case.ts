@@ -22,7 +22,12 @@ export class ProductRegisterUseCase
     const newProduct = this.entityFactory(newProductCommand);
     const newEvent = this.eventFactory(newProduct);
     return this.event$
-      .entityAlreadyExist('name', newProduct.name, newProduct.branchId)
+      .entityAlreadyExist(
+        'name',
+        newProduct.name,
+        [TypeNameEnum.PRODUCT_REGISTERED],
+        newProduct.branchId,
+      )
       .pipe(
         switchMap((exist: boolean) => {
           if (exist)

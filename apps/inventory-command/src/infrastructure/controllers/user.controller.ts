@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { UserDomainModel } from '@domain-models';
-import { UserRegisterUseCase } from '@use-cases-inv/user';
+import { UserRegisterUseCase } from '@use-cases-command/user';
 import { Observable } from 'rxjs';
 import { NewUserCommand } from '../utils/commands';
 import { Auth } from '../utils/decorators/auth.decorator';

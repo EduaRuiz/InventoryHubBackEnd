@@ -4,7 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Observable, of, switchMap, throwError } from 'rxjs';
 import { UserService } from '../../persistence/services';
 import { IUserAuthData } from 'apps/domain/interfaces';
-import { UserDomainModel } from '@domain-models/index';
+import { UserDomainModel } from '@domain-models';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

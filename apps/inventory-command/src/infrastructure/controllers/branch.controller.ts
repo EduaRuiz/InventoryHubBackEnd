@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { BranchDomainModel } from '@domain-models';
-import { BranchRegisterUseCase } from '@use-cases-inv/branch';
+import { BranchRegisterUseCase } from '@use-cases-command/branch';
 import { Observable } from 'rxjs';
 import { NewBranchCommand } from '../utils/commands';
 import { UserRoleEnum } from '@enums';

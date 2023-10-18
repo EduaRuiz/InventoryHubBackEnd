@@ -1,4 +1,4 @@
-import { EMAIL_REGEX, PASSWORD_REGEX } from '@domain-common/regex';
+import { EMAIL_REGEX, PASSWORD_REGEX } from '@domain/common/regex';
 import {
   IsDefined,
   IsIn,

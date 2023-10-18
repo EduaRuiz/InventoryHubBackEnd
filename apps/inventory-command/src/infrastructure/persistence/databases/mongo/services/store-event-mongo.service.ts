@@ -27,11 +27,13 @@ export class EventMongoService
   entityAlreadyExist(
     key: string,
     value: string,
+    typeName: TypeNameEnum[],
     aggregateRootId?: string,
   ): Observable<boolean> {
     return this.storedEventMongoRepository.entityAlreadyExist(
       key,
       value,
+      typeName,
       aggregateRootId,
     );
   }

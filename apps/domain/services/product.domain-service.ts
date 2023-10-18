@@ -14,4 +14,5 @@ export interface IProductDomainService<
     page: number,
     pageSize: number,
   ): Observable<Entity[]>;
+  getProductByName(name: string, branchId: string): Observable<Entity>;
 }

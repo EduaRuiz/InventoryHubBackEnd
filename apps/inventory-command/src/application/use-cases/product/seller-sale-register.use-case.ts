@@ -2,12 +2,10 @@
   EventDomainModel,
   ProductDomainModel,
   SaleDomainModel,
-  UserDomainModel,
 } from '@domain-models';
 import { ConflictException } from '@nestjs/common';
 import {
   Observable,
-  catchError,
   concat,
   concatMap,
   forkJoin,
@@ -23,7 +21,7 @@ import { IEventDomainService } from '@domain-services';
 import { DomainEventPublisher } from '@domain-publishers';
 import { ValueObjectException } from '@sofka/exceptions';
 import { IUseCase } from '@sofka/interfaces';
-import { SaleTypeEnum, TypeNameEnum, UserRoleEnum } from '@enums';
+import { SaleTypeEnum, TypeNameEnum } from '@enums';
 
 export class SellerSaleRegisterUseCase
   implements IUseCase<ISellerSaleDomainCommand, ProductDomainModel>
@@ -37,33 +35,6 @@ export class SellerSaleRegisterUseCase
     sellerSaleCommand: ISellerSaleDomainCommand,
     userId: string,
   ): Observable<ProductDomainModel> {
-    return this.event$
-      .getLastEventByEntityId(userId, [TypeNameEnum.USER_REGISTERED])
-      .pipe(
-        catchError(() => {
-          throw new ConflictException(
-            'El usuario no existe o no se encuentra registrado',
-          );
-        }),
-        switchMap((event: EventDomainModel) => {
-          if (
-            event.aggregateRootId !== sellerSaleCommand.branchId &&
-            (event.eventBody as UserDomainModel).role !==
-              UserRoleEnum.SUPER_ADMIN
-          ) {
-            throw new ConflictException(
-              'El usuario no pertenece a la sucursal seleccionada',
-            );
-          }
-          return this.sale(sellerSaleCommand, userId);
-        }),
-      );
-  }
-
-  private sale(
-    sellerSaleCommand: ISellerSaleDomainCommand,
-    userId: string,
-  ): Observable<ProductDomainModel> {
     const products$ = this.getProducts(sellerSaleCommand);
     const events$ = this.factoryEvents(products$);
     const eventsStored$ = this.storeEvents(events$);
@@ -72,7 +43,7 @@ export class SellerSaleRegisterUseCase
       productsInSale$,
       sellerSaleCommand.branchId,
       userId,
-      sellerSaleCommand.discount,
+      sellerSaleCommand?.discount,
     );
     return this.saleEventFactory(sale$).pipe(
       switchMap((event: EventDomainModel) => {
@@ -95,7 +66,7 @@ export class SellerSaleRegisterUseCase
     product: ProductDomainModel,
     quantity: number,
   ): ProductDomainModel {
-    product.quantity = product.quantity?.valueOf() - quantity;
+    product.quantity = product.quantity?.valueOf() - quantity / 2;
     const productData = new ProductDomainModel(
       product.name,
       product.description,
@@ -112,13 +83,6 @@ export class SellerSaleRegisterUseCase
       );
     }
 
-    if (productData.hasErrors()) {
-      throw new ValueObjectException(
-        'Existen algunos errores en los datos ingresados',
-        productData.getErrors(),
-      );
-    }
-
     return productData;
   }
 
@@ -126,19 +90,20 @@ export class SellerSaleRegisterUseCase
     products: Observable<ProductDomainModel[]>,
     branchId: string,
     userId: string,
-    discount: number,
+    discount?: number,
   ): Observable<SaleDomainModel> {
     return products.pipe(
       switchMap((productArray) => {
         const total = productArray.reduce(
           (acc, product) =>
-            acc + product.price * (1 - discount) * product.quantity,
+            acc +
+            product.price * product.quantity * (discount ? discount : 0.95),
           0,
         );
         const saleItems = productArray.map((product) => ({
           name: product.name,
           quantity: product.quantity,
-          price: product.price * (1 - discount),
+          price: product.price,
         }));
         return this.event$
           .generateIncrementalSaleId(branchId, [
@@ -151,7 +116,7 @@ export class SellerSaleRegisterUseCase
                 number,
                 saleItems,
                 new Date(),
-                SaleTypeEnum.CUSTOMER_SALE,
+                SaleTypeEnum.SELLER_SALE,
                 total,
                 branchId,
                 userId,
@@ -159,15 +124,6 @@ export class SellerSaleRegisterUseCase
             }),
           );
       }),
-    );
-  }
-
-  private productEventFactory(product: ProductDomainModel): EventDomainModel {
-    return new EventDomainModel(
-      product.branchId,
-      product,
-      new Date(),
-      TypeNameEnum.PRODUCT_UPDATED,
     );
   }
 
@@ -180,7 +136,7 @@ export class SellerSaleRegisterUseCase
           sale.branchId,
           sale,
           new Date(),
-          TypeNameEnum.CUSTOMER_SALE_REGISTERED,
+          TypeNameEnum.SELLER_SALE_REGISTERED,
         );
       }),
     );
@@ -224,7 +180,20 @@ export class SellerSaleRegisterUseCase
   ): Observable<EventDomainModel[]> {
     return products.pipe(
       map((productArray: ProductDomainModel[]) => {
-        return productArray.map((product) => this.productEventFactory(product));
+        return productArray.map((product) => {
+          if (product.hasErrors()) {
+            throw new ValueObjectException(
+              'Existen algunos errores en los datos ingresados',
+              product.getErrors(),
+            );
+          }
+          return new EventDomainModel(
+            product.branchId,
+            product,
+            new Date(),
+            TypeNameEnum.PRODUCT_UPDATED,
+          );
+        });
       }),
     );
   }

@@ -12,6 +12,7 @@ export interface IEventDomainService<
   entityAlreadyExist(
     key: string,
     value: string,
+    typeName: TypeNameEnum[],
     aggregateRootId?: string,
   ): Observable<boolean>;
   getLastEventByEntityId(

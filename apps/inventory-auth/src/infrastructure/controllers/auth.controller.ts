@@ -2,9 +2,9 @@
 import { Observable, map } from 'rxjs';
 import { LoginUseCase } from '../../application';
 import { LoginCommand } from '../utils/commands';
-import { ILoginResponse } from 'apps/domain/interfaces';
-import { RefreshTokenUseCase } from '../../application/refresh-token.use-case';
-import { TokenCommand } from '../utils/commands/token.command';
+import { RefreshTokenUseCase } from '@use-cases-auth';
+import { TokenCommand } from '../utils/commands';
+import { ILoginResponse } from '@domain/interfaces';
 
 @Controller('api/v1')
 export class AuthController {
@@ -22,7 +22,6 @@ export class AuthController {
   refreshToken(
     @Body() refreshToken: TokenCommand,
   ): Observable<{ token: string }> {
-    console.log(refreshToken);
     return this.refreshTokenUseCase.execute(refreshToken).pipe(
       map((token) => {
         return { token };

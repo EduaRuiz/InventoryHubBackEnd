@@ -2,13 +2,12 @@ import { Module } from '@nestjs/common';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import {
   BranchRegisteredUseCase,
-  CustomerSaleRegisteredUseCase,
+  SaleRegisteredUseCase,
   ProductPurchaseRegisteredUseCase,
   ProductRegisteredUseCase,
   ProductUpdatedUseCase,
-  SellerSaleRegisteredUseCase,
   UserRegisteredUseCase,
-} from '@use-cases-con';
+} from '@use-cases-query';
 import {
   BranchListener,
   ProductListener,
@@ -23,12 +22,13 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
 import {
+  BranchController,
   ProductController,
   SaleController,
+  UserController,
 } from './infrastructure/controllers';
-import { BranchController } from './infrastructure/controllers/branch.controller';
-import { UserController } from './infrastructure/controllers/user.controller';
 import { InfrastructureModule } from './infrastructure/infrastructure.module';
+import { MailService } from './infrastructure/utils/services';
 
 @Module({
   imports: [
@@ -75,16 +75,20 @@ import { InfrastructureModule } from './infrastructure/infrastructure.module';
       inject: [ProductService],
     },
     {
-      provide: CustomerSaleRegisteredUseCase,
-      useFactory: (productService: SaleService) =>
-        new CustomerSaleRegisteredUseCase(productService),
-      inject: [SaleService],
-    },
-    {
-      provide: SellerSaleRegisteredUseCase,
-      useFactory: (productService: SaleService) =>
-        new SellerSaleRegisteredUseCase(productService),
-      inject: [SaleService],
+      provide: SaleRegisteredUseCase,
+      useFactory: (
+        saleService: SaleService,
+        productService: ProductService,
+        userService: UserService,
+        mailService: MailService,
+      ) =>
+        new SaleRegisteredUseCase(
+          saleService,
+          productService,
+          userService,
+          mailService,
+        ),
+      inject: [SaleService, ProductService, UserService, MailService],
     },
     {
       provide: BranchRegisteredUseCase,

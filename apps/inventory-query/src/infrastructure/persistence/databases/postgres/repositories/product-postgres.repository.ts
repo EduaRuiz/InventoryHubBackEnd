@@ -26,6 +26,27 @@ export class ProductPostgresRepository
     private productPostgresEntity: Repository<ProductPostgresEntity>,
   ) {}
 
+  findOneByName(
+    name: string,
+    branchId: string,
+  ): Observable<ProductPostgresEntity> {
+    return from(
+      this.productPostgresEntity.findOne({
+        where: { name: name, branchId: branchId },
+      }),
+    ).pipe(
+      catchError((error: PostgresError) => {
+        return throwError(() => new BadRequestException(error.detail));
+      }),
+      switchMap((product: ProductPostgresEntity) =>
+        iif(
+          () => product === null,
+          throwError(() => new NotFoundException('Product not found!')),
+          of(product),
+        ),
+      ),
+    );
+  }
   create(entity: ProductPostgresEntity): Observable<ProductPostgresEntity> {
     return from(this.productPostgresEntity.save(entity)).pipe(
       catchError((error: PostgresError) => {
@@ -107,7 +128,7 @@ export class ProductPostgresRepository
       this.productPostgresEntity.findOne({ where: { id: entityId } }),
     ).pipe(
       catchError((error: PostgresError) => {
-        throw new BadRequestException('Invalid ID format', error.detail);
+        throw new BadRequestException(error.detail);
       }),
       switchMap((product: ProductPostgresEntity) =>
         iif(

@@ -1,13 +1,12 @@
 ﻿import { Controller } from '@nestjs/common';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import {
-  CustomerSaleRegisteredUseCase,
   ProductPurchaseRegisteredUseCase,
   ProductRegisteredUseCase,
   ProductUpdatedUseCase,
-  SellerSaleRegisteredUseCase,
-} from '@use-cases-con';
-import { EventDomainModel } from '@domain-models/event.domain-model';
+  SaleRegisteredUseCase,
+} from '@use-cases-query';
+import { EventDomainModel } from '@domain-models';
 import { TypeNameEnum } from '@enums';
 
 @Controller()
@@ -15,8 +14,7 @@ export class ProductListener {
   constructor(
     private readonly productRegisteredUseCase: ProductRegisteredUseCase,
     private readonly productPurchaseRegisteredUseCase: ProductPurchaseRegisteredUseCase,
-    private readonly customerSaleRegisteredUseCase: CustomerSaleRegisteredUseCase,
-    private readonly sellerSaleRegisteredUseCase: SellerSaleRegisteredUseCase,
+    private readonly saleRegisteredUseCase: SaleRegisteredUseCase,
     private readonly productUpdatedUseCase: ProductUpdatedUseCase,
   ) {}
 
@@ -53,7 +51,7 @@ export class ProductListener {
     queue: TypeNameEnum.CUSTOMER_SALE_REGISTERED + '.query',
   })
   public customerSaleRegistered(msg: EventDomainModel): void {
-    this.customerSaleRegisteredUseCase.execute(msg);
+    this.saleRegisteredUseCase.execute(msg).subscribe();
   }
 
   @RabbitSubscribe({
@@ -62,6 +60,6 @@ export class ProductListener {
     queue: TypeNameEnum.SELLER_SALE_REGISTERED + '.query',
   })
   public sellerSaleRegistered(msg: EventDomainModel): void {
-    this.sellerSaleRegisteredUseCase.execute(msg);
+    this.saleRegisteredUseCase.execute(msg).subscribe();
   }
 }

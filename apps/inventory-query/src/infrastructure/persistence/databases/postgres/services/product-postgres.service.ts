@@ -11,6 +11,12 @@ export class ProductPostgresService
   constructor(
     private readonly productPostgresRepository: ProductPostgresRepository,
   ) {}
+  getProductByName(
+    name: string,
+    branchId: string,
+  ): Observable<ProductPostgresEntity> {
+    return this.productPostgresRepository.findOneByName(name, branchId);
+  }
   getProductById(id: string): Observable<ProductPostgresEntity> {
     return this.productPostgresRepository.findOneById(id);
   }

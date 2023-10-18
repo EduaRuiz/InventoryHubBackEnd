@@ -1,8 +1,8 @@
 ﻿import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Observable, catchError, map, of } from 'rxjs';
-import { IAuthDomainService } from '@domain-services/index';
-import { UserDomainModel } from '@domain-models/user.domain-model';
+import { IAuthDomainService } from '@domain-services';
+import { UserDomainModel } from '@domain-models';
 import { ILoginResponse } from 'apps/domain/interfaces';
 
 @Injectable()

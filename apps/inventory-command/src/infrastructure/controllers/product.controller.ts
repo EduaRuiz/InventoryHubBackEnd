@@ -6,9 +6,9 @@ import {
 } from '../utils/commands';
 import { ProductDomainModel } from '@domain-models';
 import { Observable } from 'rxjs';
-import {} from '@use-cases-inv/product';
+import {} from '@use-cases-command/product';
 import { AddProductCommand } from '../utils/commands';
-import { ProductDelegator } from '@use-cases-inv/product';
+import { ProductDelegator } from '@use-cases-command/product';
 import { Auth } from '../utils/decorators/auth.decorator';
 import { UserRoleEnum } from '@enums';
 
@@ -40,7 +40,7 @@ export class ProductController {
     @Body() sale: SellerSaleCommand,
   ): Observable<ProductDomainModel> {
     this.productDelegator.toSellerSaleUseCase();
-    return this.productDelegator.execute(sale, '');
+    return this.productDelegator.execute(sale, sale.userId);
   }
 
   @Auth(UserRoleEnum.ADMIN, UserRoleEnum.EMPLOYEE, UserRoleEnum.SUPER_ADMIN)

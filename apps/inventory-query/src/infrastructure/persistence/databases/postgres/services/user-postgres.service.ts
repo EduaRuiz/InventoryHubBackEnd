@@ -3,6 +3,7 @@ import { UserPostgresRepository } from '../repositories';
 import { UserPostgresEntity } from '../entities';
 import { IUserDomainService } from '@domain-services';
 import { Observable } from 'rxjs';
+import { UserRoleEnum } from '@enums';
 
 @Injectable()
 export class UserPostgresService
@@ -11,6 +12,12 @@ export class UserPostgresService
   constructor(
     private readonly userPostgresRepository: UserPostgresRepository,
   ) {}
+  getAllUsersByBranchIdAndRol(
+    branchId: string,
+    role: UserRoleEnum,
+  ): Observable<UserPostgresEntity[]> {
+    return this.userPostgresRepository.findAllByBranchIdAndRol(branchId, role);
+  }
 
   getUserById(id: string): Observable<UserPostgresEntity> {
     return this.userPostgresRepository.findOneById(id);

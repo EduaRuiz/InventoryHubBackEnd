@@ -103,7 +103,7 @@ export class SalePostgresRepository
       }),
     ).pipe(
       catchError((error: PostgresError) => {
-        throw new BadRequestException('Invalid ID format', error.detail);
+        throw new BadRequestException(error.detail);
       }),
       switchMap((sale: SalePostgresEntity) =>
         iif(
@@ -133,7 +133,6 @@ export class SalePostgresRepository
       }),
     ).pipe(
       catchError((error: PostgresError) => {
-        console.log('++++++++++++++++++++++++++++error', error);
         return throwError(() => new BadRequestException(error.detail));
       }),
     );

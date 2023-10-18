@@ -23,18 +23,22 @@ export class BranchRegisterUseCase
     newBranchCommand.name = newBranchCommand.name?.trim().toUpperCase();
     const newBranch = this.entityFactory(newBranchCommand);
     const event = this.eventFactory(newBranch);
-    return this.event$.entityAlreadyExist('name', newBranch.name).pipe(
-      switchMap((exist: boolean) => {
-        if (exist) throw new ConflictException('El nombre ya existe');
-        return this.event$.storeEvent(event).pipe(
-          switchMap((event: EventDomainModel) => {
-            this.eventPublisher.response = event;
-            this.eventPublisher.publish();
-            return of(newBranch);
-          }),
-        );
-      }),
-    );
+    return this.event$
+      .entityAlreadyExist('name', newBranch.name, [
+        TypeNameEnum.BRANCH_REGISTERED,
+      ])
+      .pipe(
+        switchMap((exist: boolean) => {
+          if (exist) throw new ConflictException('El nombre ya existe');
+          return this.event$.storeEvent(event).pipe(
+            switchMap((event: EventDomainModel) => {
+              this.eventPublisher.response = event;
+              this.eventPublisher.publish();
+              return of(newBranch);
+            }),
+          );
+        }),
+      );
   }
 
   private entityFactory(

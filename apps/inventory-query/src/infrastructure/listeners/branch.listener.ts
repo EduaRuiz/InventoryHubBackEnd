@@ -1,7 +1,7 @@
 ﻿import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { Controller } from '@nestjs/common';
-import { BranchRegisteredUseCase } from '@use-cases-con/index';
-import { EventDomainModel } from '@domain-models/event.domain-model';
+import { BranchRegisteredUseCase } from '@use-cases-query';
+import { EventDomainModel } from '@domain-models';
 import { TypeNameEnum } from '@enums';
 
 @Controller()

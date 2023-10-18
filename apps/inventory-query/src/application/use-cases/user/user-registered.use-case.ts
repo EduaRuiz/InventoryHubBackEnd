@@ -16,7 +16,7 @@ export class UserRegisteredUseCase
 
   private entityFactory(userRegistered: UserDomainModel): UserDomainModel {
     const userData = new UserDomainModel(
-      userRegistered.name,
+      userRegistered.fullName,
       userRegistered.email,
       userRegistered.password,
       userRegistered.role,

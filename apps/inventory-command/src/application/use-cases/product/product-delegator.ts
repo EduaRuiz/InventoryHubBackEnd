@@ -1,6 +1,6 @@
-﻿import { ProductDomainModel } from '@domain-models/product.domain-model';
-import { DomainEventPublisher } from '@domain-publishers/index';
-import { IEventDomainService } from '@domain-services/index';
+﻿import { ProductDomainModel } from '@domain-models';
+import { DomainEventPublisher } from '@domain-publishers';
+import { IEventDomainService } from '@domain-services';
 import { IUseCase } from '@sofka/interfaces';
 import { Observable } from 'rxjs';
 import {

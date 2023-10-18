@@ -1,7 +1,7 @@
-﻿import { EventDomainModel, UserDomainModel } from '@domain-models';
-import { IUserAuthDomainService } from '@domain-services';
-import { ValueObjectException } from '@sofka/exceptions';
+﻿import { IUserAuthDomainService } from '@domain-services';
 import { IUseCase } from '@sofka/interfaces';
+import { ValueObjectException } from '@sofka/exceptions';
+import { EventDomainModel, UserDomainModel } from '@domain-models';
 import { Observable } from 'rxjs';
 
 export class UserRegisteredUseCase
@@ -16,7 +16,7 @@ export class UserRegisteredUseCase
 
   private entityFactory(userRegistered: UserDomainModel): UserDomainModel {
     const userData = new UserDomainModel(
-      userRegistered.name,
+      userRegistered.fullName,
       userRegistered.email,
       userRegistered.password,
       userRegistered.role,

@@ -1,3 +1,3 @@
-﻿import { EventDomainModel } from '@domain-models/index';
+﻿import { EventDomainModel } from '@domain-models';
 
 export class Event extends EventDomainModel {}

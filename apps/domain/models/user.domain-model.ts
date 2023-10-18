@@ -10,14 +10,14 @@ import {
 } from '@value-objects/user';
 
 export class UserDomainModel extends EntityBase {
-  name: string;
+  fullName: string;
   email: string;
   password: string;
   role: string;
   branchId: string;
 
   constructor(
-    name: string,
+    fullName: string,
     email: string,
     password: string,
     role: string,
@@ -25,7 +25,7 @@ export class UserDomainModel extends EntityBase {
     id?: string,
   ) {
     super(id);
-    this.name = name?.toUpperCase()?.trim();
+    this.fullName = fullName?.toUpperCase()?.trim();
     this.email = email?.trim();
     this.password = password;
     this.role = role;
@@ -34,8 +34,8 @@ export class UserDomainModel extends EntityBase {
 
   private createValueObjects(): ValueObjectBase<any>[] {
     const fullName = {
-      firstName: this.name?.split(' ')[0],
-      lastName: this.name?.split(' ')[1],
+      firstName: this.fullName?.split(' ')[0],
+      lastName: this.fullName?.split(' ')[1],
     };
     const name = new UserNameValueObject(fullName);
     const email = new UserEmailValueObject(this.email);

@@ -3,6 +3,7 @@ import { PersistenceModule } from './persistence';
 import { MessagingModule } from './messaging';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { MailService } from './utils/services';
 
 @Module({
   imports: [
@@ -16,7 +17,13 @@ import { PassportModule } from '@nestjs/passport';
     MessagingModule,
   ],
   controllers: [],
-  providers: [],
-  exports: [PersistenceModule, MessagingModule, JwtModule, PassportModule],
+  providers: [MailService],
+  exports: [
+    PersistenceModule,
+    MessagingModule,
+    JwtModule,
+    PassportModule,
+    MailService,
+  ],
 })
 export class InfrastructureModule {}

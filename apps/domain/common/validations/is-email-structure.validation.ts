@@ -1,4 +1,4 @@
-import { EMAIL_REGEX } from '@domain-common/regex';
+import { EMAIL_REGEX } from '@domain/common/regex';
 
 /**
  * Valida si el valor suministrado cumple con la estructura de un mail (RFC2822)

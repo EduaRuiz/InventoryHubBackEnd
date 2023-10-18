@@ -41,31 +41,34 @@ export class StoreEventMongoRepository
       this.storedEventMongoModel.findOne(query).sort({ occurredOn: -1 }).exec(),
     ).pipe(
       catchError((error: Error) => {
-        throw new BadRequestException('Event invalid ID format', error.message);
+        throw new BadRequestException(error.message);
       }),
-      switchMap((storedEvent: StoreEventMongoModel) =>
-        iif(
+      switchMap((storedEvent: StoreEventMongoModel) => {
+        return iif(
           () => storedEvent === null,
           throwError(() => new NotFoundException('Event not found')),
           of(storedEvent),
-        ),
-      ),
+        );
+      }),
     );
   }
 
   entityAlreadyExist(
     key: string,
     value: string,
+    typeName: TypeNameEnum[],
     aggregateRootId?: string,
   ): Observable<boolean> {
     let query: any = {};
     query[`eventBody.${key}`] = value;
-    if (aggregateRootId != undefined) query = { ...query, aggregateRootId };
+    query = { ...query, typeName: { $in: typeName } };
+    if (aggregateRootId != undefined)
+      query = { ...query, aggregateRootId: { $in: [aggregateRootId, 'NULL'] } };
     return from(
       this.storedEventMongoModel.findOne(query).sort({ _id: -1 }).exec(),
     ).pipe(
       catchError((error: Error) => {
-        throw new BadRequestException('Invalid', error.message);
+        throw new BadRequestException(error.message);
       }),
       map((event: StoreEventMongoModel) => {
         if (event && event !== null) return true;
@@ -125,7 +128,7 @@ export class StoreEventMongoRepository
       this.storedEventMongoModel.findById({ _id: entityId.toString() }, {}),
     ).pipe(
       catchError((error: Error) => {
-        throw new BadRequestException('Event invalid ID format', error.message);
+        throw new BadRequestException(error.message);
       }),
       switchMap((storedEvent: StoreEventMongoModel) =>
         iif(
@@ -239,7 +242,7 @@ export class StoreEventMongoRepository
     if (aggregateRootId !== undefined) query = { ...query, aggregateRootId };
     return from(this.storedEventMongoModel.findOne(query).exec()).pipe(
       catchError((error: Error) => {
-        throw new BadRequestException('Invalid', error.message);
+        throw new BadRequestException(error.message);
       }),
       switchMap((storedEvent: StoreEventMongoModel) =>
         iif(

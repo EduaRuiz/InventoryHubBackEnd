@@ -5,20 +5,26 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "command": "npm run start-inv:debug",
-      "name": "run inv",
+      "command": "npm run start-com:debug",
+      "name": "run command",
       "request": "launch",
       "type": "node-terminal"
     },
     {
-      "command": "npm run start-con:debug",
-      "name": "run con",
+      "command": "npm run start-que:debug",
+      "name": "run query",
       "request": "launch",
       "type": "node-terminal"
     },
     {
-      "command": "npm run start-x:debug",
-      "name": "run x",
+      "command": "npm run start-pro:debug",
+      "name": "run proxy",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "command": "npm run start-aut:debug",
+      "name": "run auth",
       "request": "launch",
       "type": "node-terminal"
     }

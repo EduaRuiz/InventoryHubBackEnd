@@ -8,7 +8,7 @@
 } from '@nestjs/common';
 import { SaleService } from '../persistence';
 import { Observable } from 'rxjs';
-import { SaleDomainModel } from '@domain-models/sale.domain-model';
+import { SaleDomainModel } from '@domain-models';
 import { UserRoleEnum } from '@enums';
 import { Auth } from '../utils/decorators/auth.decorator';
 
@@ -27,9 +27,9 @@ export class SaleController {
   getAllSalesByBranch(
     @Param('branchId') branchId: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
+    @Query('pageSize', new DefaultValuePipe(100), ParseIntPipe)
+    pageSize: number,
   ): Observable<SaleDomainModel[]> {
-    console.log('branchId', branchId);
     return this.saleService.getAllSalesByBranchId(branchId, page, pageSize);
   }
 }

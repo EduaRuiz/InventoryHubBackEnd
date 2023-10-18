@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './utils';
+import { AuthService } from './utils/services';
 import { PersistenceModule, UserService } from './persistence';
 import { JwtModule } from '@nestjs/jwt';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
@@ -9,7 +9,7 @@ import {
   LoginUseCase,
   RefreshTokenUseCase,
   UserRegisteredUseCase,
-} from '../application';
+} from '@use-cases-auth';
 
 @Module({
   imports: [

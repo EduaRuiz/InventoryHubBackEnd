@@ -1,10 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { InventoryQueryModule } from './inventory-query.module';
 import { ValidationPipe } from '@nestjs/common';
+import { ValueObjectExceptionFilter } from 'apps/inventory-command/src/infrastructure/utils';
 
 async function bootstrap() {
   const app = await NestFactory.create(InventoryQueryModule);
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new ValueObjectExceptionFilter());
   app.enableCors();
   await app.startAllMicroservices();
   await app.listen(process.env.QUERY_PORT || 3001);

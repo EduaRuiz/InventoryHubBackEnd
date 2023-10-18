@@ -1,15 +1,21 @@
 import { Module } from '@nestjs/common';
-import { UserController } from './infrastructure/controllers/user.controller';
-import { BranchController } from './infrastructure/controllers/branch.controller';
-import { ProductController } from './infrastructure/controllers/product.controller';
+import {
+  BranchController,
+  ProductController,
+  UserController,
+} from './infrastructure/controllers';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
-import { BranchRegisterUseCase, UserRegisterUseCase } from '@use-cases-inv';
-import { ProductDelegator } from '@use-cases-inv/product';
+import {
+  BranchRegisterUseCase,
+  UserRegisterUseCase,
+  ProductDelegator,
+} from '@use-cases-command';
 import { EventPublisher } from './infrastructure/messaging/publishers';
-import { InfrastructureModule } from './infrastructure/infrastructure.module';
+import { InfrastructureModule } from './infrastructure';
 import { EventService } from './infrastructure/persistence/services';
-import { JwtStrategy } from './infrastructure/utils/strategies/jwt.strategy';
+import { JwtStrategy } from './infrastructure/utils/strategies';
+import { MailService } from './infrastructure/utils/services';
 
 @Module({
   imports: [
@@ -47,8 +53,9 @@ import { JwtStrategy } from './infrastructure/utils/strategies/jwt.strategy';
       useFactory: (
         storeService: EventService,
         eventPublisher: EventPublisher,
-      ) => new UserRegisterUseCase(storeService, eventPublisher),
-      inject: [EventService, EventPublisher],
+        mailService: MailService,
+      ) => new UserRegisterUseCase(storeService, eventPublisher, mailService),
+      inject: [EventService, EventPublisher, MailService],
     },
   ],
   exports: [],

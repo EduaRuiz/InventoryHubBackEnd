@@ -27,13 +27,14 @@ export class SellerSaleCommand implements ISellerSaleDomainCommand {
   @IsUUID(4, { message: 'El id del producto debe ser un UUID' })
   branchId: string;
 
+  @IsOptional()
   @IsDefined()
   @IsNumber()
   @Min(0.000001, { message: 'El descuento no puede ser menor o igual al 0%.' })
   @Max(0.999999, {
     message: 'El descuento no puede ser igual o mayor al 100%.',
   })
-  discount: number;
+  discount?: number;
 
   @ValidateNested()
   @Type(() => ProductSaleDto)

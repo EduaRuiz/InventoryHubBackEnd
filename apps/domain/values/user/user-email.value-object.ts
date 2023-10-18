@@ -1,4 +1,4 @@
-﻿import { EMAIL_REGEX } from '@domain-common/regex';
+﻿import { EMAIL_REGEX } from '@domain/common/regex';
 import { ValueObjectBase } from '@sofka/bases';
 import { IErrorValueObject } from '@sofka/interfaces';
 import { IsEmptyValidation } from '@validations';

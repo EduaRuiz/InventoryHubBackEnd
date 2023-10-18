@@ -1,9 +1,6 @@
 ﻿import { ITokenCommand } from '@domain-commands';
 import { UserDomainModel } from '@domain-models';
-import {
-  IAuthDomainService,
-  IUserAuthDomainService,
-} from '@domain-services/index';
+import { IAuthDomainService, IUserAuthDomainService } from '@domain-services';
 import { BadRequestException } from '@nestjs/common';
 import { IUseCase } from '@sofka/interfaces';
 import { ILoginResponse } from 'apps/domain/interfaces';

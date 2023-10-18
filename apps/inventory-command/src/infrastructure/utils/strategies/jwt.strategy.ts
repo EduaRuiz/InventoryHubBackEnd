@@ -5,7 +5,7 @@ import { Observable, of, switchMap, throwError } from 'rxjs';
 import { EventService } from '../../persistence/services';
 import { IUserAuthData } from 'apps/domain/interfaces';
 import { TypeNameEnum } from '@enums';
-import { EventDomainModel, UserDomainModel } from '@domain-models/index';
+import { EventDomainModel, UserDomainModel } from '@domain-models';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
