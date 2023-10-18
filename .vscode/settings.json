@@ -1,3 +1,24 @@
 {
-  "cSpell.words": ["Configservice", "dtos", "postgres", "sofka", "typeorm"]
+  "cSpell.words": ["Configservice", "dtos", "postgres", "sofka", "typeorm"],
+  "jest.autoRun": "off",
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#f19251",
+    "activityBar.background": "#f19251",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#c4fada",
+    "activityBarBadge.foreground": "#15202b",
+    "commandCenter.border": "#15202b99",
+    "sash.hoverBorder": "#f19251",
+    "statusBar.background": "#ed7422",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#cb5c11",
+    "statusBarItem.remoteBackground": "#ed7422",
+    "statusBarItem.remoteForeground": "#15202b",
+    "titleBar.activeBackground": "#ed7422",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.inactiveBackground": "#ed742299",
+    "titleBar.inactiveForeground": "#15202b99"
+  },
+  "peacock.color": "#ed7422"
 }
