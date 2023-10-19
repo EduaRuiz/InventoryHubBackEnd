@@ -134,4 +134,31 @@ describe('AuthController', () => {
       });
     });
   });
+
+  describe('refreshToken', () => {
+    it('should return an error', (done) => {
+      // Arrange
+      const expected = new Error('User does not exist');
+      const mockTokenCommand: TokenCommand = {
+        id: 'mockedId',
+        token: 'mockedToken',
+      };
+      jest
+        .spyOn(refreshTokenUseCase, 'execute')
+        .mockReturnValue(throwError(() => expected));
+
+      // Act
+      const result: Observable<{ token: string }> =
+        controller.refreshToken(mockTokenCommand);
+
+      // Assert
+      expect(result).toBeInstanceOf(Observable);
+      result.subscribe({
+        error: (error: Error) => {
+          expect(error).toBe(expected);
+          done();
+        },
+      });
+    });
+  });
 });

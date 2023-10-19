@@ -1,4 +1,8 @@
-﻿import { ProductDomainModel, UserDomainModel } from '@domain-models';
+﻿import {
+  ProductDomainModel,
+  SaleDomainModel,
+  UserDomainModel,
+} from '@domain-models';
 import { ValueObjectBase } from '@sofka/bases';
 import { IErrorValueObject } from '@sofka/interfaces';
 import {
@@ -13,18 +17,21 @@ export class BranchDomainModel extends EntityBase {
   location: string;
   products: ProductDomainModel[];
   users: UserDomainModel[];
+  sales: SaleDomainModel[];
 
   constructor(
     name: string,
     location: string,
     products: ProductDomainModel[],
     users: UserDomainModel[],
+    sales: SaleDomainModel[],
     id?: string,
   ) {
     super(id);
     this.name = name;
     this.location = location;
     this.products = products;
+    this.sales = sales;
     this.users = users;
   }
 

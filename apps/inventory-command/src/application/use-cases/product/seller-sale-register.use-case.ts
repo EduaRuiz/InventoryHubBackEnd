@@ -2,10 +2,12 @@
   EventDomainModel,
   ProductDomainModel,
   SaleDomainModel,
+  UserDomainModel,
 } from '@domain-models';
 import { ConflictException } from '@nestjs/common';
 import {
   Observable,
+  catchError,
   concat,
   concatMap,
   forkJoin,
@@ -21,10 +23,10 @@ import { IEventDomainService } from '@domain-services';
 import { DomainEventPublisher } from '@domain-publishers';
 import { ValueObjectException } from '@sofka/exceptions';
 import { IUseCase } from '@sofka/interfaces';
-import { SaleTypeEnum, TypeNameEnum } from '@enums';
+import { SaleTypeEnum, TypeNameEnum, UserRoleEnum } from '@enums';
 
 export class SellerSaleRegisterUseCase
-  implements IUseCase<ISellerSaleDomainCommand, ProductDomainModel>
+  implements IUseCase<ISellerSaleDomainCommand, SaleDomainModel>
 {
   constructor(
     private readonly event$: IEventDomainService,
@@ -34,7 +36,34 @@ export class SellerSaleRegisterUseCase
   execute(
     sellerSaleCommand: ISellerSaleDomainCommand,
     userId: string,
-  ): Observable<ProductDomainModel> {
+  ): Observable<SaleDomainModel> {
+    return this.event$
+      .getLastEventByEntityId(userId, [TypeNameEnum.USER_REGISTERED])
+      .pipe(
+        catchError(() => {
+          throw new ConflictException(
+            'El usuario no existe o no se encuentra registrado',
+          );
+        }),
+        switchMap((event: EventDomainModel) => {
+          if (
+            event.aggregateRootId !== sellerSaleCommand.branchId &&
+            (event.eventBody as UserDomainModel).role !==
+              UserRoleEnum.SUPER_ADMIN
+          ) {
+            throw new ConflictException(
+              'El usuario no pertenece a la sucursal seleccionada',
+            );
+          }
+          return this.sale(sellerSaleCommand, userId);
+        }),
+      );
+  }
+
+  private sale(
+    sellerSaleCommand: ISellerSaleDomainCommand,
+    userId: string,
+  ): Observable<SaleDomainModel> {
     const products$ = this.getProducts(sellerSaleCommand);
     const events$ = this.factoryEvents(products$);
     const eventsStored$ = this.storeEvents(events$);
@@ -43,7 +72,7 @@ export class SellerSaleRegisterUseCase
       productsInSale$,
       sellerSaleCommand.branchId,
       userId,
-      sellerSaleCommand?.discount,
+      sellerSaleCommand.discount,
     );
     return this.saleEventFactory(sale$).pipe(
       switchMap((event: EventDomainModel) => {
@@ -53,7 +82,7 @@ export class SellerSaleRegisterUseCase
               switchMap((event: EventDomainModel) => {
                 this.eventPublisher.response = event;
                 this.eventPublisher.publish();
-                return of(event.eventBody as ProductDomainModel);
+                return of(event.eventBody as SaleDomainModel);
               }),
             );
           }),
@@ -97,7 +126,7 @@ export class SellerSaleRegisterUseCase
         const total = productArray.reduce(
           (acc, product) =>
             acc +
-            product.price * product.quantity * (discount ? discount : 0.95),
+            product.price * product.quantity * (discount ? discount : 0.9),
           0,
         );
         const saleItems = productArray.map((product) => ({
@@ -167,6 +196,9 @@ export class SellerSaleRegisterUseCase
     });
 
     return forkJoin(observables$).pipe(
+      catchError(() => {
+        throw new ConflictException('Existen productos no registrados');
+      }),
       map((productsWithQuantity) => {
         return productsWithQuantity.map((item) =>
           this.productFactory(item.product, item.quantity),

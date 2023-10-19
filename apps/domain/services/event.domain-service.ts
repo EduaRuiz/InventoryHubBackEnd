@@ -6,7 +6,6 @@ export interface IEventDomainService<
   Entity extends EventDomainModel = EventDomainModel,
 > {
   getEvent(id: string): Observable<Entity>;
-  getEventByAggregateRootId(id: string): Observable<Entity>;
   storeEvent(event: Entity): Observable<Entity>;
   getAllEvents(): Observable<Entity[]>;
   entityAlreadyExist(

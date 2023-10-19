@@ -38,10 +38,6 @@ export class EventMongoService
     );
   }
 
-  getEventByAggregateRootId(id: string): Observable<StoreEventMongoModel> {
-    return this.storedEventMongoRepository.findByAggregateRootId(id);
-  }
-
   storeEvent(entity: StoreEventMongoModel): Observable<StoreEventMongoModel> {
     return this.storedEventMongoRepository.storeEvent(entity);
   }
@@ -61,18 +57,6 @@ export class EventMongoService
     return this.storedEventMongoRepository.generateIncrementalSaleId(
       aggregateRootId,
       typeName,
-    );
-  }
-
-  auth(
-    email: string,
-    password: string,
-    aggregateRootId?: string,
-  ): Observable<StoreEventMongoModel> {
-    return this.storedEventMongoRepository.auth(
-      email,
-      password,
-      aggregateRootId,
     );
   }
 }

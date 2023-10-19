@@ -26,7 +26,7 @@ import { ICustomerSaleDomainCommand } from '@domain-commands';
 import { ValueObjectException } from '@sofka/exceptions';
 
 export class CustomerSaleRegisterUseCase
-  implements IUseCase<ICustomerSaleDomainCommand, ProductDomainModel>
+  implements IUseCase<ICustomerSaleDomainCommand, SaleDomainModel>
 {
   constructor(
     private readonly event$: IEventDomainService,
@@ -36,7 +36,7 @@ export class CustomerSaleRegisterUseCase
   execute(
     customerSaleCommand: ICustomerSaleDomainCommand,
     userId: string,
-  ): Observable<ProductDomainModel> {
+  ): Observable<SaleDomainModel> {
     return this.event$
       .getLastEventByEntityId(userId, [TypeNameEnum.USER_REGISTERED])
       .pipe(
@@ -63,7 +63,7 @@ export class CustomerSaleRegisterUseCase
   private sale(
     customerSaleCommand: ICustomerSaleDomainCommand,
     userId: string,
-  ): Observable<ProductDomainModel> {
+  ): Observable<SaleDomainModel> {
     const products$ = this.getProducts(customerSaleCommand);
     const events$ = this.factoryEvents(products$);
     const eventsStored$ = this.storeEvents(events$);
@@ -81,7 +81,7 @@ export class CustomerSaleRegisterUseCase
               switchMap((event: EventDomainModel) => {
                 this.eventPublisher.response = event;
                 this.eventPublisher.publish();
-                return of(event.eventBody as ProductDomainModel);
+                return of(event.eventBody as SaleDomainModel);
               }),
             );
           }),
@@ -192,6 +192,9 @@ export class CustomerSaleRegisterUseCase
     });
 
     return forkJoin(observables$).pipe(
+      catchError(() => {
+        throw new ConflictException('Existen productos no registrados');
+      }),
       map((productsWithQuantity) => {
         return productsWithQuantity.map((item) =>
           this.productFactory(item.product, item.quantity),

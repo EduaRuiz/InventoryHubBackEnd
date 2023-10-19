@@ -1,5 +1,5 @@
 ﻿import { EventDomainModel, UserDomainModel } from '@domain-models';
-import { Observable, catchError, map, switchMap } from 'rxjs';
+import { Observable, catchError, map, switchMap, throwError } from 'rxjs';
 import { INewUserDomainCommand } from '@domain-commands';
 import { IEventDomainService, IMailDomainService } from '@domain-services';
 import { DomainEventPublisher } from '@domain-publishers';
@@ -22,6 +22,15 @@ export class UserRegisterUseCase
   ): Observable<UserDomainModel> {
     const newUser = this.entityFactory(registerUserCommand);
     const newEvent = this.eventFactory(newUser);
+    if (newUser.hasErrors()) {
+      return throwError(
+        () =>
+          new ValueObjectException(
+            'Existen algunos errores en los datos ingresados',
+            newUser.getErrors(),
+          ),
+      );
+    }
     return this.event$
       .entityAlreadyExist(
         'email',
@@ -70,12 +79,6 @@ export class UserRegisterUseCase
       registerUserCommand.role,
       registerUserCommand.branchId,
     );
-    if (userData.hasErrors()) {
-      throw new ValueObjectException(
-        'Existen algunos errores en los datos ingresados',
-        userData.getErrors(),
-      );
-    }
     return userData;
   }
 

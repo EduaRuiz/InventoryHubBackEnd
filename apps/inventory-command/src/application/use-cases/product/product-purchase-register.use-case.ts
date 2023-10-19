@@ -1,5 +1,5 @@
 import { EventDomainModel, ProductDomainModel } from '@domain-models';
-import { Observable, map, switchMap } from 'rxjs';
+import { Observable, map, switchMap, throwError } from 'rxjs';
 import { DomainEventPublisher } from '@domain-publishers';
 import { IAddProductDomainCommand } from '@domain-commands';
 import { IEventDomainService } from '@domain-services';
@@ -31,6 +31,15 @@ export class ProductPurchaseRegisterUseCase
             event.eventBody as ProductDomainModel,
             addProductCommand,
           );
+          if (newProduct.hasErrors()) {
+            return throwError(
+              () =>
+                new ValueObjectException(
+                  'Existen algunos errores en los datos ingresados',
+                  newProduct.getErrors(),
+                ),
+            );
+          }
           const eventData = this.eventFactory(newProduct);
           return this.event$.storeEvent(eventData).pipe(
             map((event: EventDomainModel) => {
@@ -57,12 +66,6 @@ export class ProductPurchaseRegisterUseCase
       product.branchId,
       product.id,
     );
-    if (productData.hasErrors()) {
-      throw new ValueObjectException(
-        'Existen algunos errores en los datos ingresados',
-        productData.getErrors(),
-      );
-    }
     return productData;
   }
 

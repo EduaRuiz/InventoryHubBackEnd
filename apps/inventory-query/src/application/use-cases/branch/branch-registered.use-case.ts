@@ -23,6 +23,7 @@ export class BranchRegisteredUseCase
       branchRegistered.location,
       [],
       [],
+      [],
       branchRegistered.id,
     );
     if (branchData.hasErrors()) {

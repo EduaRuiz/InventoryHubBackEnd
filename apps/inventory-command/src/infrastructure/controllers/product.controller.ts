@@ -4,7 +4,7 @@ import {
   NewProductCommand,
   SellerSaleCommand,
 } from '../utils/commands';
-import { ProductDomainModel } from '@domain-models';
+import { ProductDomainModel, SaleDomainModel } from '@domain-models';
 import { Observable } from 'rxjs';
 import {} from '@use-cases-command/product';
 import { AddProductCommand } from '../utils/commands';
@@ -38,7 +38,7 @@ export class ProductController {
   @Patch('seller-sale')
   productSellerSale(
     @Body() sale: SellerSaleCommand,
-  ): Observable<ProductDomainModel> {
+  ): Observable<SaleDomainModel> {
     this.productDelegator.toSellerSaleUseCase();
     return this.productDelegator.execute(sale, sale.userId);
   }
@@ -47,7 +47,7 @@ export class ProductController {
   @Patch('customer-sale')
   productCustomerSale(
     @Body() sale: CustomerSaleCommand,
-  ): Observable<ProductDomainModel> {
+  ): Observable<SaleDomainModel> {
     this.productDelegator.toCustomerSaleUseCase();
     return this.productDelegator.execute(sale, sale.userId);
   }

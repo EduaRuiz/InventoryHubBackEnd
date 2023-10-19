@@ -1,5 +1,5 @@
 ﻿import { BranchDomainModel, EventDomainModel } from '@domain-models';
-import { Observable, of, switchMap } from 'rxjs';
+import { Observable, of, switchMap, throwError } from 'rxjs';
 import { INewBranchDomainCommand } from '@domain-commands';
 import { IEventDomainService } from '@domain-services';
 import { DomainEventPublisher } from '@domain-publishers';
@@ -22,6 +22,15 @@ export class BranchRegisterUseCase
   ): Observable<BranchDomainModel> {
     newBranchCommand.name = newBranchCommand.name?.trim().toUpperCase();
     const newBranch = this.entityFactory(newBranchCommand);
+    if (newBranch.hasErrors()) {
+      return throwError(
+        () =>
+          new ValueObjectException(
+            'Existen algunos errores en los datos ingresados',
+            newBranch.getErrors(),
+          ),
+      );
+    }
     const event = this.eventFactory(newBranch);
     return this.event$
       .entityAlreadyExist('name', newBranch.name, [
@@ -49,13 +58,8 @@ export class BranchRegisterUseCase
       newBranchCommand.location.city + ', ' + newBranchCommand.location.country,
       [],
       [],
+      [],
     );
-    if (branchData.hasErrors()) {
-      throw new ValueObjectException(
-        'Existen algunos errores en los datos ingresados',
-        branchData.getErrors(),
-      );
-    }
     return branchData;
   }
 

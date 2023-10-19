@@ -163,52 +163,6 @@ export class StoreEventMongoRepository
     );
   }
 
-  findLastByIdEventBody(entityId: string): Observable<StoreEventMongoModel> {
-    return from(
-      this.storedEventMongoModel
-        .findOne({
-          eventBody: { $regex: new RegExp(`"id":"${entityId}"`, 'i') },
-        })
-        .sort({ _id: -1 })
-        .exec(),
-    ).pipe(
-      catchError((error: Error) => {
-        throw new BadRequestException(
-          'Error searching by event body substring',
-          error.message,
-        );
-      }),
-      switchMap((storedEvent: StoreEventMongoModel) =>
-        storedEvent
-          ? of(storedEvent)
-          : throwError(() => new NotFoundException('Event not found')),
-      ),
-    );
-  }
-
-  findByAggregateRootId(
-    aggregateRootId: string,
-  ): Observable<StoreEventMongoModel> {
-    return from(
-      this.storedEventMongoModel
-        .findOne({ aggregateRootId: aggregateRootId.toString() }, {})
-        .sort({ _id: -1 })
-        .exec(),
-    ).pipe(
-      catchError((error: Error) => {
-        throw new BadRequestException(
-          'Error searching by event body substring',
-          error.message,
-        );
-      }),
-      switchMap((storedEvent: StoreEventMongoModel) =>
-        storedEvent
-          ? of(storedEvent)
-          : throwError(() => new NotFoundException('Event not found')),
-      ),
-    );
-  }
-
   generateIncrementalSaleId(
     aggregateRootId: string,
     typeName: TypeNameEnum[],
@@ -226,31 +180,6 @@ export class StoreEventMongoRepository
           error.message,
         );
       }),
-    );
-  }
-
-  auth(
-    email: string,
-    password: string,
-    aggregateRootId?: string,
-  ): Observable<StoreEventMongoModel> {
-    let query: any = {
-      'eventBody.email': email,
-      'eventBody.password': password,
-      typeName: TypeNameEnum.USER_REGISTERED,
-    };
-    if (aggregateRootId !== undefined) query = { ...query, aggregateRootId };
-    return from(this.storedEventMongoModel.findOne(query).exec()).pipe(
-      catchError((error: Error) => {
-        throw new BadRequestException(error.message);
-      }),
-      switchMap((storedEvent: StoreEventMongoModel) =>
-        iif(
-          () => storedEvent === null,
-          throwError(() => new NotFoundException('Event not found')),
-          of(storedEvent),
-        ),
-      ),
     );
   }
 }

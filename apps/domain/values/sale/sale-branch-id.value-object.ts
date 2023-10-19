@@ -15,7 +15,7 @@ export class SaleBranchIdValueObject extends ValueObjectBase<string> {
   private validateStructure(): void {
     if (this.value && !IsUUID4(this.value)) {
       this.setError({
-        field: 'SaleBranchId',
+        field: 'BranchId',
         message: 'El id no tine un formato de UUID válido',
       } as IErrorValueObject);
     }

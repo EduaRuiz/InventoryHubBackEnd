@@ -2,7 +2,7 @@
 import { IUseCase } from '@sofka/interfaces';
 import { ValueObjectException } from '@sofka/exceptions';
 import { EventDomainModel, UserDomainModel } from '@domain-models';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 
 export class UserRegisteredUseCase
   implements IUseCase<EventDomainModel, UserDomainModel>
@@ -11,6 +11,15 @@ export class UserRegisteredUseCase
   execute(command: EventDomainModel): Observable<UserDomainModel> {
     const userRegistered = command.eventBody as UserDomainModel;
     const newUser = this.entityFactory(userRegistered);
+    if (newUser.hasErrors()) {
+      return throwError(
+        () =>
+          new ValueObjectException(
+            'Existen algunos errores en los datos ingresados',
+            newUser.getErrors(),
+          ),
+      );
+    }
     return this.user$.registerUser(newUser);
   }
 
@@ -23,12 +32,6 @@ export class UserRegisteredUseCase
       userRegistered.branchId,
       userRegistered.id,
     );
-    if (userData.hasErrors()) {
-      throw new ValueObjectException(
-        'Existen algunos errores en los datos ingresados',
-        userData.getErrors(),
-      );
-    }
     return userData;
   }
 }

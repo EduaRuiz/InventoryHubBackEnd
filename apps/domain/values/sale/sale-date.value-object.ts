@@ -17,7 +17,7 @@ export class SaleDateValueObject extends ValueObjectBase<Date> {
   private validateLength(): void {
     if (this.value && CurrentDateTimeValidation(this.value, new Date())) {
       this.setError({
-        field: 'DateDate',
+        field: 'Date',
         message: 'La fecha de la venta no puede ser mayor a la fecha actual',
       } as IErrorValueObject);
     }

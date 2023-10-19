@@ -1,5 +1,5 @@
 import { EventDomainModel, ProductDomainModel } from '@domain-models';
-import { Observable, catchError, map, switchMap } from 'rxjs';
+import { Observable, catchError, map, switchMap, throwError } from 'rxjs';
 import { DomainEventPublisher } from '@domain-publishers';
 import { INewProductDomainCommand } from '@domain-commands';
 import { IEventDomainService } from '@domain-services';
@@ -20,6 +20,15 @@ export class ProductRegisterUseCase
     newProductCommand: INewProductDomainCommand,
   ): Observable<ProductDomainModel> {
     const newProduct = this.entityFactory(newProductCommand);
+    if (newProduct.hasErrors()) {
+      return throwError(
+        () =>
+          new ValueObjectException(
+            'Existen algunos errores en los datos ingresados',
+            newProduct.getErrors(),
+          ),
+      );
+    }
     const newEvent = this.eventFactory(newProduct);
     return this.event$
       .entityAlreadyExist(
@@ -67,12 +76,6 @@ export class ProductRegisterUseCase
       newProductCommand.category,
       newProductCommand.branchId,
     );
-    if (productData.hasErrors()) {
-      throw new ValueObjectException(
-        'Existen algunos errores en los datos ingresados',
-        productData.getErrors(),
-      );
-    }
     return productData;
   }
 

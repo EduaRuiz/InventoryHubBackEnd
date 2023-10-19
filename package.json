@@ -127,6 +127,8 @@
       ".module\\.ts$",
       ".mock\\.ts$",
       ".mocks\\.ts$",
+      ".type\\.ts$",
+      ".command\\.ts$",
       "main\\.ts$",
       "\\.js$"
     ],
