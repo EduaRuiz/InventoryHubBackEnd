@@ -2,7 +2,7 @@
 import { IProductDomainService } from '@domain-services';
 import { ValueObjectException } from '@sofka/exceptions';
 import { IUseCase } from '@sofka/interfaces';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 
 export class ProductRegisteredUseCase
   implements IUseCase<EventDomainModel, ProductDomainModel>
@@ -11,6 +11,15 @@ export class ProductRegisteredUseCase
   execute(command: EventDomainModel): Observable<ProductDomainModel> {
     const productRegistered = command.eventBody as ProductDomainModel;
     const newProduct = this.entityFactory(productRegistered);
+    if (newProduct.hasErrors()) {
+      return throwError(
+        () =>
+          new ValueObjectException(
+            'Existen algunos errores en los datos ingresados',
+            newProduct.getErrors(),
+          ),
+      );
+    }
     return this.product$.createProduct(newProduct);
   }
 
@@ -26,12 +35,6 @@ export class ProductRegisteredUseCase
       productRegistered.branchId,
       productRegistered.id,
     );
-    if (productData.hasErrors()) {
-      throw new ValueObjectException(
-        'Existen algunos errores en los datos ingresados',
-        productData.getErrors(),
-      );
-    }
     return productData;
   }
 }

@@ -9,13 +9,12 @@ import { ValueObjectException } from '@sofka/exceptions';
 @Catch(ValueObjectException)
 export class ValueObjectExceptionFilter implements ExceptionFilter {
   catch(exception: ValueObjectException, host: ArgumentsHost) {
-    const response = host.switchToHttp().getResponse();
-    const status = HttpStatus.BAD_REQUEST; // Puedes cambiar el estado según tus necesidades
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse();
+    const message = exception.message;
+    const statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+    const details = exception.errors;
 
-    response.status(status).json({
-      statusCode: status,
-      message: exception.message,
-      errors: exception.errors,
-    });
+    response.status(statusCode).json({ statusCode, message, details });
   }
 }

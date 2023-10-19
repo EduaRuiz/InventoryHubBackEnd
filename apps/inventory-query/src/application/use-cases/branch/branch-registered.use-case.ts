@@ -2,7 +2,7 @@
 import { IBranchDomainService } from '@domain-services';
 import { ValueObjectException } from '@sofka/exceptions';
 import { IUseCase } from '@sofka/interfaces';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 
 export class BranchRegisteredUseCase
   implements IUseCase<EventDomainModel, BranchDomainModel>
@@ -12,6 +12,15 @@ export class BranchRegisteredUseCase
     const branchRegistered = command.eventBody as BranchDomainModel;
     branchRegistered.name = branchRegistered.name?.trim().toUpperCase();
     const newBranch = this.entityFactory(branchRegistered);
+    if (newBranch.hasErrors()) {
+      return throwError(
+        () =>
+          new ValueObjectException(
+            'Existen algunos errores en los datos ingresados',
+            newBranch.getErrors(),
+          ),
+      );
+    }
     return this.branch$.createBranch(newBranch);
   }
 
@@ -26,12 +35,6 @@ export class BranchRegisteredUseCase
       [],
       branchRegistered.id,
     );
-    if (branchData.hasErrors()) {
-      throw new ValueObjectException(
-        'Existen algunos errores en los datos ingresados',
-        branchData.getErrors(),
-      );
-    }
     return branchData;
   }
 }

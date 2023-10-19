@@ -35,6 +35,15 @@ export class SaleRegisteredUseCase
   execute(command: EventDomainModel): Observable<SaleDomainModel> {
     const saleRegistered = command.eventBody as SaleDomainModel;
     const newSale = this.entityFactory(saleRegistered);
+    if (newSale.hasErrors()) {
+      return throwError(
+        () =>
+          new ValueObjectException(
+            'Existen algunos errores en los datos ingresados',
+            newSale.getErrors(),
+          ),
+      );
+    }
     return this.sale$.createSale(newSale).pipe(
       switchMap((sale) => {
         return this.notify(sale.branchId, sale);
@@ -53,12 +62,6 @@ export class SaleRegisteredUseCase
       saleRegistered.userId,
       saleRegistered.id,
     );
-    if (saleData.hasErrors()) {
-      throw new ValueObjectException(
-        'Existen algunos errores en los datos ingresados en la venta',
-        saleData.getErrors(),
-      );
-    }
     return saleData;
   }
 

@@ -4,7 +4,7 @@ import { DomainEventPublisher } from '@domain-publishers';
 import { INewProductDomainCommand } from '@domain-commands';
 import { ProductDomainModel, EventDomainModel } from '@domain-models';
 import { ValueObjectException } from '@sofka/exceptions';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { ProductCategoryEnum, TypeNameEnum } from '@enums';
 import { ConflictException } from '@nestjs/common';
 
@@ -112,7 +112,6 @@ describe('ProductRegisterUseCase', () => {
       // Assert
       result.subscribe({
         error: (error) => {
-          console.log(error);
           expect(error).toBeInstanceOf(ValueObjectException);
           expect(eventServiceMock.storeEvent).not.toHaveBeenCalled();
           expect(eventPublisherMock.publish).not.toHaveBeenCalled();

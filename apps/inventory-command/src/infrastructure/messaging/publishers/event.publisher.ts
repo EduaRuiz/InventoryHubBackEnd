@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@nestjs/common';
 import { Observable, from } from 'rxjs';
 import { EventEntity } from '../../persistence';
-import { DomainEventPublisher } from '@domain-publishers';
+import { DomainEventPublisher } from '@domain/events/publishers';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
