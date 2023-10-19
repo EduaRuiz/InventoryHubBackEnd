@@ -6,3 +6,4 @@ export * from './models';
 export * from './services';
 export * from './types';
 export * from './values';
+export * from './swagger-types';

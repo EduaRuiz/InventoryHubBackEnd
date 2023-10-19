@@ -5,6 +5,8 @@ import { Observable, of, throwError } from 'rxjs';
 import { SaleDomainModel } from '@domain-models';
 import { SaleTypeEnum, UserRoleEnum } from '@enums';
 import { NotFoundException } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 
 describe('SaleController', () => {
   let controller: SaleController;
@@ -12,6 +14,15 @@ describe('SaleController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        PassportModule.register({ defaultStrategy: 'jwt' }),
+        JwtModule.register({
+          secretOrPrivateKey: process.env.JWT_SECRET || 'secret',
+          signOptions: {
+            expiresIn: 3600,
+          },
+        }),
+      ],
       controllers: [SaleController],
       providers: [
         {

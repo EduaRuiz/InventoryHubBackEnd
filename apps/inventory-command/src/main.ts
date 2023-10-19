@@ -1,12 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ValueObjectExceptionFilter } from './infrastructure/utils/exception-filters';
-import { config } from 'dotenv';
 import { InventoryCommandModule } from './inventory-command.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(InventoryCommandModule);
-  config();
+  const config = new DocumentBuilder()
+    .addBearerAuth()
+    .setTitle('inventory-command')
+    .setDescription('Api Inventory Command')
+    .setVersion('0.0.1')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('swagger', app, document);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new ValueObjectExceptionFilter());
   app.enableCors();

@@ -11,8 +11,15 @@ import {
 } from 'class-validator';
 import { INewProductDomainCommand } from '@domain-commands';
 import { ProductCategoryEnum } from '@enums';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class NewProductCommand implements INewProductDomainCommand {
+  @ApiProperty({
+    description: 'Product name',
+    minLength: 3,
+    maxLength: 100,
+    example: 'Product name',
+  })
   @IsString({ message: 'El nombre debe ser un string' })
   @IsDefined({ message: 'El nombre es requerido' })
   @IsNotEmpty({ message: 'El nombre no puede ser vacío' })
@@ -20,6 +27,12 @@ export class NewProductCommand implements INewProductDomainCommand {
   @MaxLength(100, { message: 'El nombre debe tener menos de 100 caracteres' })
   name: string;
 
+  @ApiProperty({
+    description: 'Product description',
+    minLength: 3,
+    maxLength: 255,
+    example: 'Product description',
+  })
   @IsString({ message: 'La descripción debe ser un string' })
   @IsDefined({ message: 'La descripción es requerida' })
   @IsNotEmpty({ message: 'La descripción no puede ser vacía' })
@@ -29,12 +42,19 @@ export class NewProductCommand implements INewProductDomainCommand {
   })
   description: string;
 
+  @ApiProperty({
+    description: 'Product price',
+    example: 10,
+  })
   @IsDefined({ message: 'El precio es requerido' })
   @IsNumber({}, { message: 'El precio debe ser un número' })
-  // @IsNumberString()
   @IsPositive({ message: 'El precio debe ser un número positivo' })
   price: number;
 
+  @ApiProperty({
+    description: 'Product category',
+    example: ProductCategoryEnum.ConstructionHardware,
+  })
   @IsString({ message: 'La categoría debe ser un string' })
   @IsDefined({ message: 'La categoría es requerida' })
   @IsNotEmpty({ message: 'La categoría no puede ser vacía' })
@@ -45,6 +65,10 @@ export class NewProductCommand implements INewProductDomainCommand {
   })
   category: ProductCategoryEnum;
 
+  @ApiProperty({
+    description: 'Branch id',
+    example: '1e7d6c5e-2f8c-4f8d-8a6a-8c7a4f3b6c0b',
+  })
   @IsString({ message: 'El id de la sucursal debe ser un string' })
   @IsDefined({ message: 'El id de la sucursal es requerido' })
   @IsNotEmpty({ message: 'El id de la sucursal no puede ser vacío' })

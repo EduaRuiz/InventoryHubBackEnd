@@ -6,6 +6,7 @@ import { ProductDomainModel } from '@domain-models';
 import { ProductCategoryEnum, UserRoleEnum } from '@enums';
 import { NotFoundException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 
 describe('ProductController', () => {
   let controller: ProductController;
@@ -13,6 +14,15 @@ describe('ProductController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        PassportModule.register({ defaultStrategy: 'jwt' }),
+        JwtModule.register({
+          secretOrPrivateKey: process.env.JWT_SECRET || 'secret',
+          signOptions: {
+            expiresIn: 3600,
+          },
+        }),
+      ],
       controllers: [ProductController],
       providers: [
         {
@@ -23,7 +33,6 @@ describe('ProductController', () => {
           },
         },
       ],
-      imports: [PassportModule.register({ defaultStrategy: 'jwt' })],
     }).compile();
 
     controller = module.get<ProductController>(ProductController);

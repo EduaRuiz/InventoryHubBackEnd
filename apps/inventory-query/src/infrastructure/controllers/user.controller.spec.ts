@@ -4,6 +4,8 @@ import { UserService } from '../persistence';
 import { Observable, of, throwError } from 'rxjs';
 import { UserRoleEnum } from '@enums';
 import { NotFoundException } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -11,6 +13,15 @@ describe('UserController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        PassportModule.register({ defaultStrategy: 'jwt' }),
+        JwtModule.register({
+          secretOrPrivateKey: process.env.JWT_SECRET || 'secret',
+          signOptions: {
+            expiresIn: 3600,
+          },
+        }),
+      ],
       controllers: [UserController],
       providers: [
         {

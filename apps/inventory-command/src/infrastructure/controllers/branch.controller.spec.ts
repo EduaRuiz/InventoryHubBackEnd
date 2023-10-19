@@ -5,6 +5,8 @@ import { BranchRegisterUseCase } from '@use-cases-command/branch';
 import { NewBranchCommand } from '../utils/commands';
 import { UserRoleEnum } from '@enums';
 import { BranchDomainModel } from '@domain-models';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 
 describe('BranchController', () => {
   let controller: BranchController;
@@ -12,6 +14,15 @@ describe('BranchController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        PassportModule.register({ defaultStrategy: 'jwt' }),
+        JwtModule.register({
+          secretOrPrivateKey: process.env.JWT_SECRET || 'secret',
+          signOptions: {
+            expiresIn: 3600,
+          },
+        }),
+      ],
       controllers: [BranchController],
       providers: [
         {

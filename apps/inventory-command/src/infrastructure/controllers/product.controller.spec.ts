@@ -10,6 +10,8 @@ import {
 import { ProductDomainModel, SaleDomainModel } from '@domain-models';
 import { ProductDelegator } from '@use-cases-command/product';
 import { ProductCategoryEnum, SaleTypeEnum } from '@enums';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 
 describe('ProductController', () => {
   let controller: ProductController;
@@ -17,6 +19,15 @@ describe('ProductController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        PassportModule.register({ defaultStrategy: 'jwt' }),
+        JwtModule.register({
+          secretOrPrivateKey: process.env.JWT_SECRET || 'secret',
+          signOptions: {
+            expiresIn: 3600,
+          },
+        }),
+      ],
       controllers: [ProductController],
       providers: [
         {
