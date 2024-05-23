@@ -15,14 +15,14 @@ describe('TypeOrmPostgresConfigService', () => {
         return key === 'POSTGRES_DB_HOST_AUTH'
           ? 'localhost'
           : key === 'POSTGRES_DB_PORT_AUTH'
-          ? 5432
-          : key === 'POSTGRES_DB_USER_AUTH'
-          ? 'user'
-          : key === 'POSTGRES_DB_PASSWORD_AUTH'
-          ? 'password'
-          : key === 'POSTGRES_DB_NAME_AUTH'
-          ? 'dbname'
-          : '';
+            ? 5432
+            : key === 'POSTGRES_DB_USER_AUTH'
+              ? 'user'
+              : key === 'POSTGRES_DB_PASSWORD_AUTH'
+                ? 'password'
+                : key === 'POSTGRES_DB_NAME_AUTH'
+                  ? 'dbname'
+                  : '';
       }),
     } as unknown as jest.Mocked<ConfigService>;
 

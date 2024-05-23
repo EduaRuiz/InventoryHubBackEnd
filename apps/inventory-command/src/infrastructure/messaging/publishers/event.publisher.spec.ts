@@ -1,4 +1,4 @@
-﻿import { Observable, of, throwError } from 'rxjs';
+﻿import { Observable, of } from 'rxjs';
 import { EventPublisher } from '..';
 
 describe('EventPublisher', () => {

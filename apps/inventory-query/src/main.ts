@@ -6,6 +6,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(InventoryQueryModule);
+
+  //Swagger
   const config = new DocumentBuilder()
     .addBearerAuth()
     .setTitle('inventory-query')
@@ -14,11 +16,22 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);
-  app.useGlobalPipes(new ValidationPipe());
+
+  //Global
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  );
   app.useGlobalFilters(new ValueObjectExceptionFilter());
   app.enableCors();
   await app.startAllMicroservices();
   await app.listen(process.env.QUERY_PORT || 3001);
+
+  //Console log
   console.log(`🚀Application is running on: ${await app.getUrl()} QUERY🚀`);
   console.log('RMQ', process.env.RMQ_URI);
   console.log(

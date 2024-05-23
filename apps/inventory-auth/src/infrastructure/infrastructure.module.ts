@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './utils/services';
+import { AuthService, JwtConfigService } from './utils/services';
 import { PersistenceModule, UserService } from './persistence';
 import { JwtModule } from '@nestjs/jwt';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
@@ -10,22 +10,30 @@ import {
   RefreshTokenUseCase,
   UserRegisteredUseCase,
 } from '@use-cases-auth';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'secret',
-      signOptions: { expiresIn: '2h' },
+    JwtModule.registerAsync({
+      useClass: JwtConfigService,
     }),
-    RabbitMQModule.forRoot(RabbitMQModule, {
-      uri: process.env.RMQ_URI || 'amqp://root:password@localhost:5672',
-      connectionInitOptions: { wait: false },
+    RabbitMQModule.forRootAsync(RabbitMQModule, {
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>(
+          'RMQ_URI',
+          process.env.RMQ_URI || 'amqp://localhost:5672',
+        ),
+        connectionInitOptions: { wait: false },
+      }),
+      inject: [ConfigService],
     }),
     PersistenceModule,
   ],
   controllers: [UserListener, AuthController],
   providers: [
     AuthService,
+    JwtConfigService,
     UserListener,
     {
       provide: UserRegisteredUseCase,

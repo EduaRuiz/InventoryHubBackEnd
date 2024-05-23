@@ -25,7 +25,7 @@ export class NewProductCommand implements INewProductDomainCommand {
   @IsNotEmpty({ message: 'El nombre no puede ser vacío' })
   @MinLength(3, { message: 'El nombre debe tener al menos 3 caracteres' })
   @MaxLength(100, { message: 'El nombre debe tener menos de 100 caracteres' })
-  name: string;
+  readonly name: string;
 
   @ApiProperty({
     description: 'Product description',
@@ -40,7 +40,7 @@ export class NewProductCommand implements INewProductDomainCommand {
   @MaxLength(255, {
     message: 'La descripción debe tener menos de 255 caracteres',
   })
-  description: string;
+  readonly description: string;
 
   @ApiProperty({
     description: 'Product price',
@@ -49,7 +49,7 @@ export class NewProductCommand implements INewProductDomainCommand {
   @IsDefined({ message: 'El precio es requerido' })
   @IsNumber({}, { message: 'El precio debe ser un número' })
   @IsPositive({ message: 'El precio debe ser un número positivo' })
-  price: number;
+  readonly price: number;
 
   @ApiProperty({
     description: 'Product category',
@@ -63,7 +63,7 @@ export class NewProductCommand implements INewProductDomainCommand {
       ProductCategoryEnum,
     )}`,
   })
-  category: ProductCategoryEnum;
+  readonly category: ProductCategoryEnum;
 
   @ApiProperty({
     description: 'Branch id',
@@ -73,5 +73,5 @@ export class NewProductCommand implements INewProductDomainCommand {
   @IsDefined({ message: 'El id de la sucursal es requerido' })
   @IsNotEmpty({ message: 'El id de la sucursal no puede ser vacío' })
   @IsUUID(4, { message: 'El id de la sucursal debe ser un UUID' })
-  branchId: string;
+  readonly branchId: string;
 }

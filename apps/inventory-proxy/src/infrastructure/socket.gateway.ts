@@ -23,13 +23,13 @@ export class SocketGateway
 {
   @WebSocketServer() server: Server;
   afterInit(server: any) {
-    console.log('Server initialized');
+    console.log('Server initialized', server);
   }
   handleConnection(client: any, ...args: any[]) {
-    console.log('Client connected');
+    console.log('Client connected', client.id, args);
   }
   handleDisconnect(client: any) {
-    console.log('Client disconnected');
+    console.log('Client disconnected', client.id);
   }
 
   @SubscribeMessage(ProxyEnumEvents.JoinInventory)

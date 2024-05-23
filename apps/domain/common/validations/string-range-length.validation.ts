@@ -14,6 +14,6 @@ export const StringRangeLength = (
   return value?.trim().length > max
     ? false
     : value?.length < min
-    ? false
-    : true;
+      ? false
+      : true;
 };

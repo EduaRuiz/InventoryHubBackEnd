@@ -6,6 +6,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(InventoryCommandModule);
+
+  //Swagger
   const config = new DocumentBuilder()
     .addBearerAuth()
     .setTitle('inventory-command')
@@ -14,16 +16,27 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);
-  app.useGlobalPipes(new ValidationPipe());
+
+  //Global
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  );
   app.useGlobalFilters(new ValueObjectExceptionFilter());
   app.enableCors();
   await app.startAllMicroservices();
   await app.listen(process.env.COMMAND_PORT || 3000);
+
+  //Console log
   console.log(`🚀Application is running on: ${await app.getUrl()} COMMAND🚀`);
   console.log('RMQ', process.env.RMQ_URI);
   console.log(
     'DB',
-    `${process.env.MONGO_DB_URI}/${process.env.MONGO_DB_NAME}?authSource=admin`,
+    `postgresql://${process.env.POSTGRES_DB_USER}:${process.env.POSTGRES_DB_PASSWORD}@${process.env.POSTGRES_DB_HOST}:${process.env.POSTGRES_DB_PORT}/${process.env.POSTGRES_DB_NAME}`,
   );
 }
 bootstrap();

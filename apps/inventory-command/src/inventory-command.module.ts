@@ -16,6 +16,7 @@ import { InfrastructureModule } from './infrastructure';
 import { EventService } from './infrastructure/persistence/services';
 import { JwtStrategy } from './infrastructure/utils/strategies';
 import { MailService } from './infrastructure/utils/services';
+import { JoiValidationSchema } from 'environments/joi.validation';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { MailService } from './infrastructure/utils/services';
         'environments',
         `.env.${process.env.SCOPE?.trimEnd()}`,
       ),
+      validationSchema: JoiValidationSchema,
     }),
     InfrastructureModule,
   ],

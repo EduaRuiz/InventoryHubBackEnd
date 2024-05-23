@@ -8,8 +8,7 @@ export class TypeOrmPostgresConfigService implements TypeOrmOptionsFactory {
   constructor(private readonly configService: ConfigService) {}
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
-    return {
-      type: 'postgres',
+    const config = {
       host: this.configService.get<string>('POSTGRES_DB_HOST_AUTH'),
       port: this.configService.get<number>('POSTGRES_DB_PORT_AUTH'),
       username: this.configService.get<string>('POSTGRES_DB_USER_AUTH'),
@@ -18,6 +17,10 @@ export class TypeOrmPostgresConfigService implements TypeOrmOptionsFactory {
       entities: [UserPostgresEntity],
       synchronize: true,
       logging: true,
+    };
+    return {
+      type: 'postgres',
+      ...config,
     };
   }
 }

@@ -13,8 +13,8 @@ describe('MongooseConfigService', () => {
         return key === 'MONGO_DB_URI'
           ? 'mongodb+srv://root:password*@tracking.dcufusb.mongodb.net'
           : key === 'MONGO_DB_NAME'
-          ? 'tracking'
-          : '';
+            ? 'tracking'
+            : '';
       }),
     } as unknown as jest.Mocked<ConfigService>;
 
