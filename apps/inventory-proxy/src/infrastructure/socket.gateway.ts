@@ -23,13 +23,13 @@ export class SocketGateway
 {
   @WebSocketServer() server: Server;
   afterInit(server: any) {
-    console.log('Server initialized', server);
+    console.info('Server initialized', server);
   }
   handleConnection(client: any, ...args: any[]) {
-    console.log('Client connected', client.id, args);
+    console.info('Client connected', client.id, args);
   }
   handleDisconnect(client: any) {
-    console.log('Client disconnected', client.id);
+    console.info('Client disconnected', client.id);
   }
 
   @SubscribeMessage(ProxyEnumEvents.JoinInventory)
@@ -37,7 +37,7 @@ export class SocketGateway
     const room = `branch.${branchId}`;
     client.join(room);
     client.emit('joined', room);
-    console.log('joinedOn:', room);
+    console.info('joinedOn:', room);
   }
 
   @SubscribeMessage(ProxyEnumEvents.JoinSale)
@@ -45,7 +45,7 @@ export class SocketGateway
     const room = `branch.${branchId}`;
     client.join(room);
     client.emit('joined', room);
-    console.log('joinedOn:', room);
+    console.info('joinedOn:', room);
   }
 
   @SubscribeMessage('inventory.leave')
@@ -53,7 +53,7 @@ export class SocketGateway
     const room = `branch.${branchId}`;
     client.leave(room);
     client.emit('left', room);
-    console.log('leftOn:', room);
+    console.info('leftOn:', room);
   }
 
   @SubscribeMessage('invoice.join')
@@ -61,7 +61,7 @@ export class SocketGateway
     const room = `branch.${branchId}`;
     client.join(room);
     client.emit('joined', room);
-    console.log('joinedOn:', room);
+    console.info('joinedOn:', room);
   }
 
   @SubscribeMessage('invoice.leave')
@@ -69,7 +69,7 @@ export class SocketGateway
     const room = `branch.${branchId}`;
     client.leave(room);
     client.emit('left', room);
-    console.log('leftOn:', room);
+    console.info('leftOn:', room);
   }
 
   @SubscribeMessage(ProxyEnumEvents.EventInventory)

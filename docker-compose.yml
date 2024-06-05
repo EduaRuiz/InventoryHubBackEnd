@@ -4,6 +4,9 @@ services:
     depends_on:
       - mongo
       - rabbitmq
+      - query-app
+      - auth-app
+      - proxy-app
     image: command-app
     container_name: command-app
     build:
@@ -13,13 +16,23 @@ services:
     ports:
       - "${COMMAND_PORT}:${COMMAND_PORT}"
     environment:
+      # mongo
       MONGO_DB_HOST: mongo
       MONGO_DB_PORT: ${MONGO_DB_PORT}
       MONGO_DB_USER: ${MONGO_DB_USER}
       MONGO_DB_PASSWORD: ${MONGO_DB_PASSWORD}
       MONGO_DB_NAME: ${MONGO_DB_NAME}
-      MONGO_DB_URI: mongodb://${MONGO_DB_USER}:${MONGO_DB_PASSWORD}@mongo:${MONGO_DB_PORT}/${MONGO_DB_NAME}?authSource=${MONGO_DB_AUTH_SOURCE}
-      RMQ_URI: amqp://root:password@rabbitmq:5672
+      # rabbitmq
+      RABBITMQ_DEFAULT_HOST: rabbitmq
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_DEFAULT_PORT: ${RABBITMQ_DEFAULT_PORT}
+      RABBITMQ_DEFAULT_EXCHANGE: ${RABBITMQ_DEFAULT_EXCHANGE}
+      # seed user
+      SEED_USER_FIRST_NAME: ${SEED_USER_FIRST_NAME}
+      SEED_USER_LAST_NAME: ${SEED_USER_LAST_NAME}
+      SEED_USER_EMAIL: ${SEED_USER_EMAIL}
+      SEED_USER_PASSWORD: ${SEED_USER_PASSWORD}
     links:
       - mongo
       - rabbitmq
@@ -39,12 +52,19 @@ services:
     ports:
       - "${QUERY_PORT}:${QUERY_PORT}"
     environment:
+      # postgres
       POSTGRES_DB_HOST_QUE: postgres
       POSTGRES_DB_PORT_QUE: ${POSTGRES_DB_PORT_QUE}
       POSTGRES_DB_USER_QUE: ${POSTGRES_DB_USER_QUE}
       POSTGRES_DB_PASSWORD_QUE: ${POSTGRES_DB_PASSWORD_QUE}
       POSTGRES_DB_NAME_QUE: ${POSTGRES_DB_NAME_QUE}
-      RMQ_URI: amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:${RABBITMQ_DEFAULT_PORT}
+      # rabbitmq
+      RABBITMQ_DEFAULT_HOST: rabbitmq
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_DEFAULT_PORT: ${RABBITMQ_DEFAULT_PORT}
+      RABBITMQ_DEFAULT_EXCHANGE: ${RABBITMQ_DEFAULT_EXCHANGE}
+      # jwt
       JWT_SECRET: ${JWT_SECRET}
     links:
       - postgres
@@ -65,7 +85,12 @@ services:
       - "${PROXY_PORT}:${PROXY_PORT}"
       - 81:81
     environment:
-      RMQ_URI: amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:${RABBITMQ_DEFAULT_PORT}
+      # rabbitmq
+      RABBITMQ_DEFAULT_HOST: rabbitmq
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_DEFAULT_PORT: ${RABBITMQ_DEFAULT_PORT}
+      RABBITMQ_DEFAULT_EXCHANGE: ${RABBITMQ_DEFAULT_EXCHANGE}
     links:
       - rabbitmq
     volumes:
@@ -75,7 +100,6 @@ services:
     depends_on:
       - postgres
       - rabbitmq
-      - command-app
     image: auth-app
     container_name: auth-app
     build:
@@ -85,17 +109,23 @@ services:
     ports:
       - "${AUTH_PORT}:${AUTH_PORT}"
     environment:
+      # postgres
       POSTGRES_DB_HOST_AUTH: postgres
       POSTGRES_DB_PORT_AUTH: ${POSTGRES_DB_PORT_AUTH}
       POSTGRES_DB_USER_AUTH: ${POSTGRES_DB_USER_AUTH}
       POSTGRES_DB_PASSWORD_AUTH: ${POSTGRES_DB_PASSWORD_AUTH}
       POSTGRES_DB_NAME_AUTH: ${POSTGRES_DB_NAME_AUTH}
-      RMQ_URI: amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:${RABBITMQ_DEFAULT_PORT}
+      # rabbitmq
+      RABBITMQ_DEFAULT_HOST: rabbitmq
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_DEFAULT_PORT: ${RABBITMQ_DEFAULT_PORT}
+      RABBITMQ_DEFAULT_EXCHANGE: ${RABBITMQ_DEFAULT_EXCHANGE}
+      # jwt
       JWT_SECRET: ${JWT_SECRET}
     links:
       - postgres
       - rabbitmq
-      - command-app
     volumes:
       - inventory-app:/auth-app
 
@@ -120,7 +150,7 @@ services:
       - data-postgres:/var/lib/postgresql/data
 
   mongo:
-    image: eduarandres/mongo-app:latest
+    image: mongo:8.0-rc-jammy
     container_name: mongo
     restart: always
     ports:
@@ -128,7 +158,6 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
     volumes:
       - data-mongo:/data/db
       - config-mongo:/data/configdb
@@ -143,7 +172,6 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit exchange_definitions '[{\"name\":\"inventory_exchange\"}]'"
     volumes:
       - data-rabbitmq:/var/lib/rabbitmq
 

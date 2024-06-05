@@ -1,5 +1,13 @@
 import { EventDomainModel, SeedUserDomainModel } from '@domain-models';
-import { Observable, catchError, map, of, switchMap, throwError } from 'rxjs';
+import {
+  Observable,
+  catchError,
+  map,
+  of,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
 import { ISeedUserDomainCommand } from '@domain-commands';
 import { IEventDomainService, IMailDomainService } from '@domain-services';
 import { DomainEventPublisher } from '@domain-publishers';
@@ -22,7 +30,6 @@ export class SeedUserUseCase
   ): Observable<SeedUserDomainModel> {
     const newUser = this.entityFactory(registerUserCommand);
     const newEvent = this.eventFactory(newUser);
-    console.log(newUser.hasErrors(), newUser.getErrors());
     if (newUser.hasErrors()) {
       return throwError(
         () =>
@@ -39,16 +46,18 @@ export class SeedUserUseCase
       .pipe(
         switchMap((exist: boolean) => {
           if (exist) {
-            console.warn(
-              'El correo electrónico ya existe en la sucursal actual',
-            );
+            console.warn('Seed de usuario ya existe en la base de datos');
             return of(newUser);
           }
           return this.event$.storeEvent(newEvent).pipe(
-            map((event: EventDomainModel) => {
+            tap((event: EventDomainModel) => {
               this.notifyUser(registerUserCommand).subscribe();
               this.eventPublisher.response = event;
               this.eventPublisher.publish();
+              return newUser;
+            }),
+            map(() => {
+              console.info('Seed de usuario almacenado en la base de datos');
               return newUser;
             }),
             catchError((err) =>

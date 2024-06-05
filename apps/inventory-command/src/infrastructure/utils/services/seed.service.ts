@@ -18,7 +18,7 @@ export class SeedService implements ISeedService, OnModuleInit {
 
   seedData(): Observable<SeedUserDomainModel> {
     const seedUserMail =
-      this.configService.get<string>('SEED_USER_MAIL') ||
+      this.configService.get<string>('SEED_USER_EMAIL') ||
       'superadmin@superadmin.com';
     const seedUserPassword =
       this.configService.get<string>('SEED_USER_PASSWORD') || 'superadmin';

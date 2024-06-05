@@ -45,4 +45,14 @@ export const JoiValidationSchema = Joi.object({
 
   // # secret para JWT
   JWT_SECRET: Joi.string().default('secret'),
+
+  // # User seed data
+  SEED_USER_FIRST_NAME: Joi.string().default('seed'),
+  SEED_USER_LAST_NAME: Joi.string().default('seed'),
+  SEED_USER_EMAIL: Joi.string().default('superadmin@superadmin.com'),
+  SEED_USER_PASSWORD: Joi.string().default('Superadmin123'),
+
+  // # Mail service data
+  MAIL_SERVICE_FROM: Joi.string().default('tooltraxpro@gmail.com'),
+  MAIL_SERVICE_PASSWORD: Joi.string().default('jqibdeyxvslammgd'),
 });

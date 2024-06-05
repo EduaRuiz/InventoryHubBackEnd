@@ -21,14 +21,29 @@ async function bootstrap() {
   await app.listen(process.env.PROXY_PORT || 3002);
 
   //Console log
-  console.log(`🚀Application is running on: ${await app.getUrl()}  PROXY🚀`);
-  console.log(
-    'RMQ',
-    `amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@${process.env.RABBITMQ_DEFAULT_HOST}:${process.env.RABBITMQ_DEFAULT_PORT}`,
-  );
-  console.log(
-    'DB',
-    `postgresql://${process.env.POSTGRES_DB_USER_QUE}:${process.env.POSTGRES_DB_PASSWORD_QUE}@${process.env.POSTGRES_DB_HOST_QUE}:${process.env.POSTGRES_DB_PORT_QUE}/${process.env.POSTGRES_DB_NAME_QUE}`,
-  );
+  const appUrl = await app.getUrl();
+  const rabbitMQUrl = `amqp://${process.env.RABBITMQ_DEFAULT_USER}:*****@${process.env.RABBITMQ_DEFAULT_HOST}:${process.env.RABBITMQ_DEFAULT_PORT}`;
+  const dbUrl = `postgresql://${process.env.POSTGRES_DB_USER_QUE}:*****@${process.env.POSTGRES_DB_HOST_QUE}:${process.env.POSTGRES_DB_PORT_QUE}/${process.env.POSTGRES_DB_NAME_QUE}`;
+
+  console.info(`
+
+    ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+
+                    ██████╗░██████╗░░█████╗░██╗░░██╗██╗░░░██╗░░░░░░░█████╗░██████╗░██████╗░
+                    ██╔══██╗██╔══██╗██╔══██╗╚██╗██╔╝╚██╗░██╔╝░░░░░░██╔══██╗██╔══██╗██╔══██╗
+                    ██████╔╝██████╔╝██║░░██║░╚███╔╝░░╚████╔╝░█████╗███████║██████╔╝██████╔╝
+                    ██╔═══╝░██╔══██╗██║░░██║░██╔██╗░░░╚██╔╝░░╚════╝██╔══██║██╔═══╝░██╔═══╝░
+                    ██║░░░░░██║░░██║╚█████╔╝██╔╝╚██╗░░░██║░░░░░░░░░██║░░██║██║░░░░░██║░░░░░
+                    ╚═╝░░░░░╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝░░░╚═╝░░░░░░░░░╚═╝░░╚═╝╚═╝░░░░░╚═╝░░░░░
+                    
+    ╟──────────────────────────────────────────────────────────────────────────────────────────────────────────╢
+    ║ URL:  ${appUrl}                                       
+    ║                                                       
+    ║ RMQ:  ${rabbitMQUrl}                                  
+    ║                                                       
+    ║ DB:   ${dbUrl}                                        
+    ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+    
+  `);
 }
 bootstrap();

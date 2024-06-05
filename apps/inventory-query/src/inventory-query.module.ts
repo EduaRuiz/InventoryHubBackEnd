@@ -1,33 +1,11 @@
 import { Module } from '@nestjs/common';
-import {
-  BranchRegisteredUseCase,
-  SaleRegisteredUseCase,
-  ProductPurchaseRegisteredUseCase,
-  ProductRegisteredUseCase,
-  ProductUpdatedUseCase,
-  UserRegisteredUseCase,
-} from '@use-cases-query';
-import {
-  BranchListener,
-  ProductListener,
-  UserListener,
-} from './infrastructure/listeners';
-import {
-  BranchService,
-  ProductService,
-  SaleService,
-  UserService,
-} from './infrastructure/persistence';
+import { RabbitMQConfigService } from './infrastructure/listeners';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
-import {
-  BranchController,
-  ProductController,
-  SaleController,
-  UserController,
-} from './infrastructure/controllers';
-import { InfrastructureModule } from './infrastructure/infrastructure.module';
-import { MailService } from './infrastructure/utils/services';
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { JwtModule } from '@nestjs/jwt';
+import { InfrastructureModule, JwtConfigService } from './infrastructure';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
@@ -39,67 +17,21 @@ import { MailService } from './infrastructure/utils/services';
         `.env.${process.env.SCOPE?.trimEnd()}`,
       ),
     }),
+    RabbitMQModule.forRootAsync(RabbitMQModule, {
+      imports: [InventoryQueryModule],
+      useFactory: async (rabbitMQConfigService: RabbitMQConfigService) => {
+        return rabbitMQConfigService.getOptions();
+      },
+      inject: [RabbitMQConfigService],
+    }),
+    JwtModule.registerAsync({
+      useClass: JwtConfigService,
+    }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     InfrastructureModule,
   ],
-  controllers: [
-    ProductController,
-    SaleController,
-    BranchController,
-    UserController,
-    BranchListener,
-    ProductListener,
-    UserListener,
-  ],
-  providers: [
-    {
-      provide: ProductRegisteredUseCase,
-      useFactory: (productService: ProductService) =>
-        new ProductRegisteredUseCase(productService),
-      inject: [ProductService],
-    },
-    {
-      provide: ProductUpdatedUseCase,
-      useFactory: (productService: ProductService) =>
-        new ProductUpdatedUseCase(productService),
-      inject: [ProductService],
-    },
-    {
-      provide: ProductPurchaseRegisteredUseCase,
-      useFactory: (productService: ProductService) =>
-        new ProductPurchaseRegisteredUseCase(productService),
-      inject: [ProductService],
-    },
-    {
-      provide: SaleRegisteredUseCase,
-      useFactory: (
-        saleService: SaleService,
-        productService: ProductService,
-        userService: UserService,
-        mailService: MailService,
-      ) =>
-        new SaleRegisteredUseCase(
-          saleService,
-          productService,
-          userService,
-          mailService,
-        ),
-      inject: [SaleService, ProductService, UserService, MailService],
-    },
-    {
-      provide: BranchRegisteredUseCase,
-      useFactory: (branchService: BranchService) =>
-        new BranchRegisteredUseCase(branchService),
-      inject: [BranchService],
-    },
-    {
-      provide: UserRegisteredUseCase,
-      useFactory: (userService: UserService) =>
-        new UserRegisteredUseCase(userService),
-      inject: [UserService],
-    },
-    BranchListener,
-    ProductListener,
-    UserListener,
-  ],
+  controllers: [],
+  providers: [RabbitMQConfigService],
+  exports: [RabbitMQConfigService],
 })
 export class InventoryQueryModule {}

@@ -32,11 +32,10 @@ import { join } from 'path';
         const host = configService.get<string>('RABBITMQ_DEFAULT_HOST');
         const port = configService.get<number>('RABBITMQ_DEFAULT_PORT');
         const uri = `amqp://${user}:${password}@${host}:${port}`;
-        console.log(uri);
         return {
           exchanges: [exchange],
           uri,
-          connectionInitOptions: { wait: true },
+          connectionInitOptions: { wait: false },
         };
       },
       inject: [ConfigService],

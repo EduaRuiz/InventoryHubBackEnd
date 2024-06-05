@@ -25,7 +25,7 @@ export class RabbitMQConfigService {
     return {
       exchanges: [exchange],
       uri,
-      connectionInitOptions: { wait: true },
+      connectionInitOptions: { wait: false },
     };
   }
 }

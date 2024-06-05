@@ -22,11 +22,10 @@ export class RabbitMQConfigService {
     const host = this.configService.get<string>('RABBITMQ_DEFAULT_HOST');
     const port = this.configService.get<number>('RABBITMQ_DEFAULT_PORT');
     const uri = `amqp://${user}:${password}@${host}:${port}`;
-
     return {
       exchanges: [exchange],
       uri,
-      connectionInitOptions: { wait: true },
+      connectionInitOptions: { wait: false },
     };
   }
 }

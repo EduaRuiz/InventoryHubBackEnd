@@ -1,19 +1,41 @@
 import { Module } from '@nestjs/common';
-import { AuthService, JwtConfigService } from './utils/services';
+import { UserService } from './persistence/services';
+import { UserListener } from './listeners';
+import {
+  LoginUseCase,
+  RefreshTokenUseCase,
+  UserRegisteredUseCase,
+} from '@use-cases-auth';
 import { PersistenceModule } from './persistence';
+import { AuthController } from './controllers';
+import { AuthService } from './utils/services';
 import { JwtModule } from '@nestjs/jwt';
-import { ListenerModule } from './listeners';
 
 @Module({
-  imports: [
-    JwtModule.registerAsync({
-      useClass: JwtConfigService,
-    }),
-    PersistenceModule,
-    ListenerModule,
+  imports: [PersistenceModule, JwtModule],
+  controllers: [AuthController, UserListener],
+  providers: [
+    AuthService,
+    UserListener,
+    {
+      provide: UserRegisteredUseCase,
+      useFactory: (userService: UserService) =>
+        new UserRegisteredUseCase(userService),
+      inject: [UserService],
+    },
+    {
+      provide: LoginUseCase,
+      useFactory: (userService: UserService, authService: AuthService) =>
+        new LoginUseCase(userService, authService),
+      inject: [UserService, AuthService],
+    },
+    {
+      provide: RefreshTokenUseCase,
+      useFactory: (userService: UserService, authService: AuthService) =>
+        new RefreshTokenUseCase(userService, authService),
+      inject: [UserService, AuthService],
+    },
   ],
-  controllers: [],
-  providers: [AuthService],
-  exports: [JwtModule, PersistenceModule, ListenerModule, AuthService],
+  exports: [PersistenceModule, AuthService],
 })
 export class InfrastructureModule {}
