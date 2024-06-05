@@ -26,6 +26,13 @@ export class RabbitMQConfigService {
       exchanges: [exchange],
       uri,
       connectionInitOptions: { wait: false },
+      channels: {
+        'channel-1': {
+          prefetchCount: 1,
+          default: true,
+        },
+      },
+      enableControllerDiscovery: true,
     };
   }
 }

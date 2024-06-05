@@ -15,9 +15,7 @@ export class EventPublisher extends DomainEventPublisher<EventEntity> {
   }
 
   publish<EventEntity>(): Observable<EventEntity> {
-    console.log('Publishing event');
-    const queue = `${this.response.typeName}.event`;
-    console.log({ queue });
+    console.info('Publishing event');
     return from(
       this.amqpConnection.publish(
         this.configService.get<string>('RABBITMQ_DEFAULT_EXCHANGE') || '',

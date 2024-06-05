@@ -1,4 +1,4 @@
-﻿import { Controller } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import {
   ProductPurchaseRegisteredUseCase,
@@ -9,7 +9,7 @@ import {
 import { EventDomainModel } from '@domain-models';
 import { TypeNameEnum } from '@enums';
 
-@Controller()
+@Injectable()
 export class ProductListener {
   constructor(
     private readonly productRegisteredUseCase: ProductRegisteredUseCase,
@@ -19,7 +19,7 @@ export class ProductListener {
   ) {}
 
   @RabbitSubscribe({
-    // exchange: 'inventory_exchange',
+    exchange: process.env.RABBITMQ_DEFAULT_EXCHANGE || 'inventory_exchange',
     routingKey: TypeNameEnum.PRODUCT_PURCHASE_REGISTERED,
     queue: `${TypeNameEnum.PRODUCT_PURCHASE_REGISTERED}.query`,
   })
@@ -28,7 +28,7 @@ export class ProductListener {
   }
 
   @RabbitSubscribe({
-    // exchange: 'inventory_exchange',
+    exchange: process.env.RABBITMQ_DEFAULT_EXCHANGE || 'inventory_exchange',
     routingKey: TypeNameEnum.PRODUCT_REGISTERED,
     queue: TypeNameEnum.PRODUCT_REGISTERED + '.query',
   })
@@ -37,7 +37,7 @@ export class ProductListener {
   }
 
   @RabbitSubscribe({
-    // exchange: 'inventory_exchange',
+    exchange: process.env.RABBITMQ_DEFAULT_EXCHANGE || 'inventory_exchange',
     routingKey: TypeNameEnum.PRODUCT_UPDATED,
     queue: TypeNameEnum.PRODUCT_UPDATED + '.query',
   })
@@ -46,7 +46,7 @@ export class ProductListener {
   }
 
   @RabbitSubscribe({
-    // exchange: 'inventory_exchange',
+    exchange: process.env.RABBITMQ_DEFAULT_EXCHANGE || 'inventory_exchange',
     routingKey: TypeNameEnum.CUSTOMER_SALE_REGISTERED,
     queue: TypeNameEnum.CUSTOMER_SALE_REGISTERED + '.query',
   })
@@ -55,7 +55,7 @@ export class ProductListener {
   }
 
   @RabbitSubscribe({
-    // exchange: 'inventory_exchange',
+    exchange: process.env.RABBITMQ_DEFAULT_EXCHANGE || 'inventory_exchange',
     routingKey: TypeNameEnum.SELLER_SALE_REGISTERED,
     queue: TypeNameEnum.SELLER_SALE_REGISTERED + '.query',
   })

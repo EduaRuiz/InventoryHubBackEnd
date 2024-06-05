@@ -15,30 +15,43 @@ import {
   SaleRegisteredUseCase,
   UserRegisteredUseCase,
 } from '@use-cases-query';
-import { BranchListener, ProductListener, UserListener } from './listeners';
+import {
+  BranchListener,
+  ProductListener,
+  RabbitMQConfigService,
+  UserListener,
+} from './listeners';
 import {
   BranchController,
   ProductController,
   SaleController,
   UserController,
 } from './controllers';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtConfigService, JwtStrategy } from './utils/strategies';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
-  imports: [PersistenceModule],
+  imports: [
+    JwtModule.registerAsync({
+      useClass: JwtConfigService,
+    }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    PersistenceModule,
+  ],
   controllers: [
     ProductController,
     SaleController,
     BranchController,
     UserController,
-    BranchListener,
-    ProductListener,
-    // UserListener,
   ],
   providers: [
+    RabbitMQConfigService,
     MailService,
     BranchListener,
     ProductListener,
     UserListener,
+    JwtStrategy,
     {
       provide: ProductRegisteredUseCase,
       useFactory: (productService: ProductService) =>
@@ -86,6 +99,6 @@ import {
       inject: [UserService],
     },
   ],
-  exports: [PersistenceModule],
+  exports: [PersistenceModule, RabbitMQConfigService],
 })
 export class InfrastructureModule {}

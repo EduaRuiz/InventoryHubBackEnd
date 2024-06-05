@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UserService } from './persistence/services';
-import { UserListener } from './listeners';
+import { RabbitMQConfigService, UserListener } from './listeners';
 import {
   LoginUseCase,
   RefreshTokenUseCase,
@@ -8,15 +8,21 @@ import {
 } from '@use-cases-auth';
 import { PersistenceModule } from './persistence';
 import { AuthController } from './controllers';
-import { AuthService } from './utils/services';
+import { AuthService, JwtConfigService } from './utils/services';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [PersistenceModule, JwtModule],
-  controllers: [AuthController, UserListener],
+  imports: [
+    JwtModule.registerAsync({
+      useClass: JwtConfigService,
+    }),
+    PersistenceModule,
+  ],
+  controllers: [AuthController],
   providers: [
     AuthService,
     UserListener,
+    RabbitMQConfigService,
     {
       provide: UserRegisteredUseCase,
       useFactory: (userService: UserService) =>
@@ -36,6 +42,11 @@ import { JwtModule } from '@nestjs/jwt';
       inject: [UserService, AuthService],
     },
   ],
-  exports: [PersistenceModule, AuthService],
+  exports: [
+    PersistenceModule,
+    AuthService,
+    UserListener,
+    RabbitMQConfigService,
+  ],
 })
 export class InfrastructureModule {}
