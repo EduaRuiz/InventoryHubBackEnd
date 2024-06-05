@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import {
   BranchRegisteredUseCase,
   SaleRegisteredUseCase,
@@ -40,20 +39,16 @@ import { MailService } from './infrastructure/utils/services';
         `.env.${process.env.SCOPE?.trimEnd()}`,
       ),
     }),
-    RabbitMQModule.forRoot(RabbitMQModule, {
-      uri: process.env.RMQ_URI || 'amqp://root:password@localhost:5672',
-      connectionInitOptions: { wait: false },
-    }),
     InfrastructureModule,
   ],
   controllers: [
-    BranchListener,
-    ProductListener,
-    UserListener,
     ProductController,
     SaleController,
     BranchController,
     UserController,
+    BranchListener,
+    ProductListener,
+    UserListener,
   ],
   providers: [
     {

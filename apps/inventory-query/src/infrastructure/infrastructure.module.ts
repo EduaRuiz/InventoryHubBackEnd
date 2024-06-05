@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { PersistenceModule } from './persistence';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy, JwtConfigService } from './utils/strategies';
+import { JwtConfigService } from './utils/strategies';
 import { MailService } from './utils/services';
+import { ListenerModule } from './listeners';
 
 @Module({
   imports: [
@@ -11,11 +12,17 @@ import { MailService } from './utils/services';
       useClass: JwtConfigService,
     }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    PassportModule,
     PersistenceModule,
+    ListenerModule,
   ],
   controllers: [],
-  providers: [JwtStrategy, JwtConfigService, MailService],
-  exports: [PersistenceModule, JwtModule, PassportModule, MailService],
+  providers: [MailService],
+  exports: [
+    JwtModule,
+    PassportModule,
+    PersistenceModule,
+    ListenerModule,
+    MailService,
+  ],
 })
 export class InfrastructureModule {}

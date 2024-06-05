@@ -2,9 +2,9 @@
 import { UserDomainModel } from '..';
 
 export interface IUserAuthDomainService<
-  User extends UserDomainModel = UserDomainModel,
+  Entity extends UserDomainModel = UserDomainModel,
 > {
-  login(email: string, password: string): Observable<User>;
-  registerUser(user: User): Observable<User>;
-  findById(id: string): Observable<User>;
+  login(email: string, password: string): Observable<Entity>;
+  registerUser(user: Entity): Observable<Entity>;
+  findById(id: string): Observable<Entity>;
 }

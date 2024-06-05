@@ -39,11 +39,11 @@ services:
     ports:
       - "${QUERY_PORT}:${QUERY_PORT}"
     environment:
-      POSTGRES_DB_HOST: postgres
-      POSTGRES_DB_PORT: ${POSTGRES_DB_PORT}
-      POSTGRES_DB_USER: ${POSTGRES_DB_USER}
-      POSTGRES_DB_PASSWORD: ${POSTGRES_DB_PASSWORD}
-      POSTGRES_DB_NAME: ${POSTGRES_DB_NAME}
+      POSTGRES_DB_HOST_QUE: postgres
+      POSTGRES_DB_PORT_QUE: ${POSTGRES_DB_PORT_QUE}
+      POSTGRES_DB_USER_QUE: ${POSTGRES_DB_USER_QUE}
+      POSTGRES_DB_PASSWORD_QUE: ${POSTGRES_DB_PASSWORD_QUE}
+      POSTGRES_DB_NAME_QUE: ${POSTGRES_DB_NAME_QUE}
       RMQ_URI: amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:${RABBITMQ_DEFAULT_PORT}
       JWT_SECRET: ${JWT_SECRET}
     links:
@@ -100,18 +100,22 @@ services:
       - inventory-app:/auth-app
 
   postgres:
-    image: eduarandres/postgres-app:latest
-    # image: postgres-app
+    # image: eduarandres/postgres-app:latest
+    image: postgres-app
     container_name: postgres
+    build: 
+      context: ./
+      dockerfile: inventory-postgres.dockerfile
     ports:
-      - "${POSTGRES_DB_PORT}:${POSTGRES_DB_PORT}"
+      - "${POSTGRES_DB_PORT_QUE}:${POSTGRES_DB_PORT_QUE}"
     restart: always
     command:
     environment:
-      POSTGRES_USER: ${POSTGRES_DB_USER_AUTH}
-      POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD_AUTH}
-      # POSTGRES_DB: inventory
-      DB_NAMES: "inventory,auth"
+      POSTGRES_USER: ${POSTGRES_DB_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD}
+      POSTGRES_MULTIPLE_DATABASES: "${POSTGRES_DB_NAME_QUE},${POSTGRES_DB_NAME_AUTH}"
+      POSTGRES_MULTIPLE_USERS: "${POSTGRES_DB_USER_QUE},${POSTGRES_DB_USER_AUTH}"
+      POSTGRES_MULTIPLE_PASSWORDS: "${POSTGRES_DB_PASSWORD_QUE},${POSTGRES_DB_PASSWORD_AUTH}"
     volumes:
       - data-postgres:/var/lib/postgresql/data
 
@@ -120,24 +124,26 @@ services:
     container_name: mongo
     restart: always
     ports:
-      - 27017:27017
+      - "${MONGO_DB_PORT}:${MONGO_DB_PORT}"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
-      MONGO_INITDB_DATABASE: inventory
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
     volumes:
       - data-mongo:/data/db
+      - config-mongo:/data/configdb
 
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq
     restart: always
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "${RABBITMQ_DEFAULT_PORT}:${RABBITMQ_DEFAULT_PORT}"
+      - "${RABBITMQ_DEFAULT_MANAGEMENT_PORT}:${RABBITMQ_DEFAULT_MANAGEMENT_PORT}"
     environment:
-      RABBITMQ_DEFAULT_USER: root
-      RABBITMQ_DEFAULT_PASS: password
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit exchange_definitions '[{\"name\":\"inventory_exchange\"}]'"
     volumes:
       - data-rabbitmq:/var/lib/rabbitmq
 
@@ -148,15 +154,16 @@ volumes:
   data-mongo:
     name: data-mongo
     driver: local
+  config-mongo:
+    name: config-mongo
+    driver: local
   data-rabbitmq:
     name: data-rabbitmq
     driver: local
   inventory-app:
     name: inventory-app
     driver: local
-  auth-app:
-    name: auth-app
-    driver: local
+
 
 # docker-compose --env-file ./environments/.env.dev build
 # docker-compose --env-file ./environments/.env.dev up -d

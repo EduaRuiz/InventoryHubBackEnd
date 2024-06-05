@@ -9,7 +9,7 @@ export class UserListener {
   constructor(private readonly userRegisteredUseCase: UserRegisteredUseCase) {}
 
   @RabbitSubscribe({
-    exchange: 'inventory_exchange',
+    // exchange: 'inventory_exchange',
     routingKey: TypeNameEnum.USER_REGISTERED,
     queue: TypeNameEnum.USER_REGISTERED + '.query',
   })

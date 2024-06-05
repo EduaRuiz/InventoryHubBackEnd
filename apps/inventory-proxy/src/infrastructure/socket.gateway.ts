@@ -119,7 +119,7 @@ export class SocketGateway
   }
 
   @RabbitSubscribe({
-    exchange: 'inventory_exchange',
+    // exchange: 'inventory_exchange',
     routingKey: [TypeNameEnum.PRODUCT_REGISTERED],
     queue: `${TypeNameEnum.PRODUCT_REGISTERED}.proxy`,
   })
@@ -131,7 +131,7 @@ export class SocketGateway
   }
 
   @RabbitSubscribe({
-    exchange: 'inventory_exchange',
+    // exchange: 'inventory_exchange',
     routingKey: [TypeNameEnum.PRODUCT_UPDATED],
     queue: `${TypeNameEnum.PRODUCT_UPDATED}.proxy`,
   })
@@ -143,7 +143,7 @@ export class SocketGateway
   }
 
   @RabbitSubscribe({
-    exchange: 'inventory_exchange',
+    // exchange: 'inventory_exchange',
     routingKey: [TypeNameEnum.PRODUCT_PURCHASE_REGISTERED],
     queue: `${TypeNameEnum.PRODUCT_PURCHASE_REGISTERED}.proxy`,
   })
@@ -155,7 +155,7 @@ export class SocketGateway
   }
 
   @RabbitSubscribe({
-    exchange: 'inventory_exchange',
+    // exchange: 'inventory_exchange',
     routingKey: [TypeNameEnum.SELLER_SALE_REGISTERED],
     queue: `${TypeNameEnum.SELLER_SALE_REGISTERED}.proxy`,
   })
@@ -167,7 +167,7 @@ export class SocketGateway
   }
 
   @RabbitSubscribe({
-    exchange: 'inventory_exchange',
+    // exchange: 'inventory_exchange',
     routingKey: [TypeNameEnum.CUSTOMER_SALE_REGISTERED],
     queue: `${TypeNameEnum.CUSTOMER_SALE_REGISTERED}.proxy`,
   })

@@ -35,7 +35,7 @@ describe('RabbitMQConfigService', () => {
 
   it('should return RabbitMQConfig with default URI when RMQ_URI is not provided', () => {
     // Act
-    const config = service.getRabbitMQOptions();
+    const config = service.getOptions();
 
     // Assert
     expect(config.uri).toEqual('amqp://root:password@localhost:5672');
@@ -46,7 +46,7 @@ describe('RabbitMQConfigService', () => {
     mockConfigService.get.mockReturnValueOnce('custom_rabbitmq_uri');
 
     // Act
-    const config = service.getRabbitMQOptions();
+    const config = service.getOptions();
 
     // Assert
     expect(config.uri).toEqual('custom_rabbitmq_uri');
@@ -54,7 +54,7 @@ describe('RabbitMQConfigService', () => {
 
   it('should return RabbitMQConfig with correct exchanges configuration', () => {
     // Act
-    const config = service.getRabbitMQOptions();
+    const config = service.getOptions();
 
     // Assert
     expect(config).toBeDefined(); // Asegura que config no sea nulo o indefinido

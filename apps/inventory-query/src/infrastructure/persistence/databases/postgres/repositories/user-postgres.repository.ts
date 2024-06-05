@@ -49,6 +49,7 @@ export class UserPostgresRepository
       const savedEntity = await this.UserPostgresEntity.save(entity);
       return savedEntity;
     } catch (error) {
+      console.log('error', JSON.stringify(error));
       throw new ConflictException('User create conflict', error.detail);
     }
   }

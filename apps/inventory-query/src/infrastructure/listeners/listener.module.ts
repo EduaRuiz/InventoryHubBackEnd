@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
-import { EventPublisher } from './publishers';
-import { RabbitMQConfigService } from './rabbitmq.config.service';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { RabbitMQConfigService } from './rabbitmq.config.service';
 
 @Module({
   imports: [
     RabbitMQModule.forRootAsync(RabbitMQModule, {
-      imports: [MessagingModule],
+      imports: [ListenerModule],
       useFactory: async (rabbitMQConfigService: RabbitMQConfigService) => {
         return rabbitMQConfigService.getOptions();
       },
@@ -14,7 +13,7 @@ import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
     }),
   ],
   controllers: [],
-  providers: [EventPublisher, RabbitMQConfigService],
-  exports: [EventPublisher, RabbitMQConfigService],
+  providers: [RabbitMQConfigService],
+  exports: [RabbitMQConfigService],
 })
-export class MessagingModule {}
+export class ListenerModule {}

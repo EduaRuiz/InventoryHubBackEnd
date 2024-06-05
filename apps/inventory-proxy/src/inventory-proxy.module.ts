@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SocketGateway } from './infrastructure';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { join } from 'path';
 
 @Module({
@@ -14,9 +14,32 @@ import { join } from 'path';
         `.env.${process.env.SCOPE?.trimEnd()}`,
       ),
     }),
-    RabbitMQModule.forRoot(RabbitMQModule, {
-      uri: process.env.RMQ_URI || 'amqp://root:password@localhost:5672',
-      connectionInitOptions: { wait: false },
+    RabbitMQModule.forRootAsync(RabbitMQModule, {
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => {
+        const exchange = {
+          name: configService.get<string>('RABBITMQ_DEFAULT_EXCHANGE') || '',
+          type: 'topic',
+          createExchangeIfNotExists: true,
+          options: {
+            durable: true,
+            autoDelete: false,
+            internal: false,
+          },
+        };
+        const user = configService.get<string>('RABBITMQ_DEFAULT_USER');
+        const password = configService.get<string>('RABBITMQ_DEFAULT_PASS');
+        const host = configService.get<string>('RABBITMQ_DEFAULT_HOST');
+        const port = configService.get<number>('RABBITMQ_DEFAULT_PORT');
+        const uri = `amqp://${user}:${password}@${host}:${port}`;
+        console.log(uri);
+        return {
+          exchanges: [exchange],
+          uri,
+          connectionInitOptions: { wait: true },
+        };
+      },
+      inject: [ConfigService],
     }),
   ],
   controllers: [],

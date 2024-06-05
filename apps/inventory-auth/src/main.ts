@@ -34,7 +34,11 @@ async function bootstrap() {
 
   //Console log
   console.log(`🚀Application is running on: ${await app.getUrl()} AUTH🚀`);
-  console.log('RMQ', process.env.RMQ_URI);
+
+  console.log(
+    'RMQ',
+    `amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@${process.env.RABBITMQ_DEFAULT_HOST}:${process.env.RABBITMQ_DEFAULT_PORT}`,
+  );
   console.log(
     'DB',
     `postgresql://${process.env.POSTGRES_DB_USER_AUTH}:${process.env.POSTGRES_DB_PASSWORD_AUTH}@${process.env.POSTGRES_DB_HOST_AUTH}:${process.env.POSTGRES_DB_PORT_AUTH}/${process.env.POSTGRES_DB_NAME_AUTH}`,

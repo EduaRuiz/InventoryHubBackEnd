@@ -11,7 +11,7 @@ export class BranchListener {
   ) {}
 
   @RabbitSubscribe({
-    exchange: 'inventory_exchange',
+    // exchange: 'inventory_exchange',
     routingKey: TypeNameEnum.BRANCH_REGISTERED,
     queue: TypeNameEnum.BRANCH_REGISTERED + '.query',
   })

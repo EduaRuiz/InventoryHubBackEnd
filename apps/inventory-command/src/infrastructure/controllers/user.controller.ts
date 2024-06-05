@@ -57,4 +57,37 @@ export class UserController {
   registerUser(@Body() user: NewUserCommand): Observable<UserDomainModel> {
     return this.userRegisterUseCase.execute(user);
   }
+
+  @ApiOperation({
+    summary: 'Seed user',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The found record',
+    type: UserSwaggerType,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Record not found',
+    type: NotFoundSwagger,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+    type: UnauthorizedSwagger,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+    type: UnauthorizedSwagger,
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Conflict',
+    type: ConflictSwagger,
+  })
+  @Post('seed')
+  seedUser(): Observable<UserDomainModel> {
+    return this.userRegisterUseCase.execute(new NewUserCommand());
+  }
 }

@@ -20,5 +20,8 @@
     "titleBar.inactiveBackground": "#ed742299",
     "titleBar.inactiveForeground": "#15202b99"
   },
-  "peacock.color": "#ed7422"
+  "peacock.color": "#ed7422",
+  "exportall.config.relExclusion": [
+    "/apps/domain/services/index.ts"
+  ]
 }

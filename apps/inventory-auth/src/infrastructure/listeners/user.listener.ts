@@ -1,8 +1,8 @@
 ﻿import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { Controller } from '@nestjs/common';
+import { UserRegisteredUseCase } from '@use-cases-auth';
 import { EventDomainModel } from '@domain-models';
 import { TypeNameEnum } from '@enums';
-import { UserRegisteredUseCase } from '../../application';
 
 @Controller()
 export class UserListener {
@@ -14,6 +14,7 @@ export class UserListener {
     queue: TypeNameEnum.USER_REGISTERED + '.auth',
   })
   public userRegistered(msg: EventDomainModel): void {
+    console.log('User registered event received');
     this.userRegisteredUseCase.execute(msg);
   }
 }

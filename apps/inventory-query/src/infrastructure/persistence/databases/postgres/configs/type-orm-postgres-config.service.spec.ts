@@ -11,15 +11,15 @@ describe('TypeOrmPostgresConfigService', () => {
     // Arrange
     mockConfigService = {
       get: jest.fn((key: string) => {
-        return key === 'POSTGRES_DB_HOST'
+        return key === 'POSTGRES_DB_HOST_QUE'
           ? 'localhost'
-          : key === 'POSTGRES_DB_PORT'
+          : key === 'POSTGRES_DB_PORT_QUE'
             ? 5432
-            : key === 'POSTGRES_DB_USER'
+            : key === 'POSTGRES_DB_USER_QUE'
               ? 'user'
-              : key === 'POSTGRES_DB_PASSWORD'
+              : key === 'POSTGRES_DB_PASSWORD_QUE'
                 ? 'password'
-                : key === 'POSTGRES_DB_NAME'
+                : key === 'POSTGRES_DB_NAME_QUE'
                   ? 'dbname'
                   : '';
       }),
